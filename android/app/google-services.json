@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "338742978059",
+    "project_id": "attendease-4d428",
+    "storage_bucket": "attendease-4d428.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338742978059:android:73810ce1152b2e3617090e",
+        "android_client_info": {
+          "package_name": "com.example.attendease_frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDklsjczUK3syKCORO1df7h1DQUqYVZidQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
