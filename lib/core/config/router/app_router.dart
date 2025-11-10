@@ -15,8 +15,15 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
     debugLogDiagnostics: true,
     redirect: (context, state) {
-      final isAuthenticated = authState is Authenticated;
-      final isLoading = authState is Loading || authState is Initial;
+      final isAuthenticated = authState.maybeWhen(
+        authenticated: (_) => true,
+        orElse: () => false,
+      );
+      final isLoading = authState.maybeWhen(
+        loading: () => true,
+        initial: () => true,
+        orElse: () => false,
+      );
       final isLoginRoute = state.matchedLocation == '/login';
       final isSplashRoute = state.matchedLocation == '/';
 
@@ -32,7 +39,11 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Redirect to appropriate dashboard if already logged in
       if (isAuthenticated && (isLoginRoute || isSplashRoute)) {
-        final user = (authState as Authenticated).user;
+        final user = authState.maybeWhen(
+          authenticated: (u) => u,
+          orElse: () => null,
+        );
+        if(user != null)
         return user.isTeacher ? '/teacher' : '/student';
       }
 
