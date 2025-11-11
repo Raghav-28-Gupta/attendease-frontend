@@ -26,15 +26,15 @@ class DebugMenu extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('🐛 Debug Menu'),
-        content: Column(
+        content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('API: ${AppConfig.baseUrl}'),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text('Version: ${AppConfig.appVersion}'),
-            const SizedBox(height: 16),
-            const Text('Quick Actions:'),
+            SizedBox(height: 16),
+            Text('Quick Actions:'),
           ],
         ),
         actions: [

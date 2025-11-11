@@ -36,21 +36,21 @@ class CardSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return const Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SkeletonLoader(height: 20, width: 150),
-            const SizedBox(height: 8),
-            const SkeletonLoader(height: 16, width: 200),
-            const SizedBox(height: 12),
+            SkeletonLoader(height: 20, width: 150),
+            SizedBox(height: 8),
+            SkeletonLoader(height: 16, width: 200),
+            SizedBox(height: 12),
             Row(
               children: [
-                const SkeletonLoader(height: 32, width: 80),
-                const SizedBox(width: 12),
-                const SkeletonLoader(height: 32, width: 80),
+                SkeletonLoader(height: 32, width: 80),
+                SizedBox(width: 12),
+                SkeletonLoader(height: 32, width: 80),
               ],
             ),
           ],
@@ -65,18 +65,18 @@ class ListTileSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: const SkeletonLoader(
+    return const ListTile(
+      leading: SkeletonLoader(
         height: 48,
         width: 48,
         borderRadius: BorderRadius.all(Radius.circular(24)),
       ),
-      title: const SkeletonLoader(height: 16, width: 120),
-      subtitle: const Padding(
+      title: SkeletonLoader(height: 16, width: 120),
+      subtitle: Padding(
         padding: EdgeInsets.only(top: 8),
         child: SkeletonLoader(height: 12, width: 180),
       ),
-      trailing: const SkeletonLoader(height: 24, width: 60),
+      trailing: SkeletonLoader(height: 24, width: 60),
     );
   }
 }
