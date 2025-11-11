@@ -92,7 +92,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
+                            color: AppColors.primary.withAlpha((0.3 * 255).round()),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
@@ -233,10 +233,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.info.withOpacity(0.1),
+                    color: AppColors.info.withAlpha((0.1 * 255).round()),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppColors.info.withOpacity(0.3),
+                      color: AppColors.info.withAlpha((0.3 * 255).round()),
                     ),
                   ),
                   child: Column(
@@ -255,7 +255,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.info.withOpacity(0.9),
+                              color: AppColors.info.withAlpha((0.9 * 255).round()),
                             ),
                           ),
                         ],
@@ -267,7 +267,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         '• Contact admin for login issues',
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.info.withOpacity(0.8),
+                          color: AppColors.info.withAlpha((0.8 * 255).round()),
                           height: 1.5,
                         ),
                       ),

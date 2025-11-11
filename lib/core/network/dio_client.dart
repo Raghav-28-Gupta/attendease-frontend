@@ -5,7 +5,7 @@ import '../storage/secure_storage.dart';
 import '../utils/logger.dart';
 import 'api_endpoints.dart';
 
-final dioProvider = Provider<Dio>((ref) {
+final dioProvider = Provider<Dio>((Ref ref) {
   final dio = Dio(
     BaseOptions(
       baseUrl: ApiEndpoints.baseUrl,
@@ -79,16 +79,16 @@ final dioProvider = Provider<Dio>((ref) {
 });
 
 // Refresh token logic
-Future<bool> _refreshToken(Dio dio, ProviderRef ref) async {
+Future<bool> _refreshToken(Dio dio, Ref ref) async {
   try {
     final refreshToken = await ref.read(secureStorageProvider).read(AppConfig.refreshTokenKey,);
 
     if (refreshToken == null) {
-      print('❌ No refresh token found');
+      AppLogger.warning('❌ No refresh token found');
       return false;
     }
 
-    print('🔄 Attempting token refresh...');
+    AppLogger.info('🔄 Attempting token refresh...');
 
     
     final response = await dio.post(

@@ -78,10 +78,10 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
+                    color: Colors.blue.withAlpha((0.1 * 255).round()),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: Colors.blue.withOpacity(0.3),
+                      color: Colors.blue.withAlpha((0.3 * 255).round()),
                     ),
                   ),
                   child: const Row(
