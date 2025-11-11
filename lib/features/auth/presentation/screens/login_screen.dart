@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/utils/snackbar_utils.dart';
 import '../providers/auth_provider.dart';
+import '../providers/auth_state.dart'; 
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -19,6 +20,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _rememberMe = false;
 
   @override
   void dispose() {
@@ -28,6 +30,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
+    // Dismiss keyboard
+    FocusScope.of(context).unfocus();
+
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
@@ -41,23 +46,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       setState(() => _isLoading = false);
 
       if (success) {
-        // Navigation handled by GoRouter redirect
-        SnackbarUtils.showSuccess(context, 'Login successful!');
+        SnackbarUtils.showSuccess(context, 'Welcome back! 👋');
       } else {
         final authState = ref.read(authProvider);
-        authState.when(
-        initial: () => SnackbarUtils.showError(context, 'Login failed'),
-        loading: () => {},
-        authenticated: (_) => {},
-        unauthenticated: () => SnackbarUtils.showError(context, 'Not authenticated'),
-        error: (message) => SnackbarUtils.showError(context, message),
-      );
+        authState.maybeWhen(
+          error: (message) => SnackbarUtils.showError(context, message),
+          orElse: () {},
+        );
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Listen to auth state for additional error handling
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      next.maybeWhen(
+        error: (message) {
+          if (mounted) SnackbarUtils.showError(context, message);
+        },
+        orElse: () {},
+      );
+    });
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -69,23 +80,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               children: [
                 const SizedBox(height: 48),
 
-                // Logo
+                // Logo with Hero animation
                 Center(
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.check_circle,
-                      size: 56,
-                      color: AppColors.primary,
+                  child: Hero(
+                    tag: 'app_logo',
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.3),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.check_circle,
+                        size: 56,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
 
                 // Title
                 const Text(
@@ -101,7 +122,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // Subtitle
                 const Text(
-                  'Login to continue to AttendEase',
+                  'Login to manage your attendance',
                   style: TextStyle(
                     fontSize: 16,
                     color: AppColors.textSecondary,
@@ -112,25 +133,74 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // Email Field
                 AppTextField(
-                  label: 'Email',
-                  hint: 'Enter your email',
+                  label: 'Email Address',
+                  hint: 'your.email@college.edu',
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icons.email_outlined,
                   validator: Validators.email,
+                  enabled: !_isLoading,
                 ),
                 const SizedBox(height: 20),
 
                 // Password Field
                 AppTextField(
                   label: 'Password',
-                  hint: 'Enter your password',
+                  hint: '••••••••',
                   controller: _passwordController,
                   obscureText: true,
                   prefixIcon: Icons.lock_outlined,
                   validator: Validators.password,
+                  enabled: !_isLoading,
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 12),
+
+                // Remember Me & Forgot Password Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Remember Me Checkbox
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _rememberMe,
+                          onChanged: _isLoading
+                              ? null
+                              : (value) {
+                                  setState(() => _rememberMe = value ?? false);
+                                },
+                        ),
+                        const Text(
+                          'Remember me',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Forgot Password (future feature)
+                    TextButton(
+                      onPressed: _isLoading
+                          ? null
+                          : () {
+                              SnackbarUtils.showInfo(
+                                context,
+                                'Contact admin to reset password',
+                              );
+                            },
+                      child: const Text(
+                        'Forgot password?',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
 
                 // Login Button
                 AppButton(
@@ -138,33 +208,67 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   onPressed: _isLoading ? null : _handleLogin,
                   isLoading: _isLoading,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
 
-                // Info Text
+                // Divider
+                Row(
+                  children: [
+                    const Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'OR',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Help Text
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: AppColors.info.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: AppColors.info.withOpacity(0.3),
                     ),
                   ),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
-                        Icons.info_outline,
-                        color: AppColors.info,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Students: Use credentials sent via email\nTeachers: Use registered account',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.info.withOpacity(0.8),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.info_outline,
+                            color: AppColors.info,
+                            size: 20,
                           ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Login Help',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.info.withOpacity(0.9),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '• Students: Use credentials sent via email\n'
+                        '• Teachers: Use your registered account\n'
+                        '• Contact admin for login issues',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.info.withOpacity(0.8),
+                          height: 1.5,
                         ),
                       ),
                     ],
