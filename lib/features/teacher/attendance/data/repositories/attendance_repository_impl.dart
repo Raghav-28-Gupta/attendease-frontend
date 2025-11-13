@@ -63,4 +63,48 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
       return Left(e);
     }
   }
+
+
+  @override
+  Future<Either<NetworkException, List<SessionWithDetails>>>
+      getEnrollmentSessions(String enrollmentId) async {
+    try {
+      final sessions = await remoteDatasource.getEnrollmentSessions(enrollmentId);
+      AppLogger.info('✅ Fetched ${sessions.length} sessions for enrollment');
+      return Right(sessions);
+    } on NetworkException catch (e) {
+      AppLogger.error('❌ Failed to fetch enrollment sessions', e);
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either<NetworkException, Map<String, dynamic>>> getSessionDetails(
+    String sessionId,
+  ) async {
+    try {
+      final details = await remoteDatasource.getSessionDetails(sessionId);
+      AppLogger.info('✅ Fetched session details');
+      return Right(details);
+    } on NetworkException catch (e) {
+      AppLogger.error('❌ Failed to fetch session details', e);
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either<NetworkException, void>> updateAttendanceRecord(
+    String recordId,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      await remoteDatasource.updateAttendanceRecord(recordId, data);
+      AppLogger.info('✅ Attendance record updated');
+      return const Right(null);
+    } on NetworkException catch (e) {
+      AppLogger.error('❌ Failed to update attendance record', e);
+      return Left(e);
+    }
+  }
+
 }

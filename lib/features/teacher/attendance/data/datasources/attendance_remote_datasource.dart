@@ -8,6 +8,9 @@ abstract class AttendanceRemoteDatasource {
   Future<List<StudentAttendanceModel>> getSessionStudents(String sessionId);
   Future<Map<String, dynamic>> markAttendance(MarkAttendanceRequest request);
   Future<List<AttendanceSessionModel>> getTeacherSessions();
+  Future<List<SessionWithDetails>> getEnrollmentSessions(String enrollmentId);
+  Future<Map<String, dynamic>> getSessionDetails(String sessionId);
+  Future<void> updateAttendanceRecord(String recordId, Map<String, dynamic> data);
 }
 
 class AttendanceRemoteDatasourceImpl implements AttendanceRemoteDatasource {
@@ -99,6 +102,7 @@ class AttendanceRemoteDatasourceImpl implements AttendanceRemoteDatasource {
     }
   }
 
+  @override
   Future<List<SessionWithDetails>> getEnrollmentSessions(String enrollmentId) async {
     try {
       final response = await dio.get(
@@ -132,26 +136,19 @@ class AttendanceRemoteDatasourceImpl implements AttendanceRemoteDatasource {
     }
   }
 
-  Future<Map<String, dynamic>> updateAttendanceRecord({
-    required String recordId,
-    required String status,
-    String? reason,
-  }) async {
+  @override
+  Future<void> updateAttendanceRecord(
+    String recordId,
+    Map<String, dynamic> data,
+  ) async {
     try {
       final response = await dio.put(
         ApiEndpoints.updateRecord(recordId),
-        data: {
-          'status': status,
-          if (reason != null) 'reason': reason,
-        },
+        data: data,
       );
 
-      if (response.data['success'] == true) {
-        return response.data;
-      } else {
-        throw NetworkException.defaultError(
-          response.data['message'] ?? 'Failed to update record',
-        );
+      if (response.data['success'] != true) {
+        throw const NetworkException.defaultError('Failed to update attendance record');
       }
     } on DioException catch (e) {
       throw NetworkException.getDioException(e);

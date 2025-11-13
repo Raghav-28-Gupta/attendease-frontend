@@ -16,4 +16,13 @@ abstract class AttendanceRepository {
 
   Future<Either<NetworkException, List<AttendanceSessionModel>>>
       getTeacherSessions();
+
+  Future<Either<NetworkException, List<SessionWithDetails>>>
+    getEnrollmentSessions(String enrollmentId);
+
+  Future<Either<NetworkException, Map<String, dynamic>>> getSessionDetails(
+    String sessionId,
+  );
+
+  Future<Either<NetworkException, void>> updateAttendanceRecord(String recordId, Map<String, dynamic> data);
 }
