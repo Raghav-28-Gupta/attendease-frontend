@@ -1398,3 +1398,1019 @@ abstract class _AttendanceRecord implements AttendanceRecord {
   _$$AttendanceRecordImplCopyWith<_$AttendanceRecordImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+SessionWithDetails _$SessionWithDetailsFromJson(Map<String, dynamic> json) {
+  return _SessionWithDetails.fromJson(json);
+}
+
+/// @nodoc
+mixin _$SessionWithDetails {
+  String get id => throw _privateConstructorUsedError;
+  String get subjectEnrollmentId => throw _privateConstructorUsedError;
+  String get teacherId => throw _privateConstructorUsedError;
+  DateTime get date => throw _privateConstructorUsedError;
+  String get startTime => throw _privateConstructorUsedError;
+  String get endTime => throw _privateConstructorUsedError;
+  String get type => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+  SubjectEnrollmentDetailInfo get subjectEnrollment =>
+      throw _privateConstructorUsedError;
+  SessionRecordsCount get count => throw _privateConstructorUsedError;
+
+  /// Serializes this SessionWithDetails to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of SessionWithDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $SessionWithDetailsCopyWith<SessionWithDetails> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SessionWithDetailsCopyWith<$Res> {
+  factory $SessionWithDetailsCopyWith(
+          SessionWithDetails value, $Res Function(SessionWithDetails) then) =
+      _$SessionWithDetailsCopyWithImpl<$Res, SessionWithDetails>;
+  @useResult
+  $Res call(
+      {String id,
+      String subjectEnrollmentId,
+      String teacherId,
+      DateTime date,
+      String startTime,
+      String endTime,
+      String type,
+      DateTime createdAt,
+      SubjectEnrollmentDetailInfo subjectEnrollment,
+      SessionRecordsCount count});
+
+  $SubjectEnrollmentDetailInfoCopyWith<$Res> get subjectEnrollment;
+  $SessionRecordsCountCopyWith<$Res> get count;
+}
+
+/// @nodoc
+class _$SessionWithDetailsCopyWithImpl<$Res, $Val extends SessionWithDetails>
+    implements $SessionWithDetailsCopyWith<$Res> {
+  _$SessionWithDetailsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of SessionWithDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? subjectEnrollmentId = null,
+    Object? teacherId = null,
+    Object? date = null,
+    Object? startTime = null,
+    Object? endTime = null,
+    Object? type = null,
+    Object? createdAt = null,
+    Object? subjectEnrollment = null,
+    Object? count = null,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      subjectEnrollmentId: null == subjectEnrollmentId
+          ? _value.subjectEnrollmentId
+          : subjectEnrollmentId // ignore: cast_nullable_to_non_nullable
+              as String,
+      teacherId: null == teacherId
+          ? _value.teacherId
+          : teacherId // ignore: cast_nullable_to_non_nullable
+              as String,
+      date: null == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      startTime: null == startTime
+          ? _value.startTime
+          : startTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      endTime: null == endTime
+          ? _value.endTime
+          : endTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      subjectEnrollment: null == subjectEnrollment
+          ? _value.subjectEnrollment
+          : subjectEnrollment // ignore: cast_nullable_to_non_nullable
+              as SubjectEnrollmentDetailInfo,
+      count: null == count
+          ? _value.count
+          : count // ignore: cast_nullable_to_non_nullable
+              as SessionRecordsCount,
+    ) as $Val);
+  }
+
+  /// Create a copy of SessionWithDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SubjectEnrollmentDetailInfoCopyWith<$Res> get subjectEnrollment {
+    return $SubjectEnrollmentDetailInfoCopyWith<$Res>(_value.subjectEnrollment,
+        (value) {
+      return _then(_value.copyWith(subjectEnrollment: value) as $Val);
+    });
+  }
+
+  /// Create a copy of SessionWithDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SessionRecordsCountCopyWith<$Res> get count {
+    return $SessionRecordsCountCopyWith<$Res>(_value.count, (value) {
+      return _then(_value.copyWith(count: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$SessionWithDetailsImplCopyWith<$Res>
+    implements $SessionWithDetailsCopyWith<$Res> {
+  factory _$$SessionWithDetailsImplCopyWith(_$SessionWithDetailsImpl value,
+          $Res Function(_$SessionWithDetailsImpl) then) =
+      __$$SessionWithDetailsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      String subjectEnrollmentId,
+      String teacherId,
+      DateTime date,
+      String startTime,
+      String endTime,
+      String type,
+      DateTime createdAt,
+      SubjectEnrollmentDetailInfo subjectEnrollment,
+      SessionRecordsCount count});
+
+  @override
+  $SubjectEnrollmentDetailInfoCopyWith<$Res> get subjectEnrollment;
+  @override
+  $SessionRecordsCountCopyWith<$Res> get count;
+}
+
+/// @nodoc
+class __$$SessionWithDetailsImplCopyWithImpl<$Res>
+    extends _$SessionWithDetailsCopyWithImpl<$Res, _$SessionWithDetailsImpl>
+    implements _$$SessionWithDetailsImplCopyWith<$Res> {
+  __$$SessionWithDetailsImplCopyWithImpl(_$SessionWithDetailsImpl _value,
+      $Res Function(_$SessionWithDetailsImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of SessionWithDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? subjectEnrollmentId = null,
+    Object? teacherId = null,
+    Object? date = null,
+    Object? startTime = null,
+    Object? endTime = null,
+    Object? type = null,
+    Object? createdAt = null,
+    Object? subjectEnrollment = null,
+    Object? count = null,
+  }) {
+    return _then(_$SessionWithDetailsImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      subjectEnrollmentId: null == subjectEnrollmentId
+          ? _value.subjectEnrollmentId
+          : subjectEnrollmentId // ignore: cast_nullable_to_non_nullable
+              as String,
+      teacherId: null == teacherId
+          ? _value.teacherId
+          : teacherId // ignore: cast_nullable_to_non_nullable
+              as String,
+      date: null == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      startTime: null == startTime
+          ? _value.startTime
+          : startTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      endTime: null == endTime
+          ? _value.endTime
+          : endTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      subjectEnrollment: null == subjectEnrollment
+          ? _value.subjectEnrollment
+          : subjectEnrollment // ignore: cast_nullable_to_non_nullable
+              as SubjectEnrollmentDetailInfo,
+      count: null == count
+          ? _value.count
+          : count // ignore: cast_nullable_to_non_nullable
+              as SessionRecordsCount,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$SessionWithDetailsImpl implements _SessionWithDetails {
+  const _$SessionWithDetailsImpl(
+      {required this.id,
+      required this.subjectEnrollmentId,
+      required this.teacherId,
+      required this.date,
+      required this.startTime,
+      required this.endTime,
+      required this.type,
+      required this.createdAt,
+      required this.subjectEnrollment,
+      required this.count});
+
+  factory _$SessionWithDetailsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SessionWithDetailsImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String subjectEnrollmentId;
+  @override
+  final String teacherId;
+  @override
+  final DateTime date;
+  @override
+  final String startTime;
+  @override
+  final String endTime;
+  @override
+  final String type;
+  @override
+  final DateTime createdAt;
+  @override
+  final SubjectEnrollmentDetailInfo subjectEnrollment;
+  @override
+  final SessionRecordsCount count;
+
+  @override
+  String toString() {
+    return 'SessionWithDetails(id: $id, subjectEnrollmentId: $subjectEnrollmentId, teacherId: $teacherId, date: $date, startTime: $startTime, endTime: $endTime, type: $type, createdAt: $createdAt, subjectEnrollment: $subjectEnrollment, count: $count)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SessionWithDetailsImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.subjectEnrollmentId, subjectEnrollmentId) ||
+                other.subjectEnrollmentId == subjectEnrollmentId) &&
+            (identical(other.teacherId, teacherId) ||
+                other.teacherId == teacherId) &&
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.startTime, startTime) ||
+                other.startTime == startTime) &&
+            (identical(other.endTime, endTime) || other.endTime == endTime) &&
+            (identical(other.type, type) || other.type == type) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.subjectEnrollment, subjectEnrollment) ||
+                other.subjectEnrollment == subjectEnrollment) &&
+            (identical(other.count, count) || other.count == count));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      subjectEnrollmentId,
+      teacherId,
+      date,
+      startTime,
+      endTime,
+      type,
+      createdAt,
+      subjectEnrollment,
+      count);
+
+  /// Create a copy of SessionWithDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SessionWithDetailsImplCopyWith<_$SessionWithDetailsImpl> get copyWith =>
+      __$$SessionWithDetailsImplCopyWithImpl<_$SessionWithDetailsImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SessionWithDetailsImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _SessionWithDetails implements SessionWithDetails {
+  const factory _SessionWithDetails(
+      {required final String id,
+      required final String subjectEnrollmentId,
+      required final String teacherId,
+      required final DateTime date,
+      required final String startTime,
+      required final String endTime,
+      required final String type,
+      required final DateTime createdAt,
+      required final SubjectEnrollmentDetailInfo subjectEnrollment,
+      required final SessionRecordsCount count}) = _$SessionWithDetailsImpl;
+
+  factory _SessionWithDetails.fromJson(Map<String, dynamic> json) =
+      _$SessionWithDetailsImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get subjectEnrollmentId;
+  @override
+  String get teacherId;
+  @override
+  DateTime get date;
+  @override
+  String get startTime;
+  @override
+  String get endTime;
+  @override
+  String get type;
+  @override
+  DateTime get createdAt;
+  @override
+  SubjectEnrollmentDetailInfo get subjectEnrollment;
+  @override
+  SessionRecordsCount get count;
+
+  /// Create a copy of SessionWithDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SessionWithDetailsImplCopyWith<_$SessionWithDetailsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+SubjectEnrollmentDetailInfo _$SubjectEnrollmentDetailInfoFromJson(
+    Map<String, dynamic> json) {
+  return _SubjectEnrollmentDetailInfo.fromJson(json);
+}
+
+/// @nodoc
+mixin _$SubjectEnrollmentDetailInfo {
+  SubjectInfo get subject => throw _privateConstructorUsedError;
+  BatchInfo get batch => throw _privateConstructorUsedError;
+
+  /// Serializes this SubjectEnrollmentDetailInfo to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of SubjectEnrollmentDetailInfo
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $SubjectEnrollmentDetailInfoCopyWith<SubjectEnrollmentDetailInfo>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SubjectEnrollmentDetailInfoCopyWith<$Res> {
+  factory $SubjectEnrollmentDetailInfoCopyWith(
+          SubjectEnrollmentDetailInfo value,
+          $Res Function(SubjectEnrollmentDetailInfo) then) =
+      _$SubjectEnrollmentDetailInfoCopyWithImpl<$Res,
+          SubjectEnrollmentDetailInfo>;
+  @useResult
+  $Res call({SubjectInfo subject, BatchInfo batch});
+
+  $SubjectInfoCopyWith<$Res> get subject;
+  $BatchInfoCopyWith<$Res> get batch;
+}
+
+/// @nodoc
+class _$SubjectEnrollmentDetailInfoCopyWithImpl<$Res,
+        $Val extends SubjectEnrollmentDetailInfo>
+    implements $SubjectEnrollmentDetailInfoCopyWith<$Res> {
+  _$SubjectEnrollmentDetailInfoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of SubjectEnrollmentDetailInfo
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? subject = null,
+    Object? batch = null,
+  }) {
+    return _then(_value.copyWith(
+      subject: null == subject
+          ? _value.subject
+          : subject // ignore: cast_nullable_to_non_nullable
+              as SubjectInfo,
+      batch: null == batch
+          ? _value.batch
+          : batch // ignore: cast_nullable_to_non_nullable
+              as BatchInfo,
+    ) as $Val);
+  }
+
+  /// Create a copy of SubjectEnrollmentDetailInfo
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SubjectInfoCopyWith<$Res> get subject {
+    return $SubjectInfoCopyWith<$Res>(_value.subject, (value) {
+      return _then(_value.copyWith(subject: value) as $Val);
+    });
+  }
+
+  /// Create a copy of SubjectEnrollmentDetailInfo
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $BatchInfoCopyWith<$Res> get batch {
+    return $BatchInfoCopyWith<$Res>(_value.batch, (value) {
+      return _then(_value.copyWith(batch: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$SubjectEnrollmentDetailInfoImplCopyWith<$Res>
+    implements $SubjectEnrollmentDetailInfoCopyWith<$Res> {
+  factory _$$SubjectEnrollmentDetailInfoImplCopyWith(
+          _$SubjectEnrollmentDetailInfoImpl value,
+          $Res Function(_$SubjectEnrollmentDetailInfoImpl) then) =
+      __$$SubjectEnrollmentDetailInfoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({SubjectInfo subject, BatchInfo batch});
+
+  @override
+  $SubjectInfoCopyWith<$Res> get subject;
+  @override
+  $BatchInfoCopyWith<$Res> get batch;
+}
+
+/// @nodoc
+class __$$SubjectEnrollmentDetailInfoImplCopyWithImpl<$Res>
+    extends _$SubjectEnrollmentDetailInfoCopyWithImpl<$Res,
+        _$SubjectEnrollmentDetailInfoImpl>
+    implements _$$SubjectEnrollmentDetailInfoImplCopyWith<$Res> {
+  __$$SubjectEnrollmentDetailInfoImplCopyWithImpl(
+      _$SubjectEnrollmentDetailInfoImpl _value,
+      $Res Function(_$SubjectEnrollmentDetailInfoImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of SubjectEnrollmentDetailInfo
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? subject = null,
+    Object? batch = null,
+  }) {
+    return _then(_$SubjectEnrollmentDetailInfoImpl(
+      subject: null == subject
+          ? _value.subject
+          : subject // ignore: cast_nullable_to_non_nullable
+              as SubjectInfo,
+      batch: null == batch
+          ? _value.batch
+          : batch // ignore: cast_nullable_to_non_nullable
+              as BatchInfo,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$SubjectEnrollmentDetailInfoImpl
+    implements _SubjectEnrollmentDetailInfo {
+  const _$SubjectEnrollmentDetailInfoImpl(
+      {required this.subject, required this.batch});
+
+  factory _$SubjectEnrollmentDetailInfoImpl.fromJson(
+          Map<String, dynamic> json) =>
+      _$$SubjectEnrollmentDetailInfoImplFromJson(json);
+
+  @override
+  final SubjectInfo subject;
+  @override
+  final BatchInfo batch;
+
+  @override
+  String toString() {
+    return 'SubjectEnrollmentDetailInfo(subject: $subject, batch: $batch)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SubjectEnrollmentDetailInfoImpl &&
+            (identical(other.subject, subject) || other.subject == subject) &&
+            (identical(other.batch, batch) || other.batch == batch));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, subject, batch);
+
+  /// Create a copy of SubjectEnrollmentDetailInfo
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SubjectEnrollmentDetailInfoImplCopyWith<_$SubjectEnrollmentDetailInfoImpl>
+      get copyWith => __$$SubjectEnrollmentDetailInfoImplCopyWithImpl<
+          _$SubjectEnrollmentDetailInfoImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SubjectEnrollmentDetailInfoImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _SubjectEnrollmentDetailInfo
+    implements SubjectEnrollmentDetailInfo {
+  const factory _SubjectEnrollmentDetailInfo(
+      {required final SubjectInfo subject,
+      required final BatchInfo batch}) = _$SubjectEnrollmentDetailInfoImpl;
+
+  factory _SubjectEnrollmentDetailInfo.fromJson(Map<String, dynamic> json) =
+      _$SubjectEnrollmentDetailInfoImpl.fromJson;
+
+  @override
+  SubjectInfo get subject;
+  @override
+  BatchInfo get batch;
+
+  /// Create a copy of SubjectEnrollmentDetailInfo
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SubjectEnrollmentDetailInfoImplCopyWith<_$SubjectEnrollmentDetailInfoImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+SessionRecordsCount _$SessionRecordsCountFromJson(Map<String, dynamic> json) {
+  return _SessionRecordsCount.fromJson(json);
+}
+
+/// @nodoc
+mixin _$SessionRecordsCount {
+  int get records => throw _privateConstructorUsedError;
+
+  /// Serializes this SessionRecordsCount to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of SessionRecordsCount
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $SessionRecordsCountCopyWith<SessionRecordsCount> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SessionRecordsCountCopyWith<$Res> {
+  factory $SessionRecordsCountCopyWith(
+          SessionRecordsCount value, $Res Function(SessionRecordsCount) then) =
+      _$SessionRecordsCountCopyWithImpl<$Res, SessionRecordsCount>;
+  @useResult
+  $Res call({int records});
+}
+
+/// @nodoc
+class _$SessionRecordsCountCopyWithImpl<$Res, $Val extends SessionRecordsCount>
+    implements $SessionRecordsCountCopyWith<$Res> {
+  _$SessionRecordsCountCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of SessionRecordsCount
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? records = null,
+  }) {
+    return _then(_value.copyWith(
+      records: null == records
+          ? _value.records
+          : records // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$SessionRecordsCountImplCopyWith<$Res>
+    implements $SessionRecordsCountCopyWith<$Res> {
+  factory _$$SessionRecordsCountImplCopyWith(_$SessionRecordsCountImpl value,
+          $Res Function(_$SessionRecordsCountImpl) then) =
+      __$$SessionRecordsCountImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int records});
+}
+
+/// @nodoc
+class __$$SessionRecordsCountImplCopyWithImpl<$Res>
+    extends _$SessionRecordsCountCopyWithImpl<$Res, _$SessionRecordsCountImpl>
+    implements _$$SessionRecordsCountImplCopyWith<$Res> {
+  __$$SessionRecordsCountImplCopyWithImpl(_$SessionRecordsCountImpl _value,
+      $Res Function(_$SessionRecordsCountImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of SessionRecordsCount
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? records = null,
+  }) {
+    return _then(_$SessionRecordsCountImpl(
+      records: null == records
+          ? _value.records
+          : records // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$SessionRecordsCountImpl implements _SessionRecordsCount {
+  const _$SessionRecordsCountImpl({required this.records});
+
+  factory _$SessionRecordsCountImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SessionRecordsCountImplFromJson(json);
+
+  @override
+  final int records;
+
+  @override
+  String toString() {
+    return 'SessionRecordsCount(records: $records)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SessionRecordsCountImpl &&
+            (identical(other.records, records) || other.records == records));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, records);
+
+  /// Create a copy of SessionRecordsCount
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SessionRecordsCountImplCopyWith<_$SessionRecordsCountImpl> get copyWith =>
+      __$$SessionRecordsCountImplCopyWithImpl<_$SessionRecordsCountImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SessionRecordsCountImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _SessionRecordsCount implements SessionRecordsCount {
+  const factory _SessionRecordsCount({required final int records}) =
+      _$SessionRecordsCountImpl;
+
+  factory _SessionRecordsCount.fromJson(Map<String, dynamic> json) =
+      _$SessionRecordsCountImpl.fromJson;
+
+  @override
+  int get records;
+
+  /// Create a copy of SessionRecordsCount
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SessionRecordsCountImplCopyWith<_$SessionRecordsCountImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+AttendanceRecordDetail _$AttendanceRecordDetailFromJson(
+    Map<String, dynamic> json) {
+  return _AttendanceRecordDetail.fromJson(json);
+}
+
+/// @nodoc
+mixin _$AttendanceRecordDetail {
+  String get id => throw _privateConstructorUsedError;
+  String get sessionId => throw _privateConstructorUsedError;
+  String get studentId => throw _privateConstructorUsedError;
+  String get status => throw _privateConstructorUsedError;
+  DateTime get markedAt => throw _privateConstructorUsedError;
+  StudentInfo get student => throw _privateConstructorUsedError;
+
+  /// Serializes this AttendanceRecordDetail to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of AttendanceRecordDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $AttendanceRecordDetailCopyWith<AttendanceRecordDetail> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $AttendanceRecordDetailCopyWith<$Res> {
+  factory $AttendanceRecordDetailCopyWith(AttendanceRecordDetail value,
+          $Res Function(AttendanceRecordDetail) then) =
+      _$AttendanceRecordDetailCopyWithImpl<$Res, AttendanceRecordDetail>;
+  @useResult
+  $Res call(
+      {String id,
+      String sessionId,
+      String studentId,
+      String status,
+      DateTime markedAt,
+      StudentInfo student});
+
+  $StudentInfoCopyWith<$Res> get student;
+}
+
+/// @nodoc
+class _$AttendanceRecordDetailCopyWithImpl<$Res,
+        $Val extends AttendanceRecordDetail>
+    implements $AttendanceRecordDetailCopyWith<$Res> {
+  _$AttendanceRecordDetailCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of AttendanceRecordDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? sessionId = null,
+    Object? studentId = null,
+    Object? status = null,
+    Object? markedAt = null,
+    Object? student = null,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      sessionId: null == sessionId
+          ? _value.sessionId
+          : sessionId // ignore: cast_nullable_to_non_nullable
+              as String,
+      studentId: null == studentId
+          ? _value.studentId
+          : studentId // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
+      markedAt: null == markedAt
+          ? _value.markedAt
+          : markedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      student: null == student
+          ? _value.student
+          : student // ignore: cast_nullable_to_non_nullable
+              as StudentInfo,
+    ) as $Val);
+  }
+
+  /// Create a copy of AttendanceRecordDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $StudentInfoCopyWith<$Res> get student {
+    return $StudentInfoCopyWith<$Res>(_value.student, (value) {
+      return _then(_value.copyWith(student: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$AttendanceRecordDetailImplCopyWith<$Res>
+    implements $AttendanceRecordDetailCopyWith<$Res> {
+  factory _$$AttendanceRecordDetailImplCopyWith(
+          _$AttendanceRecordDetailImpl value,
+          $Res Function(_$AttendanceRecordDetailImpl) then) =
+      __$$AttendanceRecordDetailImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      String sessionId,
+      String studentId,
+      String status,
+      DateTime markedAt,
+      StudentInfo student});
+
+  @override
+  $StudentInfoCopyWith<$Res> get student;
+}
+
+/// @nodoc
+class __$$AttendanceRecordDetailImplCopyWithImpl<$Res>
+    extends _$AttendanceRecordDetailCopyWithImpl<$Res,
+        _$AttendanceRecordDetailImpl>
+    implements _$$AttendanceRecordDetailImplCopyWith<$Res> {
+  __$$AttendanceRecordDetailImplCopyWithImpl(
+      _$AttendanceRecordDetailImpl _value,
+      $Res Function(_$AttendanceRecordDetailImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of AttendanceRecordDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? sessionId = null,
+    Object? studentId = null,
+    Object? status = null,
+    Object? markedAt = null,
+    Object? student = null,
+  }) {
+    return _then(_$AttendanceRecordDetailImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      sessionId: null == sessionId
+          ? _value.sessionId
+          : sessionId // ignore: cast_nullable_to_non_nullable
+              as String,
+      studentId: null == studentId
+          ? _value.studentId
+          : studentId // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
+      markedAt: null == markedAt
+          ? _value.markedAt
+          : markedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      student: null == student
+          ? _value.student
+          : student // ignore: cast_nullable_to_non_nullable
+              as StudentInfo,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$AttendanceRecordDetailImpl implements _AttendanceRecordDetail {
+  const _$AttendanceRecordDetailImpl(
+      {required this.id,
+      required this.sessionId,
+      required this.studentId,
+      required this.status,
+      required this.markedAt,
+      required this.student});
+
+  factory _$AttendanceRecordDetailImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AttendanceRecordDetailImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String sessionId;
+  @override
+  final String studentId;
+  @override
+  final String status;
+  @override
+  final DateTime markedAt;
+  @override
+  final StudentInfo student;
+
+  @override
+  String toString() {
+    return 'AttendanceRecordDetail(id: $id, sessionId: $sessionId, studentId: $studentId, status: $status, markedAt: $markedAt, student: $student)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$AttendanceRecordDetailImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.sessionId, sessionId) ||
+                other.sessionId == sessionId) &&
+            (identical(other.studentId, studentId) ||
+                other.studentId == studentId) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.markedAt, markedAt) ||
+                other.markedAt == markedAt) &&
+            (identical(other.student, student) || other.student == student));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, id, sessionId, studentId, status, markedAt, student);
+
+  /// Create a copy of AttendanceRecordDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$AttendanceRecordDetailImplCopyWith<_$AttendanceRecordDetailImpl>
+      get copyWith => __$$AttendanceRecordDetailImplCopyWithImpl<
+          _$AttendanceRecordDetailImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$AttendanceRecordDetailImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _AttendanceRecordDetail implements AttendanceRecordDetail {
+  const factory _AttendanceRecordDetail(
+      {required final String id,
+      required final String sessionId,
+      required final String studentId,
+      required final String status,
+      required final DateTime markedAt,
+      required final StudentInfo student}) = _$AttendanceRecordDetailImpl;
+
+  factory _AttendanceRecordDetail.fromJson(Map<String, dynamic> json) =
+      _$AttendanceRecordDetailImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get sessionId;
+  @override
+  String get studentId;
+  @override
+  String get status;
+  @override
+  DateTime get markedAt;
+  @override
+  StudentInfo get student;
+
+  /// Create a copy of AttendanceRecordDetail
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$AttendanceRecordDetailImplCopyWith<_$AttendanceRecordDetailImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}

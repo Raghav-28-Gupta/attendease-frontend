@@ -98,4 +98,63 @@ class AttendanceRemoteDatasourceImpl implements AttendanceRemoteDatasource {
       throw NetworkException.getDioException(e);
     }
   }
+
+  Future<List<SessionWithDetails>> getEnrollmentSessions(String enrollmentId) async {
+    try {
+      final response = await dio.get(
+        ApiEndpoints.enrollmentSessions(enrollmentId),
+      );
+
+      if (response.data['success'] == true) {
+        final List data = response.data['data'] ?? [];
+        return data.map((json) => SessionWithDetails.fromJson(json)).toList();
+      } else {
+        throw const NetworkException.defaultError('Failed to fetch sessions');
+      }
+    } on DioException catch (e) {
+      throw NetworkException.getDioException(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> getSessionDetails(String sessionId) async {
+    try {
+      final response = await dio.get(
+        ApiEndpoints.sessionById(sessionId),
+      );
+
+      if (response.data['success'] == true) {
+        return response.data['data'];
+      } else {
+        throw const NetworkException.defaultError('Failed to fetch session details');
+      }
+    } on DioException catch (e) {
+      throw NetworkException.getDioException(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> updateAttendanceRecord({
+    required String recordId,
+    required String status,
+    String? reason,
+  }) async {
+    try {
+      final response = await dio.put(
+        ApiEndpoints.updateRecord(recordId),
+        data: {
+          'status': status,
+          if (reason != null) 'reason': reason,
+        },
+      );
+
+      if (response.data['success'] == true) {
+        return response.data;
+      } else {
+        throw NetworkException.defaultError(
+          response.data['message'] ?? 'Failed to update record',
+        );
+      }
+    } on DioException catch (e) {
+      throw NetworkException.getDioException(e);
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../../../dashboard/data/models/teacher_dashboard_model.dart';
 
 part 'attendance_session_model.freezed.dart';
 part 'attendance_session_model.g.dart';
@@ -86,4 +87,59 @@ class AttendanceRecord with _$AttendanceRecord {
 
   factory AttendanceRecord.fromJson(Map<String, dynamic> json) =>
       _$AttendanceRecordFromJson(json);
+}
+
+@freezed
+class SessionWithDetails with _$SessionWithDetails {
+  const factory SessionWithDetails({
+    required String id,
+    required String subjectEnrollmentId,
+    required String teacherId,
+    required DateTime date,
+    required String startTime,
+    required String endTime,
+    required String type,
+    required DateTime createdAt,
+    required SubjectEnrollmentDetailInfo subjectEnrollment,
+    required SessionRecordsCount count,
+  }) = _SessionWithDetails;
+
+  factory SessionWithDetails.fromJson(Map<String, dynamic> json) =>
+      _$SessionWithDetailsFromJson(json);
+}
+
+@freezed
+class SubjectEnrollmentDetailInfo with _$SubjectEnrollmentDetailInfo {
+  const factory SubjectEnrollmentDetailInfo({
+    required SubjectInfo subject,
+    required BatchInfo batch,
+  }) = _SubjectEnrollmentDetailInfo;
+
+  factory SubjectEnrollmentDetailInfo.fromJson(Map<String, dynamic> json) =>
+      _$SubjectEnrollmentDetailInfoFromJson(json);
+}
+
+@freezed
+class SessionRecordsCount with _$SessionRecordsCount {
+  const factory SessionRecordsCount({
+    required int records,
+  }) = _SessionRecordsCount;
+
+  factory SessionRecordsCount.fromJson(Map<String, dynamic> json) =>
+      _$SessionRecordsCountFromJson(json);
+}
+
+@freezed
+class AttendanceRecordDetail with _$AttendanceRecordDetail {
+  const factory AttendanceRecordDetail({
+    required String id,
+    required String sessionId,
+    required String studentId,
+    required String status,
+    required DateTime markedAt,
+    required StudentInfo student,
+  }) = _AttendanceRecordDetail;
+
+  factory AttendanceRecordDetail.fromJson(Map<String, dynamic> json) =>
+      _$AttendanceRecordDetailFromJson(json);
 }

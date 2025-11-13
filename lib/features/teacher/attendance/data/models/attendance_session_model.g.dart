@@ -119,3 +119,83 @@ Map<String, dynamic> _$$AttendanceRecordImplToJson(
       'studentId': instance.studentId,
       'status': instance.status,
     };
+
+_$SessionWithDetailsImpl _$$SessionWithDetailsImplFromJson(
+        Map<String, dynamic> json) =>
+    _$SessionWithDetailsImpl(
+      id: json['id'] as String,
+      subjectEnrollmentId: json['subjectEnrollmentId'] as String,
+      teacherId: json['teacherId'] as String,
+      date: DateTime.parse(json['date'] as String),
+      startTime: json['startTime'] as String,
+      endTime: json['endTime'] as String,
+      type: json['type'] as String,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      subjectEnrollment: SubjectEnrollmentDetailInfo.fromJson(
+          json['subjectEnrollment'] as Map<String, dynamic>),
+      count:
+          SessionRecordsCount.fromJson(json['count'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$SessionWithDetailsImplToJson(
+        _$SessionWithDetailsImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'subjectEnrollmentId': instance.subjectEnrollmentId,
+      'teacherId': instance.teacherId,
+      'date': instance.date.toIso8601String(),
+      'startTime': instance.startTime,
+      'endTime': instance.endTime,
+      'type': instance.type,
+      'createdAt': instance.createdAt.toIso8601String(),
+      'subjectEnrollment': instance.subjectEnrollment,
+      'count': instance.count,
+    };
+
+_$SubjectEnrollmentDetailInfoImpl _$$SubjectEnrollmentDetailInfoImplFromJson(
+        Map<String, dynamic> json) =>
+    _$SubjectEnrollmentDetailInfoImpl(
+      subject: SubjectInfo.fromJson(json['subject'] as Map<String, dynamic>),
+      batch: BatchInfo.fromJson(json['batch'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$SubjectEnrollmentDetailInfoImplToJson(
+        _$SubjectEnrollmentDetailInfoImpl instance) =>
+    <String, dynamic>{
+      'subject': instance.subject,
+      'batch': instance.batch,
+    };
+
+_$SessionRecordsCountImpl _$$SessionRecordsCountImplFromJson(
+        Map<String, dynamic> json) =>
+    _$SessionRecordsCountImpl(
+      records: (json['records'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$$SessionRecordsCountImplToJson(
+        _$SessionRecordsCountImpl instance) =>
+    <String, dynamic>{
+      'records': instance.records,
+    };
+
+_$AttendanceRecordDetailImpl _$$AttendanceRecordDetailImplFromJson(
+        Map<String, dynamic> json) =>
+    _$AttendanceRecordDetailImpl(
+      id: json['id'] as String,
+      sessionId: json['sessionId'] as String,
+      studentId: json['studentId'] as String,
+      status: json['status'] as String,
+      markedAt: DateTime.parse(json['markedAt'] as String),
+      student: StudentInfo.fromJson(json['student'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$AttendanceRecordDetailImplToJson(
+        _$AttendanceRecordDetailImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'sessionId': instance.sessionId,
+      'studentId': instance.studentId,
+      'status': instance.status,
+      'markedAt': instance.markedAt.toIso8601String(),
+      'student': instance.student,
+    };
