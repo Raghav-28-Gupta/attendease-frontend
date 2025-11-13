@@ -64,7 +64,6 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
     }
   }
 
-
   @override
   Future<Either<NetworkException, List<SessionWithDetails>>>
       getEnrollmentSessions(String enrollmentId) async {
@@ -93,18 +92,22 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
   }
 
   @override
-  Future<Either<NetworkException, void>> updateAttendanceRecord(
-    String recordId,
-    Map<String, dynamic> data,
-  ) async {
+  Future<Either<NetworkException, Map<String, dynamic>>> updateAttendanceRecord({
+    required String recordId,
+    required String status,
+    String? reason,
+  }) async {
     try {
-      await remoteDatasource.updateAttendanceRecord(recordId, data);
+      final result = await remoteDatasource.updateAttendanceRecord(
+        recordId: recordId,
+        status: status,
+        reason: reason,
+      );
       AppLogger.info('✅ Attendance record updated');
-      return const Right(null);
+      return Right(result);
     } on NetworkException catch (e) {
       AppLogger.error('❌ Failed to update attendance record', e);
       return Left(e);
     }
   }
-
 }
