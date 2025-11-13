@@ -1,3 +1,5 @@
+import 'package:attendease_frontend/features/teacher/attendance/presentation/screens/attendance_history_screen.dart';
+import 'package:attendease_frontend/features/teacher/attendance/presentation/screens/session_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -97,6 +99,30 @@ final routerProvider = Provider<GoRouter>((ref) {
               return const Scaffold(
                 body: Center(child: Text('Enrollment Details Coming Soon')),
               );
+            },
+          ),
+
+          // Attendance History
+          GoRoute(
+            path: 'attendance-history/:enrollmentId',
+            builder: (context, state) {
+              final enrollmentId = state.pathParameters['enrollmentId']!;
+              final extra = state.extra as Map<String, dynamic>?;
+              final enrollmentName = extra?['name'] ?? 'Attendance History';
+              
+              return AttendanceHistoryScreen(
+                enrollmentId: enrollmentId,
+                enrollmentName: enrollmentName,
+              );
+            },
+          ),
+
+          // Session Details
+          GoRoute(
+            path: 'session-details/:sessionId',
+            builder: (context, state) {
+              final sessionId = state.pathParameters['sessionId']!;
+              return SessionDetailsScreen(sessionId: sessionId);
             },
           ),
         ],

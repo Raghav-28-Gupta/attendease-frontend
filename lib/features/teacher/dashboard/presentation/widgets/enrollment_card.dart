@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../../core/config/theme/app_colors.dart';
 import '../../../../../core/extensions/datetime_extensions.dart';
 import '../../data/models/teacher_dashboard_model.dart';
@@ -32,7 +33,7 @@ class EnrollmentCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withAlpha((0.1 * 255).round()),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
@@ -83,7 +84,7 @@ class EnrollmentCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.secondary.withOpacity(0.1),
+                  color: AppColors.secondary.withAlpha((0.1 * 255).round()),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -123,6 +124,25 @@ class EnrollmentCard extends StatelessWidget {
                     icon: Icons.trending_up,
                     label: 'Avg. Attendance',
                     value: '${enrollment.stats.averageAttendance.toStringAsFixed(1)}%',
+                  ),
+                ],
+              ),
+
+              // Actions Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton.icon(
+                    onPressed: () {
+                      context.push('/teacher/attendance-history/${enrollment.id}',
+                        extra: {
+                          'id': enrollment.id,
+                          'name': '${enrollment.subject.code} - ${enrollment.batch.code}',
+                        },
+                      );
+                    },
+                    icon: const Icon(Icons.history, size: 16),
+                    label: const Text('View History'),
                   ),
                 ],
               ),
