@@ -92,6 +92,7 @@ class _SessionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final attendedCount = session.count.records;
+    // ignore: unused_local_variable
     final attendancePercentage = attendedCount > 0 ? 100.0 : 0.0;
 
     return Card(

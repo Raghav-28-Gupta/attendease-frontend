@@ -11,6 +11,11 @@ import '../../../features/teacher/dashboard/presentation/screens/teacher_dashboa
 import '../../../features/teacher/attendance/presentation/screens/create_session_screen.dart';
 import '../../../features/teacher/attendance/presentation/screens/mark_attendance_screen.dart';
 import '../../../features/student/dashboard/presentation/screens/student_dashboard_screen.dart';
+import '../../../features/student/timetable/presentation/screens/timetable_screen.dart';
+import '../../../features/student/profile/presentation/screens/profile_screen.dart';
+import '../../../features/student/subject/presentation/screens/subject_details_screen.dart';
+import '../../../features/student/dashboard/data/models/student_dashboard_model.dart';
+
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -133,7 +138,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/student',
         builder: (context, state) => const StudentDashboardScreen(),
         routes: [
-          // Student sub-routes will be added in Day 3
+          // Timetable
+          GoRoute(
+            path: 'timetable',
+            builder: (context, state) => const TimetableScreen(),
+          ),
+          
+          // Profile
+          GoRoute(
+            path: 'profile',
+            builder: (context, state) => const ProfileScreen(),
+          ),
+          
+          // Subject Details
+          GoRoute(
+            path: 'subject/:subjectCode',
+            builder: (context, state) {
+              final subject = state.extra as SubjectAttendanceInfo;
+              return SubjectDetailsScreen(subject: subject);
+            },
+          ),
         ],
       ),
     ],

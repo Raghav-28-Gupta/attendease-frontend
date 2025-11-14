@@ -55,6 +55,7 @@ class ApiEndpoints {
   static const String myBatch = '/students/me/batch';
   static const String myTimetable = '/students/me/timetable';
   static const String todayClasses = '/students/me/today';
+  static String subjectAttendance(String subjectCode) => '/attendance/subjects/$subjectCode/my-attendance';
 
   // Student - Attendance
   static String studentStats(String studentId) => '/attendance/students/$studentId/stats';
