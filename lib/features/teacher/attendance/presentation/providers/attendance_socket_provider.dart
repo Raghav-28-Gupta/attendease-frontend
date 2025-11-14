@@ -3,25 +3,33 @@ import '../../../../../core/services/socket_service.dart';
 import '../../../../../core/config/socket_config.dart';
 import '../../../../../core/utils/logger.dart';
 import '../../../dashboard/presentation/providers/dashboard_provider.dart';
+import '../../../../../core/providers/notification_provider.dart';
+import '../../../../../core/models/app_notification.dart';
+
 
 // Attendance socket events provider
 final attendanceSocketProvider = Provider<AttendanceSocketNotifier>((ref) {
   final socketService = ref.watch(socketServiceProvider);
   final dashboardNotifier = ref.read(teacherDashboardProvider.notifier);
+  final notificationNotifier = ref.read(notificationsProvider.notifier);
   
   return AttendanceSocketNotifier(
     socketService: socketService,
     dashboardNotifier: dashboardNotifier,
+    notificationNotifier: notificationNotifier,
   );
 });
 
 class AttendanceSocketNotifier {
   final SocketService socketService;
   final DashboardNotifier dashboardNotifier;
+  final NotificationNotifier notificationNotifier;
+
 
   AttendanceSocketNotifier({
     required this.socketService,
     required this.dashboardNotifier,
+    required this.notificationNotifier,
   });
 
   /// Join teacher's room for real-time updates
@@ -78,19 +86,60 @@ class AttendanceSocketNotifier {
 
   /// Handle attendance marked event
   void _handleAttendanceMarked(dynamic data) {
-    // Refresh dashboard to show updated stats
+    AppLogger.info('📢 Attendance marked event received: $data');
+    // Show notification
+    notificationNotifier.addNotification(
+      AppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Attendance Marked',
+        message: 'Attendance has been successfully marked for the session',
+        type: NotificationType.success,
+        timestamp: DateTime.now(),
+        data: data as Map<String, dynamic>?,
+      ),
+    );
+    
+    // Refresh dashboard
     dashboardNotifier.refresh();
   }
 
   /// Handle attendance updated event
   void _handleAttendanceUpdated(dynamic data) {
+    AppLogger.info('📢 Attendance updated event received: $data');
+    
+    // Show notification
+    notificationNotifier.addNotification(
+      AppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Attendance Updated',
+        message: 'An attendance record has been modified',
+        type: NotificationType.info,
+        timestamp: DateTime.now(),
+        data: data as Map<String, dynamic>?,
+      ),
+    );
+    
     // Refresh dashboard
     dashboardNotifier.refresh();
   }
 
   /// Handle session created event
   void _handleSessionCreated(dynamic data) {
-    // Refresh dashboard to show new session
+    AppLogger.info('📢 Session created event received: $data');
+    
+    // Show notification
+    notificationNotifier.addNotification(
+      AppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'New Session Created',
+        message: 'A new attendance session has been created',
+        type: NotificationType.success,
+        timestamp: DateTime.now(),
+        data: data as Map<String, dynamic>?,
+      ),
+    );
+    
+    // Refresh dashboard
     dashboardNotifier.refresh();
   }
 }
