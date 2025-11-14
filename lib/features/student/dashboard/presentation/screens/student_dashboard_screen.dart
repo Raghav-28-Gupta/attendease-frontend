@@ -6,18 +6,61 @@ import '../../../../../core/widgets/loading_widget.dart';
 import '../../../../../core/widgets/error_widget.dart';
 import '../../../../../core/widgets/section_header.dart';
 import '../../../../../core/widgets/info_card.dart';
+import '../../../../../core/utils/logger.dart';
+import '../../../../../core/providers/socket_provider.dart';
 import '../../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/dashboard_provider.dart';
 import '../providers/dashboard_state.dart';
 import '../widgets/subject_attendance_card.dart';
 import '../widgets/today_classes_list.dart';
+import '../providers/student_socket_provider.dart';
 
-class StudentDashboardScreen extends ConsumerWidget {
+class StudentDashboardScreen extends ConsumerStatefulWidget {
   const StudentDashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StudentDashboardScreen> createState() =>
+      _StudentDashboardScreenState();
+}
+
+class _StudentDashboardScreenState
+    extends ConsumerState<StudentDashboardScreen> {
+  
+  @override
+  void initState() {
+    super.initState();
+    // Load dashboard data on init
+    Future.microtask(() {
+      ref.read(studentDashboardProvider.notifier).loadDashboard();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final dashboardState = ref.watch(studentDashboardProvider);
+
+    // Initialize socket connection and listen for real-time updates
+    ref.listen(initializeSocketProvider, (previous, next) {
+      next.when(
+        data: (_) {
+          dashboardState.maybeWhen(
+            loaded: (data) {
+              // Join student room for real-time attendance updates
+              final socketNotifier = ref.read(studentSocketProvider);
+              socketNotifier.joinStudentRoom(data.student.id);
+              AppLogger.info('📡 Joined student room: ${data.student.id}');
+            },
+            orElse: () {},
+          );
+        },
+        loading: () {
+          AppLogger.info('🔄 Initializing socket connection...');
+        },
+        error: (error, stack) {
+          AppLogger.error('❌ Socket initialization failed', error);
+        },
+      );
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -26,7 +69,7 @@ class StudentDashboardScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              ref.read(studentDashboardProvider.notifier).refresh();
+              ref.read(studentDashboardProvider.notifier).loadDashboard();
             },
           ),
           PopupMenuButton<String>(
@@ -36,7 +79,7 @@ class StudentDashboardScreen extends ConsumerWidget {
               } else if (value == 'timetable') {
                 context.push('/student/timetable');
               } else if (value == 'logout') {
-                _showLogoutDialog(context, ref);
+                _showLogoutDialog(context);
               }
             },
             itemBuilder: (context) => [
@@ -76,7 +119,7 @@ class StudentDashboardScreen extends ConsumerWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await ref.read(studentDashboardProvider.notifier).refresh();
+          await ref.read(studentDashboardProvider.notifier).loadDashboard();
         },
         child: dashboardState.when(
           initial: () => const LoadingWidget(message: 'Loading dashboard...'),
@@ -85,7 +128,7 @@ class StudentDashboardScreen extends ConsumerWidget {
           error: (message) => AppErrorWidget(
             message: message,
             onRetry: () {
-              ref.read(studentDashboardProvider.notifier).refresh();
+              ref.read(studentDashboardProvider.notifier).loadDashboard();
             },
           ),
         ),
@@ -120,7 +163,8 @@ class StudentDashboardScreen extends ConsumerWidget {
   Widget _buildDashboard(BuildContext context, dynamic data) {
     final overview = data.overview;
     final lowAttendanceCount = data.subjects
-        .where((s) => s.stats.status == 'WARNING' || s.stats.status == 'CRITICAL')
+        .where((s) =>
+            s.stats.status == 'WARNING' || s.stats.status == 'CRITICAL')
         .length;
 
     return SingleChildScrollView(
@@ -188,7 +232,8 @@ class StudentDashboardScreen extends ConsumerWidget {
               children: [
                 InfoCard(
                   title: 'Overall Attendance',
-                  value: '${overview.overallAttendance.toStringAsFixed(1)}%',
+                  value:
+                      '${overview.overallAttendance.toStringAsFixed(1)}%',
                   icon: Icons.trending_up,
                   color: _getAttendanceColor(overview.overallAttendance),
                 ),
@@ -200,7 +245,8 @@ class StudentDashboardScreen extends ConsumerWidget {
                 ),
                 InfoCard(
                   title: 'Classes Attended',
-                  value: '${overview.classesAttended}/${overview.totalSessions}',
+                  value:
+                      '${overview.classesAttended}/${overview.totalSessions}',
                   icon: Icons.check_circle,
                   color: AppColors.success,
                 ),
@@ -208,7 +254,9 @@ class StudentDashboardScreen extends ConsumerWidget {
                   title: 'Alerts',
                   value: lowAttendanceCount.toString(),
                   icon: Icons.warning,
-                  color: lowAttendanceCount > 0 ? AppColors.error : AppColors.success,
+                  color: lowAttendanceCount > 0
+                      ? AppColors.error
+                      : AppColors.success,
                 ),
               ],
             ),
@@ -271,7 +319,7 @@ class StudentDashboardScreen extends ConsumerWidget {
     return AppColors.error;
   }
 
-  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+  void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

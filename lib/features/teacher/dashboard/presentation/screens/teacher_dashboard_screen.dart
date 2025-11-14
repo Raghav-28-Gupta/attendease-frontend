@@ -1,3 +1,4 @@
+import 'package:attendease_frontend/core/providers/socket_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,12 +7,15 @@ import '../../../../../core/widgets/loading_widget.dart';
 import '../../../../../core/widgets/error_widget.dart';
 import '../../../../../core/widgets/empty_state_widget.dart';
 import '../../../../../core/widgets/section_header.dart';
+import '../../../../../core/utils/logger.dart';
+import '../../../../../core/services/socket_service.dart';
 import '../../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/dashboard_provider.dart';
 import '../providers/dashboard_state.dart';
 import '../widgets/enrollment_card.dart';
 import '../widgets/stats_card.dart';
 import '../widgets/low_attendance_list.dart';
+import '../../../attendance/presentation/providers/attendance_socket_provider.dart';
 
 class TeacherDashboardScreen extends ConsumerStatefulWidget {
   const TeacherDashboardScreen({super.key});
@@ -23,14 +27,46 @@ class TeacherDashboardScreen extends ConsumerStatefulWidget {
 
 class _TeacherDashboardScreenState
     extends ConsumerState<TeacherDashboardScreen> {
+  
+  @override
+  void initState() {
+    super.initState();
+    // Load dashboard data on init
+    Future.microtask(() {
+      ref.read(teacherDashboardProvider.notifier).refresh();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final dashboardState = ref.watch(teacherDashboardProvider);
+    
+    // Extract user from auth state
     final user = authState.maybeWhen(
-        authenticated: (u) => u,
-        orElse: () => null,
+      authenticated: (u) => u,
+      orElse: () => null,
     );
+
+    // Initialize socket connection and listen for real-time updates
+    ref.listen(initializeSocketProvider, (previous, next) {
+      next.when(
+        data: (_) {
+          if (user != null) {
+            AppLogger.info('✅ Socket initialized, joining teacher room');
+            // Join teacher room for real-time updates
+            final socketNotifier = ref.read(attendanceSocketProvider);
+            socketNotifier.joinTeacherRoom(user.id);
+          }
+        },
+        loading: () {
+          AppLogger.info('🔄 Initializing socket connection...');
+        },
+        error: (error, stack) {
+          AppLogger.error('❌ Socket initialization failed', error);
+        },
+      );
+    });
 
     return Scaffold(
       appBar: AppBar(
