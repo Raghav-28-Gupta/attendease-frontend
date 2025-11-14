@@ -1,3 +1,4 @@
+import 'package:attendease_frontend/core/utils/logger.dart';
 import 'package:dartz/dartz.dart';
 import '../../../../../core/network/network_exceptions.dart';
 import '../../domain/repositories/dashboard_repository.dart';
@@ -14,9 +15,14 @@ class StudentDashboardRepositoryImpl implements StudentDashboardRepository {
       getStudentDashboard() async {
     try {
       final result = await remoteDatasource.getStudentDashboard();
+      AppLogger.info('✅ Dashboard repository: Data loaded successfully');
       return Right(result);
     } on NetworkException catch (e) {
+      AppLogger.error('❌ Dashboard repository: Network error', e);
       return Left(e);
+    } catch (e) {
+      AppLogger.error('❌ Dashboard repository: Unexpected error', e);
+      return const Left(NetworkException.defaultError('Failed to load dashboard'));
     }
   }
 }
