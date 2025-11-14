@@ -7,6 +7,7 @@ import '../../../../../core/widgets/loading_widget.dart';
 import '../../../../../core/widgets/error_widget.dart';
 import '../../../../../core/widgets/empty_state_widget.dart';
 import '../../../../../core/widgets/section_header.dart';
+import '../../../../../core/widgets/connection_status_widget.dart';
 import '../../../../../core/utils/logger.dart';
 import '../../../../../core/services/socket_service.dart';
 import '../../../../auth/presentation/providers/auth_provider.dart';
@@ -99,21 +100,31 @@ class _TeacherDashboardScreenState
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await ref.read(teacherDashboardProvider.notifier).refresh();
-        },
-        child: dashboardState.when(
-          initial: () => const LoadingWidget(message: 'Loading dashboard...'),
-          loading: () => const LoadingWidget(message: 'Loading dashboard...'),
-          loaded: (data) => _buildDashboard(context, data, user?.displayName),
-          error: (message) => AppErrorWidget(
-            message: message,
-            onRetry: () {
-              ref.read(teacherDashboardProvider.notifier).refresh();
-            },
+      body: Column(
+        children: [
+          // Connection status indicator
+          const ConnectionStatusWidget(),
+          
+          // Main dashboard content
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                await ref.read(teacherDashboardProvider.notifier).refresh();
+              },
+              child: dashboardState.when(
+                initial: () => const LoadingWidget(message: 'Loading dashboard...'),
+                loading: () => const LoadingWidget(message: 'Loading dashboard...'),
+                loaded: (data) => _buildDashboard(context, data, user?.displayName),
+                error: (message) => AppErrorWidget(
+                  message: message,
+                  onRetry: () {
+                    ref.read(teacherDashboardProvider.notifier).refresh();
+                  },
+                ),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
       floatingActionButton: dashboardState.maybeWhen(
         loaded: (_) => FloatingActionButton.extended(
