@@ -1,3 +1,4 @@
+import 'package:attendease_frontend/core/providers/firebase_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -58,6 +59,19 @@ class _StudentDashboardScreenState
         },
         error: (error, stack) {
           AppLogger.error('❌ Socket initialization failed', error);
+        },
+      );
+    });
+
+    // Initialize Firebase (NEW)
+    ref.listen(initializeFirebaseProvider, (previous, next) {
+      next.when(
+        data: (_) {
+          AppLogger.info('✅ Firebase ready for notifications');
+        },
+        loading: () {},
+        error: (error, stack) {
+          AppLogger.error('Firebase initialization failed', error);
         },
       );
     });

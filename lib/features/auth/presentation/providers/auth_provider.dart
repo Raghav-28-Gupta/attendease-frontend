@@ -8,6 +8,7 @@ import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../data/models/login_request.dart';
 import '../../data/models/change_password_request.dart';
+import '../../../../core/providers/firebase_provider.dart';
 import 'auth_state.dart';
 
 // Auth Remote Datasource Provider
@@ -29,13 +30,15 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 // Auth State Provider
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final repository = ref.watch(authRepositoryProvider);
-  return AuthNotifier(repository);
+  return AuthNotifier(repository, ref);
 });
 
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
+  final Ref _ref; 
 
-  AuthNotifier(this._repository) : super(const AuthState.initial()) {
+  AuthNotifier(this._repository, this._ref) // Update constructor
+      : super(const AuthState.initial()) {
     _checkAuthStatus();
   }
 
@@ -80,6 +83,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
       (user) {
         state = AuthState.authenticated(user);
         AppLogger.info('✅ Login successful: ${user.email}');
+
+        // Initialize Firebase after login (NEW)
+        try {
+          _ref.invalidate(initializeFirebaseProvider);
+          AppLogger.info('🔥 Firebase initialization triggered');
+        } catch (e) {
+          AppLogger.error('❌ Failed to initialize Firebase', e);
+        }
+
         return true;
       },
     );
@@ -88,10 +100,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Logout
   Future<void> logout() async {
     state = const AuthState.loading();
-
     await _repository.logout();
     state = const AuthState.unauthenticated();
-
     AppLogger.info('✅ User logged out');
   }
 

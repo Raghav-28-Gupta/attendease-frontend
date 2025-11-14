@@ -16,6 +16,7 @@ import '../providers/dashboard_state.dart';
 import '../widgets/enrollment_card.dart';
 import '../widgets/stats_card.dart';
 import '../widgets/low_attendance_list.dart';
+import '../../../../../core/providers/firebase_provider.dart';
 import '../../../attendance/presentation/providers/attendance_socket_provider.dart';
 
 class TeacherDashboardScreen extends ConsumerStatefulWidget {
@@ -65,6 +66,19 @@ class _TeacherDashboardScreenState
         },
         error: (error, stack) {
           AppLogger.error('❌ Socket initialization failed', error);
+        },
+      );
+    });
+
+    // Initialize Firebase (NEW)
+    ref.listen(initializeFirebaseProvider, (previous, next) {
+      next.when(
+        data: (_) {
+          AppLogger.info('✅ Firebase ready for notifications');
+        },
+        loading: () {},
+        error: (error, stack) {
+          AppLogger.error('Firebase initialization failed', error);
         },
       );
     });
