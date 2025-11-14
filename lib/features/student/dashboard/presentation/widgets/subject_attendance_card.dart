@@ -51,6 +51,14 @@ class SubjectAttendanceCard extends StatelessWidget {
                             color: AppColors.textPrimary,
                           ),
                         ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Semester: ${subject.semester}', 
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
                       ],
                     ),
                   ),
