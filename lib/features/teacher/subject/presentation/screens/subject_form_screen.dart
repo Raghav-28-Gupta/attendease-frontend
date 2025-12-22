@@ -46,10 +46,10 @@ class _SubjectFormScreenState extends ConsumerState<SubjectFormScreen> {
     );
     _selectedSemester = widget.subject?.semester ?? '1';
     _creditController = TextEditingController(
-      text: widget.subject?.credits.toString() ?? '',  
+      text: widget.subject?.credits.toString() ?? '',
     );
     _departmentController = TextEditingController(
-      text: widget.subject?.department ?? '',  
+      text: widget.subject?.department ?? '',
     );
   }
 
@@ -58,7 +58,7 @@ class _SubjectFormScreenState extends ConsumerState<SubjectFormScreen> {
     _codeController.dispose();
     _nameController.dispose();
     _descriptionController.dispose();
-    _creditController.dispose();  
+    _creditController.dispose();
     _departmentController.dispose();
     super.dispose();
   }

@@ -11,7 +11,7 @@ _$BatchModelImpl _$$BatchModelImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       code: json['code'] as String,
       name: json['name'] as String,
-      academicYear: json['academicYear'] as String,
+      academicYear: json['year'] as String,
       description: json['description'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       studentCount: (json['studentCount'] as num).toInt(),
@@ -22,7 +22,7 @@ Map<String, dynamic> _$$BatchModelImplToJson(_$BatchModelImpl instance) =>
       'id': instance.id,
       'code': instance.code,
       'name': instance.name,
-      'academicYear': instance.academicYear,
+      'year': instance.academicYear,
       'description': instance.description,
       'createdAt': instance.createdAt.toIso8601String(),
       'studentCount': instance.studentCount,
@@ -33,7 +33,7 @@ _$CreateBatchRequestImpl _$$CreateBatchRequestImplFromJson(
     _$CreateBatchRequestImpl(
       code: json['code'] as String,
       name: json['name'] as String,
-      academicYear: json['academicYear'] as String,
+      academicYear: json['year'] as String,
       description: json['description'] as String?,
     );
 
@@ -42,7 +42,7 @@ Map<String, dynamic> _$$CreateBatchRequestImplToJson(
     <String, dynamic>{
       'code': instance.code,
       'name': instance.name,
-      'academicYear': instance.academicYear,
+      'year': instance.academicYear,
       'description': instance.description,
     };
 

@@ -9,7 +9,7 @@ class BatchModel with _$BatchModel {
     required String id,
     required String code,
     required String name,
-    required String academicYear,
+    @JsonKey(name: 'year') required String academicYear,
     String? description,
     required DateTime createdAt,
     required int studentCount,
@@ -24,7 +24,7 @@ class CreateBatchRequest with _$CreateBatchRequest {
   const factory CreateBatchRequest({
     required String code,
     required String name,
-    required String academicYear,
+    @JsonKey(name: 'year') required String academicYear,
     String? description,
   }) = _CreateBatchRequest;
 

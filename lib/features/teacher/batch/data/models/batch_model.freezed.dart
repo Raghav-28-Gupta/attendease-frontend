@@ -23,6 +23,7 @@ mixin _$BatchModel {
   String get id => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  @JsonKey(name: 'year')
   String get academicYear => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -48,7 +49,7 @@ abstract class $BatchModelCopyWith<$Res> {
       {String id,
       String code,
       String name,
-      String academicYear,
+      @JsonKey(name: 'year') String academicYear,
       String? description,
       DateTime createdAt,
       int studentCount});
@@ -122,7 +123,7 @@ abstract class _$$BatchModelImplCopyWith<$Res>
       {String id,
       String code,
       String name,
-      String academicYear,
+      @JsonKey(name: 'year') String academicYear,
       String? description,
       DateTime createdAt,
       int studentCount});
@@ -189,7 +190,7 @@ class _$BatchModelImpl implements _BatchModel {
       {required this.id,
       required this.code,
       required this.name,
-      required this.academicYear,
+      @JsonKey(name: 'year') required this.academicYear,
       this.description,
       required this.createdAt,
       required this.studentCount});
@@ -204,6 +205,7 @@ class _$BatchModelImpl implements _BatchModel {
   @override
   final String name;
   @override
+  @JsonKey(name: 'year')
   final String academicYear;
   @override
   final String? description;
@@ -261,7 +263,7 @@ abstract class _BatchModel implements BatchModel {
       {required final String id,
       required final String code,
       required final String name,
-      required final String academicYear,
+      @JsonKey(name: 'year') required final String academicYear,
       final String? description,
       required final DateTime createdAt,
       required final int studentCount}) = _$BatchModelImpl;
@@ -276,6 +278,7 @@ abstract class _BatchModel implements BatchModel {
   @override
   String get name;
   @override
+  @JsonKey(name: 'year')
   String get academicYear;
   @override
   String? get description;
@@ -300,6 +303,7 @@ CreateBatchRequest _$CreateBatchRequestFromJson(Map<String, dynamic> json) {
 mixin _$CreateBatchRequest {
   String get code => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  @JsonKey(name: 'year')
   String get academicYear => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
 
@@ -320,7 +324,10 @@ abstract class $CreateBatchRequestCopyWith<$Res> {
       _$CreateBatchRequestCopyWithImpl<$Res, CreateBatchRequest>;
   @useResult
   $Res call(
-      {String code, String name, String academicYear, String? description});
+      {String code,
+      String name,
+      @JsonKey(name: 'year') String academicYear,
+      String? description});
 }
 
 /// @nodoc
@@ -373,7 +380,10 @@ abstract class _$$CreateBatchRequestImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String code, String name, String academicYear, String? description});
+      {String code,
+      String name,
+      @JsonKey(name: 'year') String academicYear,
+      String? description});
 }
 
 /// @nodoc
@@ -421,7 +431,7 @@ class _$CreateBatchRequestImpl implements _CreateBatchRequest {
   const _$CreateBatchRequestImpl(
       {required this.code,
       required this.name,
-      required this.academicYear,
+      @JsonKey(name: 'year') required this.academicYear,
       this.description});
 
   factory _$CreateBatchRequestImpl.fromJson(Map<String, dynamic> json) =>
@@ -432,6 +442,7 @@ class _$CreateBatchRequestImpl implements _CreateBatchRequest {
   @override
   final String name;
   @override
+  @JsonKey(name: 'year')
   final String academicYear;
   @override
   final String? description;
@@ -480,7 +491,7 @@ abstract class _CreateBatchRequest implements CreateBatchRequest {
   const factory _CreateBatchRequest(
       {required final String code,
       required final String name,
-      required final String academicYear,
+      @JsonKey(name: 'year') required final String academicYear,
       final String? description}) = _$CreateBatchRequestImpl;
 
   factory _CreateBatchRequest.fromJson(Map<String, dynamic> json) =
@@ -491,6 +502,7 @@ abstract class _CreateBatchRequest implements CreateBatchRequest {
   @override
   String get name;
   @override
+  @JsonKey(name: 'year')
   String get academicYear;
   @override
   String? get description;
