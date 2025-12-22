@@ -252,6 +252,56 @@ class _TeacherDashboardScreenState
 
           const SizedBox(height: 24),
 
+          // Management Section
+          const SectionHeader(
+            title: 'Management',
+            subtitle: 'Setup & Configuration',
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 1.3,
+              children: [
+                _ManagementCard(
+                  title: 'Batches',
+                  icon: Icons.school,
+                  color: Colors.blue,
+                  count: '${data.stats.totalBatches}',
+                  onTap: () => context.push('/teacher/batches'),
+                ),
+                _ManagementCard(
+                  title: 'Subjects',
+                  icon: Icons.book,
+                  color: Colors.orange,
+                  count: '${data.stats.totalSubjects}',
+                  onTap: () => context.push('/teacher/subjects'),
+                ),
+                _ManagementCard(
+                  title: 'Enrollments',
+                  icon: Icons.link,
+                  color: Colors.purple,
+                  count: '${data.stats.totalEnrollments}',
+                  onTap: () => context.push('/teacher/enrollments'),
+                ),
+                _ManagementCard(
+                  title: 'Import Students',
+                  icon: Icons.upload_file,
+                  color: Colors.green,
+                  count: 'CSV',
+                  onTap: () => context.push('/teacher/students/import'),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
           // My Enrollments
           SectionHeader(
             title: 'My Enrollments',
@@ -331,6 +381,66 @@ class _TeacherDashboardScreenState
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ManagementCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color color;
+  final String count;
+  final VoidCallback onTap;
+
+  const _ManagementCard({
+    required this.title,
+    required this.icon,
+    required this.color,
+    required this.count,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const Spacer(),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                count,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

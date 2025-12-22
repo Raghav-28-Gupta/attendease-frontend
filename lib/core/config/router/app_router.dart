@@ -1,6 +1,15 @@
 import 'package:attendease_frontend/core/utils/logger.dart';
 import 'package:attendease_frontend/features/teacher/attendance/presentation/screens/attendance_history_screen.dart';
 import 'package:attendease_frontend/features/teacher/attendance/presentation/screens/session_details_screen.dart';
+import 'package:attendease_frontend/features/teacher/batch/data/models/batch_model.dart';
+import 'package:attendease_frontend/features/teacher/batch/presentation/screens/batch_form_screen.dart';
+import 'package:attendease_frontend/features/teacher/batch/presentation/screens/batches_screen.dart';
+import 'package:attendease_frontend/features/teacher/enrollment/presentation/screens/enrollment_form_screen.dart';
+import 'package:attendease_frontend/features/teacher/enrollment/presentation/screens/enrollments_screen.dart';
+import 'package:attendease_frontend/features/teacher/students/presentation/screens/import_students_screen.dart';
+import 'package:attendease_frontend/features/teacher/subject/data/models/subject_model.dart';
+import 'package:attendease_frontend/features/teacher/subject/presentation/screens/subject_form_screen.dart';
+import 'package:attendease_frontend/features/teacher/subject/presentation/screens/subjects_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -147,6 +156,62 @@ final routerProvider = Provider<GoRouter>((ref) {
               final sessionId = state.pathParameters['sessionId']!;
               return SessionDetailsScreen(sessionId: sessionId);
             },
+          ),
+
+          // Batches
+          GoRoute(
+            path: 'batches',
+            builder: (context, state) => const BatchesScreen(),
+            routes: [
+              GoRoute(
+                path: 'create',
+                builder: (context, state) => const BatchFormScreen(),
+              ),
+              GoRoute(
+                path: ':id',
+                builder: (context, state) {
+                  final batch = state.extra; // pass BatchModel when navigating
+                  return BatchFormScreen(batch: batch as BatchModel?);
+                },
+              ),
+            ],
+          ),
+
+          // Subjects
+          GoRoute(
+            path: 'subjects',
+            builder: (context, state) => const SubjectsScreen(),
+            routes: [
+              GoRoute(
+                path: 'create',
+                builder: (context, state) => const SubjectFormScreen(),
+              ),
+              GoRoute(
+                path: ':id',
+                builder: (context, state) {
+                  final subject = state.extra;
+                  return SubjectFormScreen(subject: subject as SubjectModel?);
+                },
+              ),
+            ],
+          ),
+
+          // Enrollments
+          GoRoute(
+            path: 'enrollments',
+            builder: (context, state) => const EnrollmentsScreen(),
+            routes: [
+              GoRoute(
+                path: 'create',
+                builder: (context, state) => const EnrollmentFormScreen(),
+              ),
+            ],
+          ),
+
+          // Import students
+          GoRoute(
+            path: 'students/import',
+            builder: (context, state) => const ImportStudentsScreen(),
           ),
         ],
       ),

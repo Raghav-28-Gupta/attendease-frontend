@@ -11,6 +11,18 @@ class EnrollmentRepositoryImpl implements EnrollmentRepository {
   EnrollmentRepositoryImpl(this.remoteDatasource);
 
   @override
+  Future<Either<NetworkException, List<EnrollmentModel>>> getMyEnrollments() async {  // ✅ ADD THIS
+    try {
+      final enrollments = await remoteDatasource.getMyEnrollments();
+      AppLogger.info('✅ Fetched ${enrollments.length} enrollments for teacher');
+      return Right(enrollments);
+    } on NetworkException catch (e) {
+      AppLogger.error('❌ Failed to fetch teacher enrollments', e);
+      return Left(e);
+    }
+  }
+
+  @override
   Future<Either<NetworkException, List<EnrollmentModel>>> getSubjectEnrollments(String subjectId,) async {
     try {
       final enrollments = await remoteDatasource.getSubjectEnrollments(subjectId);

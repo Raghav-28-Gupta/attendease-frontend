@@ -23,6 +23,7 @@ class ApiEndpoints {
 
   // Teacher - Enrollments
   static const String enrollments = '/enrollments';
+  static const String myEnrollments = '/enrollments';   // (alias for clarity)
   static String enrollmentById(String id) => '/enrollments/$id';
   static String subjectEnrollments(String subjectId) => '/enrollments/subjects/$subjectId';
   static String batchSubjects(String batchId) => '/enrollments/batches/$batchId/subjects';

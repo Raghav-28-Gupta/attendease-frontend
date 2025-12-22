@@ -20,6 +20,17 @@ final enrollmentRepositoryProvider = Provider<EnrollmentRepository>((ref) {
   return EnrollmentRepositoryImpl(ds);
 });
 
+final myEnrollmentsProvider = FutureProvider<List<EnrollmentModel>>(
+  (ref) async {
+    final repo = ref.watch(enrollmentRepositoryProvider);
+    final result = await repo.getMyEnrollments();
+    return result.fold(
+      (e) => throw NetworkException.getErrorMessage(e),
+      (data) => data,
+    );
+  },
+);
+
 // ✅ Get enrollments for a SPECIFIC SUBJECT
 final subjectEnrollmentsProvider = FutureProvider.family<List<EnrollmentModel>, String>(
   (ref, subjectId) async {

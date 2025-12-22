@@ -4,11 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../../core/config/theme/app_colors.dart';
 import '../../../../../core/widgets/app_button.dart';
-import '../../../../../core/widgets/app_text_field.dart';
 import '../../../../../core/utils/snackbar_utils.dart';
-import '../../../../../core/utils/validators.dart';
-import '../../../dashboard/data/models/teacher_dashboard_model.dart';
-import '../../../dashboard/presentation/providers/dashboard_provider.dart';
+import '../../../enrollment/presentation/providers/enrollment_provider.dart';  // ✅ ADD THIS
 import '../../data/models/attendance_session_model.dart';
 import '../providers/attendance_provider.dart';
 
@@ -23,7 +20,7 @@ class CreateSessionScreen extends ConsumerStatefulWidget {
 class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
   final _formKey = GlobalKey<FormState>();
   
-  EnrollmentInfo? _selectedEnrollment;
+  String? _selectedEnrollmentId;  // ✅ Changed from EnrollmentInfo to String
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _startTime = TimeOfDay.now();
   TimeOfDay _endTime = TimeOfDay.now().replacing(hour: TimeOfDay.now().hour + 1);
@@ -33,226 +30,300 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dashboardState = ref.watch(teacherDashboardProvider);
+    final enrollmentsAsync = ref.watch(myEnrollmentsProvider);  // ✅ Use new provider
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Attendance Session'),
       ),
-      body: dashboardState.when(
-        initial: () => const Center(child: CircularProgressIndicator()),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        loaded: (data) => _buildForm(context, data.enrollments),
-        error: (message) => Center(child: Text('Error: $message')),
-      ),
-    );
-  }
-
-  Widget _buildForm(BuildContext context, List<EnrollmentInfo> enrollments) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Select Enrollment
-            const Text(
-              'Select Subject',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<EnrollmentInfo>(
-              value: _selectedEnrollment,
-              decoration: InputDecoration(
-                hintText: 'Choose subject and batch',
-                prefixIcon: const Icon(Icons.book),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ✅ UPDATED ENROLLMENT SELECTOR
+              const Text(
+                'Select Class',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              items: enrollments.map((enrollment) {
-                return DropdownMenuItem(
-                  value: enrollment,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '${enrollment.subject.code} - ${enrollment.subject.name}',
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      Text(
-                        enrollment.batch.code,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
+              const SizedBox(height: 8),
+              
+              enrollmentsAsync.when(
+                data: (enrollments) {
+                  if (enrollments.isEmpty) {
+                    return Card(
+                      color: AppColors.warning.withOpacity(0.1),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            const Icon(
+                              Icons.warning,
+                              color: AppColors.warning,
+                              size: 40,
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'No Enrollments Available',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'You need to enroll batches to subjects first before creating attendance sessions.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            const SizedBox(height: 16),
+                            AppButton(
+                              text: 'Create Enrollment',
+                              onPressed: () {
+                                context.push('/teacher/enrollments/create');
+                              },
+                              icon: Icons.add,
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                );
-              }).toList(),
-              onChanged: _isLoading
-                  ? null
-                  : (value) {
-                      setState(() => _selectedEnrollment = value);
+                    );
+                  }
+
+                  return DropdownButtonFormField<String>(
+                    value: _selectedEnrollmentId,
+                    decoration: const InputDecoration(
+                      labelText: 'Select Class',
+                      prefixIcon: Icon(Icons.class_),
+                      border: OutlineInputBorder(),
+                      helperText: 'Choose subject and batch combination',
+                    ),
+                    items: enrollments.map((enrollment) {
+                      return DropdownMenuItem(
+                        value: enrollment.id,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              enrollment.subject.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                            Text(
+                              '${enrollment.subject.code} • ${enrollment.batch.name}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: _isLoading
+                        ? null
+                        : (value) {
+                            setState(() => _selectedEnrollmentId = value);
+                          },
+                    validator: (value) {
+                      if (value == null) return 'Please select an enrollment';
+                      return null;
                     },
-              validator: (value) {
-                if (value == null) return 'Please select a subject';
-                return null;
-              },
-            ),
-
-            const SizedBox(height: 24),
-
-            // Select Date
-            const Text(
-              'Date',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 8),
-            InkWell(
-              onTap: _isLoading ? null : () => _selectDate(context),
-              child: InputDecorator(
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.calendar_today),
-                  border: OutlineInputBorder(
+                  );
+                },
+                loading: () => Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.border),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                ),
-                child: Text(
-                  DateFormat('dd MMM yyyy').format(_selectedDate),
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Time Row
-            Row(
-              children: [
-                // Start Time
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: const Row(
                     children: [
-                      const Text(
-                        'Start Time',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
                       ),
-                      const SizedBox(height: 8),
-                      InkWell(
-                        onTap: _isLoading ? null : () => _selectStartTime(context),
-                        child: InputDecorator(
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.access_time),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Text(
-                            _startTime.format(context),
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ),
+                      SizedBox(width: 12),
+                      Text('Loading enrollments...'),
                     ],
                   ),
                 ),
-
-                const SizedBox(width: 16),
-
-                // End Time
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'End Time',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      InkWell(
-                        onTap: _isLoading ? null : () => _selectEndTime(context),
-                        child: InputDecorator(
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.access_time),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
+                error: (error, stack) => Card(
+                  color: AppColors.error.withOpacity(0.1),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.error, color: AppColors.error),
+                        const SizedBox(width: 8),
+                        Expanded(
                           child: Text(
-                            _endTime.format(context),
-                            style: const TextStyle(fontSize: 16),
+                            'Failed to load enrollments: ${error.toString()}',
+                            style: const TextStyle(fontSize: 12),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            // Session Type
-            const Text(
-              'Session Type',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
               ),
-            ),
-            const SizedBox(height: 8),
-            SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(
-                  value: 'REGULAR',
-                  label: Text('Regular'),
-                  icon: Icon(Icons.event, size: 16),
-                ),
-                ButtonSegment(
-                  value: 'MAKEUP',
-                  label: Text('Makeup'),
-                  icon: Icon(Icons.event_repeat, size: 16),
-                ),
-                ButtonSegment(
-                  value: 'EXTRA',
-                  label: Text('Extra'),
-                  icon: Icon(Icons.event_available, size: 16),
-                ),
-              ],
-              selected: {_sessionType},
-              onSelectionChanged: _isLoading
-                  ? null
-                  : (Set<String> selected) {
-                      setState(() => _sessionType = selected.first);
-                    },
-            ),
 
-            const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
-            // Create Button
-            AppButton(
-              text: 'Create Session',
-              onPressed: _isLoading ? null : _handleCreateSession,
-              isLoading: _isLoading,
-            ),
-          ],
+              // Select Date
+              const Text(
+                'Date',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              InkWell(
+                onTap: _isLoading ? null : () => _selectDate(context),
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.calendar_today),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    DateFormat('dd MMM yyyy').format(_selectedDate),
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Time Row
+              Row(
+                children: [
+                  // Start Time
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Start Time',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        InkWell(
+                          onTap: _isLoading ? null : () => _selectStartTime(context),
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.access_time),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              _startTime.format(context),
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(width: 16),
+
+                  // End Time
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'End Time',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        InkWell(
+                          onTap: _isLoading ? null : () => _selectEndTime(context),
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.access_time),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              _endTime.format(context),
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 24),
+
+              // Session Type
+              const Text(
+                'Session Type',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              SegmentedButton<String>(
+                segments: const [
+                  ButtonSegment(
+                    value: 'REGULAR',
+                    label: Text('Regular'),
+                    icon: Icon(Icons.event, size: 16),
+                  ),
+                  ButtonSegment(
+                    value: 'MAKEUP',
+                    label: Text('Makeup'),
+                    icon: Icon(Icons.event_repeat, size: 16),
+                  ),
+                  ButtonSegment(
+                    value: 'EXTRA',
+                    label: Text('Extra'),
+                    icon: Icon(Icons.event_available, size: 16),
+                  ),
+                ],
+                selected: {_sessionType},
+                onSelectionChanged: _isLoading
+                    ? null
+                    : (Set<String> selected) {
+                        setState(() => _sessionType = selected.first);
+                      },
+              ),
+
+              const SizedBox(height: 32),
+
+              // Create Button
+              AppButton(
+                text: 'Create Session',
+                onPressed: _isLoading ? null : _handleCreateSession,
+                isLoading: _isLoading,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -317,15 +388,15 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
   Future<void> _handleCreateSession() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_selectedEnrollment == null) {
-      SnackbarUtils.showError(context, 'Please select a subject');
+    if (_selectedEnrollmentId == null) {  // ✅ Updated check
+      SnackbarUtils.showError(context, 'Please select a class');
       return;
     }
 
     setState(() => _isLoading = true);
 
     final request = CreateSessionRequest(
-      subjectEnrollmentId: _selectedEnrollment!.id,
+      subjectEnrollmentId: _selectedEnrollmentId!,  // ✅ Use enrollment ID
       date: DateFormat('yyyy-MM-dd').format(_selectedDate),
       startTime: '${_startTime.hour.toString().padLeft(2, '0')}:'
           '${_startTime.minute.toString().padLeft(2, '0')}:00',

@@ -4,6 +4,9 @@ import '../../../../../core/network/network_exceptions.dart';
 import '../models/enrollment_model.dart';
 
 abstract class EnrollmentRemoteDatasource {
+  /// Get ALL enrollments for authenticated teacher
+  Future<List<EnrollmentModel>> getMyEnrollments();
+
   /// Get enrollments for a specific subject
   Future<List<EnrollmentModel>> getSubjectEnrollments(String subjectId);
   
@@ -24,6 +27,22 @@ class EnrollmentRemoteDatasourceImpl implements EnrollmentRemoteDatasource {
   final Dio dio;
 
   EnrollmentRemoteDatasourceImpl(this.dio);
+
+  @override
+  Future<List<EnrollmentModel>> getMyEnrollments() async {  // ✅ ADD THIS METHOD
+    try {
+      final response = await dio.get(ApiEndpoints.myEnrollments);
+
+      if (response.data['success'] == true) {
+        final List data = response.data['data'] ?? [];
+        return data.map((json) => EnrollmentModel.fromJson(json)).toList();
+      } else {
+        throw const NetworkException.defaultError('Failed to fetch enrollments');
+      }
+    } on DioException catch (e) {
+      throw NetworkException.getDioException(e);
+    }
+  }
 
   @override
   Future<List<EnrollmentModel>> getSubjectEnrollments(String subjectId) async {
