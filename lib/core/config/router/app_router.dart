@@ -1,3 +1,4 @@
+import 'package:attendease_frontend/core/utils/logger.dart';
 import 'package:attendease_frontend/features/teacher/attendance/presentation/screens/attendance_history_screen.dart';
 import 'package:attendease_frontend/features/teacher/attendance/presentation/screens/session_details_screen.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,11 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
     debugLogDiagnostics: true,
     redirect: (context, state) {
+      final currentPath = state.matchedLocation;
+      
+      // Log current state for debugging
+      AppLogger.info('🚦 Router redirect - path: $currentPath, authState: ${authState.runtimeType}');
+      
       final isAuthenticated = authState.maybeWhen(
         authenticated: (_) => true,
         orElse: () => false,
@@ -33,28 +39,40 @@ final routerProvider = Provider<GoRouter>((ref) {
         initial: () => true,
         orElse: () => false,
       );
+      final isUnauthenticated = authState.maybeWhen(
+        unauthenticated: () => true,
+        error: (_) => true,
+        orElse: () => false,
+      );
       final isLoginRoute = state.matchedLocation == '/login';
       final isSplashRoute = state.matchedLocation == '/';
 
-      // Show splash while checking auth
-      if (isLoading && !isSplashRoute) {
-        return '/';
+      // Stay on splash while loading (but only if already on splash)
+      if (isLoading) {
+        AppLogger.info('⏳ Auth loading - staying on splash');
+        return isSplashRoute ? null : '/';
       }
 
-      // Redirect to login if not authenticated
-      if (!isAuthenticated && !isLoginRoute && !isSplashRoute) {
-        return '/login';
+      // If unauthenticated, go to login
+      if (isUnauthenticated) {
+        AppLogger.info('🔓 Unauthenticated - redirecting to login');
+        return isLoginRoute ? null : '/login';
       }
 
-      // Redirect to appropriate dashboard if already logged in
-      if (isAuthenticated && (isLoginRoute || isSplashRoute)) {
-        final user = authState.maybeWhen(
+      // If authenticated, redirect away from splash/login
+      if (isAuthenticated) {
+        if (isLoginRoute || isSplashRoute) {
+          final user = authState.maybeWhen(
             authenticated: (u) => u,
             orElse: () => null,
-        );
-        if (user != null) {
-            return user.isTeacher ? '/teacher' : '/student';
+          );
+          if (user != null) {
+            final destination = user.isTeacher ? '/teacher' : '/student';
+            AppLogger.info('✅ Authenticated - redirecting to $destination');
+            return destination;
+          }
         }
+        return null; // Stay on current route
       }
 
       return null;

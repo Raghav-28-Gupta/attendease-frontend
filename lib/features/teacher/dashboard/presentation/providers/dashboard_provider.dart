@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import '../../../../../core/network/dio_client.dart';
@@ -37,19 +39,32 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
   Future<void> loadDashboard() async {
     state = const DashboardState.loading();
 
-    final result = await _repository.getTeacherDashboard();
+    AppLogger.info('🔄 Loading teacher dashboard...');
 
-    result.fold(
-      (error) {
-        final message = NetworkException.getErrorMessage(error);
-        state = DashboardState.error(message);
-        AppLogger.error('Dashboard load failed: $message');
-      },
-      (data) {
-        state = DashboardState.loaded(data);
-        AppLogger.info('Dashboard loaded: ${data.enrollments.length} enrollments');
-      },
-    );
+    try {
+      final result = await _repository.getTeacherDashboard().timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          AppLogger.error('⏱️ Dashboard load timeout');
+          throw TimeoutException('Dashboard load timeout');
+        },
+      );
+
+      result.fold(
+        (error) {
+          final message = NetworkException.getErrorMessage(error);
+          state = DashboardState.error(message);
+          AppLogger.error('Dashboard load failed: $message');
+        },
+        (data) {
+          state = DashboardState.loaded(data);
+          AppLogger.info('Dashboard loaded: ${data.enrollments.length} enrollments');
+        },
+      );
+    } catch (e) {
+      state = DashboardState.error('Failed to load dashboard: ${e.toString()}');
+      AppLogger.error('❌ Dashboard load exception', e);
+    }
   }
 
   Future<void> refresh() async {

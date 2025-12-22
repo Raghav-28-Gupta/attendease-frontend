@@ -47,21 +47,37 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = const AuthState.loading();
 
     try {
-      final isLoggedIn = await _repository.isLoggedIn();
+      // Add timeout to prevent hanging forever
+      final isLoggedIn = await _repository.isLoggedIn().timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {
+          AppLogger.warning('⚠️ isLoggedIn() timed out');
+          return false;
+        },
+      );
+
+      AppLogger.info('📋 isLoggedIn result: $isLoggedIn');
 
       if (isLoggedIn) {
-        final user = await _repository.getCurrentUser();
+        final user = await _repository.getCurrentUser().timeout(
+          const Duration(seconds: 5),
+          onTimeout: () {
+            AppLogger.warning('⚠️ getCurrentUser() timed out');
+            return null;
+          },
+        );
+
         if (user != null) {
           state = AuthState.authenticated(user);
-          AppLogger.info('✅ User already logged in: ${user.email}');
-        } else {
-          state = const AuthState.unauthenticated();
+          AppLogger.info('✅ User restored: ${user.email}');
+          return;
         }
       } else {
         state = const AuthState.unauthenticated();
+        AppLogger.info('ℹ️ No saved session - redirecting to login');
       }
-    } catch (e) {
-      AppLogger.error('❌ Error checking auth status', e);
+    } catch (e, stackTrace) {
+      AppLogger.error('❌ Error checking auth status', e, stackTrace);
       state = const AuthState.unauthenticated();
     }
   }

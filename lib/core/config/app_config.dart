@@ -1,11 +1,11 @@
 class AppConfig {
   // API Configuration
-  static const String baseUrl = 'http://localhost:5000/api';
-  static const String socketUrl = 'http://localhost:5000';
+  static const String baseUrl = 'http://192.168.1.8:5000/api';
+  static const String socketUrl = 'http://192.168.1.8:5000';
   
   // Timeouts
-  static const int connectTimeout = 30000; // 30 seconds
-  static const int receiveTimeout = 30000;
+  static const int connectTimeout = 45000; // 30 seconds
+  static const int receiveTimeout = 45000;
   
   // Storage Keys
   static const String accessTokenKey = 'access_token';
