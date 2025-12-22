@@ -35,7 +35,7 @@ class AppTextField extends StatefulWidget {
     this.maxLength,
     this.inputFormatters,
     this.onChanged,
-    this.initialValue,
+    this.initialValue, required TextCapitalization textCapitalization,
   });
 
   @override

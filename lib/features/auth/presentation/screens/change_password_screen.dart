@@ -107,6 +107,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   obscureText: true,
                   prefixIcon: Icons.lock_outlined,
                   validator: Validators.password,
+                  textCapitalization: TextCapitalization.none,
                 ),
                 const SizedBox(height: 20),
 
@@ -118,6 +119,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   obscureText: true,
                   prefixIcon: Icons.lock_outlined,
                   validator: Validators.password,
+                  textCapitalization: TextCapitalization.none,
                 ),
                 const SizedBox(height: 20),
 
@@ -132,6 +134,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                     value,
                     _newPasswordController.text,
                   ),
+                  textCapitalization: TextCapitalization.none,
                 ),
                 const SizedBox(height: 32),
 

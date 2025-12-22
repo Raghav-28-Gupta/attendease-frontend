@@ -5,12 +5,16 @@ class EmptyStateWidget extends StatelessWidget {
   final String message;
   final IconData? icon;
   final Widget? action;
+  final String? actionText;
+  final VoidCallback? onAction;
 
   const EmptyStateWidget({
     super.key,
     required this.message,
     this.icon,
-    this.action,
+    this.action, 
+    this.actionText,
+    this.onAction,
   });
 
   @override
@@ -38,6 +42,12 @@ class EmptyStateWidget extends StatelessWidget {
             if (action != null) ...[
               const SizedBox(height: 24),
               action!,
+            ] else if (actionText != null && onAction != null) ...[
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: onAction,
+                child: Text(actionText!),
+              ),
             ],
           ],
         ),

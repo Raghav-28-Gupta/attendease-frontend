@@ -242,6 +242,7 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
               prefixIcon: Icons.person,
               validator: Validators.required,
               enabled: !_isSubmitting,
+              textCapitalization: TextCapitalization.words,
             ),
             const SizedBox(height: 16),
             AppTextField(
@@ -251,6 +252,7 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
               prefixIcon: Icons.person_outline,
               validator: Validators.required,
               enabled: !_isSubmitting,
+              textCapitalization: TextCapitalization.words,
             ),
             const SizedBox(height: 16),
             AppTextField(
@@ -260,6 +262,7 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
               prefixIcon: Icons.phone,
               keyboardType: TextInputType.phone,
               enabled: !_isSubmitting,
+              textCapitalization: TextCapitalization.none,
             ),
             const SizedBox(height: 24),
 

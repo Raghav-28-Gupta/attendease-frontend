@@ -140,6 +140,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   prefixIcon: Icons.email_outlined,
                   validator: Validators.email,
                   enabled: !_isLoading,
+                  textCapitalization: TextCapitalization.none,
                 ),
                 const SizedBox(height: 20),
 
@@ -152,6 +153,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   prefixIcon: Icons.lock_outlined,
                   validator: Validators.password,
                   enabled: !_isLoading,
+                  textCapitalization: TextCapitalization.none,
                 ),
                 const SizedBox(height: 12),
 
