@@ -33,6 +33,9 @@ class ApiEndpoints {
   static String batchStudents(String id) => '/batches/$id/students';
   static String importStudents(String batchId) => '/batches/$batchId/students/import';
 
+  // Teacher - Students
+  static String studentById(String id) => '/students/$id';
+
   // Teacher - Attendance
   static const String attendanceSessions = '/attendance/sessions';
   static String sessionById(String id) => '/attendance/sessions/$id';
