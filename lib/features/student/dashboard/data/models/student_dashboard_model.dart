@@ -109,3 +109,20 @@ class TodayClassInfo with _$TodayClassInfo {
   factory TodayClassInfo.fromJson(Map<String, dynamic> json) =>
       _$TodayClassInfoFromJson(json);
 }
+
+@freezed
+class DashboardStats with _$DashboardStats {
+  const factory DashboardStats({
+    required int totalEnrollments,
+    required int totalSessions,
+    required int todaySessions,
+    required int pendingSessions,
+    required double overallAttendance,
+    @Default(0) int totalBatches,      // ADD THIS
+    @Default(0) int totalSubjects,     // ADD THIS
+    @Default(0) int totalStudents,     // ADD THIS
+  }) = _DashboardStats;
+
+  factory DashboardStats.fromJson(Map<String, dynamic> json) =>
+      _$DashboardStatsFromJson(json);
+}
