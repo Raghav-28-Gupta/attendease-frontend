@@ -73,6 +73,7 @@ _$SubjectAttendanceInfoImpl _$$SubjectAttendanceInfoImplFromJson(
       subjectCode: json['subjectCode'] as String,
       subjectName: json['subjectName'] as String,
       semester: json['semester'] as String,
+      teacherName: json['teacherName'] as String,
       stats: AttendanceStats.fromJson(json['stats'] as Map<String, dynamic>),
     );
 
@@ -82,6 +83,7 @@ Map<String, dynamic> _$$SubjectAttendanceInfoImplToJson(
       'subjectCode': instance.subjectCode,
       'subjectName': instance.subjectName,
       'semester': instance.semester,
+      'teacherName': instance.teacherName,
       'stats': instance.stats,
     };
 

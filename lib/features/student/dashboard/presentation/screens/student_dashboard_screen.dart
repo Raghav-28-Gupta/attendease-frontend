@@ -26,7 +26,6 @@ class StudentDashboardScreen extends ConsumerStatefulWidget {
 
 class _StudentDashboardScreenState
     extends ConsumerState<StudentDashboardScreen> {
-  
   @override
   void initState() {
     super.initState();
@@ -63,7 +62,7 @@ class _StudentDashboardScreenState
       );
     });
 
-    // Initialize Firebase (NEW)
+    // Initialize Firebase
     ref.listen(initializeFirebaseProvider, (previous, next) {
       next.when(
         data: (_) {
@@ -177,12 +176,14 @@ class _StudentDashboardScreenState
   Widget _buildDashboard(BuildContext context, dynamic data) {
     final overview = data.overview;
     final lowAttendanceCount = data.subjects
-        .where((s) =>
-            s.stats.status == 'WARNING' || s.stats.status == 'CRITICAL')
+        .where(
+            (s) => s.stats.status == 'WARNING' || s.stats.status == 'CRITICAL')
         .length;
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
+      // Added padding at the bottom to ensure content isn't obscured
+      padding: const EdgeInsets.only(bottom: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -215,7 +216,7 @@ class _StudentDashboardScreenState
                     'Student ID: ${data.student.studentId}',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white.withAlpha((0.9 * 255).round()),
+                      color: Colors.white.withOpacity(0.9),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -223,7 +224,7 @@ class _StudentDashboardScreenState
                     'Batch: ${data.student.batch.code}',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white.withAlpha((0.9 * 255).round()),
+                      color: Colors.white.withOpacity(0.9),
                     ),
                   ),
                 ],
@@ -242,12 +243,12 @@ class _StudentDashboardScreenState
               crossAxisCount: 2,
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
-              childAspectRatio: 1.5,
+              // CHANGED: Reduced from 1.5 to 1.1 to give cards more vertical space
+              childAspectRatio: 1.1,
               children: [
                 InfoCard(
                   title: 'Overall Attendance',
-                  value:
-                      '${overview.overallAttendance.toStringAsFixed(1)}%',
+                  value: '${overview.overallAttendance.toStringAsFixed(1)}%',
                   icon: Icons.trending_up,
                   color: _getAttendanceColor(overview.overallAttendance),
                 ),
@@ -306,17 +307,21 @@ class _StudentDashboardScreenState
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: data.subjects.length,
               itemBuilder: (context, index) {
                 final subject = data.subjects[index];
-                return SubjectAttendanceCard(
-                  subject: subject,
-                  onTap: () {
-                    context.push(
-                      '/student/subject/${subject.subjectCode}',
-                      extra: subject,
-                    );
-                  },
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: SubjectAttendanceCard(
+                    subject: subject,
+                    onTap: () {
+                      context.push(
+                        '/student/subject/${subject.subjectCode}',
+                        extra: subject,
+                      );
+                    },
+                  ),
                 );
               },
             ),

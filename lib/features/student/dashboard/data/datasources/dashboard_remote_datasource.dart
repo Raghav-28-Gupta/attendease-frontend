@@ -18,21 +18,41 @@ class StudentDashboardRemoteDatasourceImpl
   Future<StudentDashboardModel> getStudentDashboard() async {
     try {
       AppLogger.info('🌐 Fetching student dashboard...');
-      
+
       final response = await dio.get(ApiEndpoints.studentDashboard);
-      
+
+      AppLogger.info('✅ Response status: ${response.statusCode}');
+      AppLogger.info('📦 Response data: ${response.data}');
+
+      // ✅ Check response structure
+      if (response.data == null) {
+        throw const NetworkException.defaultError('Response is null');
+      }
+
       if (response.data['success'] != true) {
-        throw const NetworkException.defaultError('Failed to load dashboard');
+        throw NetworkException.defaultError(
+          response.data['message'] ?? 'Failed to load dashboard',
+        );
+      }
+
+      // ✅ Extract data field
+      final dashboardData = response.data['data'];
+
+      if (dashboardData == null) {
+        AppLogger.error('❌ Dashboard data is null in response');
+        throw const NetworkException.defaultError(
+          'Dashboard data is empty from server',
+        );
       }
 
       AppLogger.info('✅ Student dashboard fetched successfully');
-      return StudentDashboardModel.fromJson(response.data['data']);
+      return StudentDashboardModel.fromJson(dashboardData);
     } on DioException catch (e) {
-      AppLogger.error('❌ Failed to fetch student dashboard', e);
+      AppLogger.error('❌ Dio error fetching student dashboard', e);
       throw NetworkException.getDioException(e);
     } catch (e) {
       AppLogger.error('❌ Unexpected error fetching student dashboard', e);
-      throw const NetworkException.defaultError('Unexpected error occurred');
+      throw NetworkException.defaultError(e.toString());
     }
   }
 }

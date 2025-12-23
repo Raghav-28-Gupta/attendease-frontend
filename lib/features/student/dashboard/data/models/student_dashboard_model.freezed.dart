@@ -773,6 +773,7 @@ mixin _$SubjectAttendanceInfo {
   String get subjectCode => throw _privateConstructorUsedError;
   String get subjectName => throw _privateConstructorUsedError;
   String get semester => throw _privateConstructorUsedError;
+  String get teacherName => throw _privateConstructorUsedError;
   AttendanceStats get stats => throw _privateConstructorUsedError;
 
   /// Serializes this SubjectAttendanceInfo to a JSON map.
@@ -795,6 +796,7 @@ abstract class $SubjectAttendanceInfoCopyWith<$Res> {
       {String subjectCode,
       String subjectName,
       String semester,
+      String teacherName,
       AttendanceStats stats});
 
   $AttendanceStatsCopyWith<$Res> get stats;
@@ -819,6 +821,7 @@ class _$SubjectAttendanceInfoCopyWithImpl<$Res,
     Object? subjectCode = null,
     Object? subjectName = null,
     Object? semester = null,
+    Object? teacherName = null,
     Object? stats = null,
   }) {
     return _then(_value.copyWith(
@@ -833,6 +836,10 @@ class _$SubjectAttendanceInfoCopyWithImpl<$Res,
       semester: null == semester
           ? _value.semester
           : semester // ignore: cast_nullable_to_non_nullable
+              as String,
+      teacherName: null == teacherName
+          ? _value.teacherName
+          : teacherName // ignore: cast_nullable_to_non_nullable
               as String,
       stats: null == stats
           ? _value.stats
@@ -865,6 +872,7 @@ abstract class _$$SubjectAttendanceInfoImplCopyWith<$Res>
       {String subjectCode,
       String subjectName,
       String semester,
+      String teacherName,
       AttendanceStats stats});
 
   @override
@@ -888,6 +896,7 @@ class __$$SubjectAttendanceInfoImplCopyWithImpl<$Res>
     Object? subjectCode = null,
     Object? subjectName = null,
     Object? semester = null,
+    Object? teacherName = null,
     Object? stats = null,
   }) {
     return _then(_$SubjectAttendanceInfoImpl(
@@ -902,6 +911,10 @@ class __$$SubjectAttendanceInfoImplCopyWithImpl<$Res>
       semester: null == semester
           ? _value.semester
           : semester // ignore: cast_nullable_to_non_nullable
+              as String,
+      teacherName: null == teacherName
+          ? _value.teacherName
+          : teacherName // ignore: cast_nullable_to_non_nullable
               as String,
       stats: null == stats
           ? _value.stats
@@ -918,6 +931,7 @@ class _$SubjectAttendanceInfoImpl implements _SubjectAttendanceInfo {
       {required this.subjectCode,
       required this.subjectName,
       required this.semester,
+      required this.teacherName,
       required this.stats});
 
   factory _$SubjectAttendanceInfoImpl.fromJson(Map<String, dynamic> json) =>
@@ -930,11 +944,13 @@ class _$SubjectAttendanceInfoImpl implements _SubjectAttendanceInfo {
   @override
   final String semester;
   @override
+  final String teacherName;
+  @override
   final AttendanceStats stats;
 
   @override
   String toString() {
-    return 'SubjectAttendanceInfo(subjectCode: $subjectCode, subjectName: $subjectName, semester: $semester, stats: $stats)';
+    return 'SubjectAttendanceInfo(subjectCode: $subjectCode, subjectName: $subjectName, semester: $semester, teacherName: $teacherName, stats: $stats)';
   }
 
   @override
@@ -948,13 +964,15 @@ class _$SubjectAttendanceInfoImpl implements _SubjectAttendanceInfo {
                 other.subjectName == subjectName) &&
             (identical(other.semester, semester) ||
                 other.semester == semester) &&
+            (identical(other.teacherName, teacherName) ||
+                other.teacherName == teacherName) &&
             (identical(other.stats, stats) || other.stats == stats));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, subjectCode, subjectName, semester, stats);
+  int get hashCode => Object.hash(
+      runtimeType, subjectCode, subjectName, semester, teacherName, stats);
 
   /// Create a copy of SubjectAttendanceInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -978,6 +996,7 @@ abstract class _SubjectAttendanceInfo implements SubjectAttendanceInfo {
       {required final String subjectCode,
       required final String subjectName,
       required final String semester,
+      required final String teacherName,
       required final AttendanceStats stats}) = _$SubjectAttendanceInfoImpl;
 
   factory _SubjectAttendanceInfo.fromJson(Map<String, dynamic> json) =
@@ -989,6 +1008,8 @@ abstract class _SubjectAttendanceInfo implements SubjectAttendanceInfo {
   String get subjectName;
   @override
   String get semester;
+  @override
+  String get teacherName;
   @override
   AttendanceStats get stats;
 

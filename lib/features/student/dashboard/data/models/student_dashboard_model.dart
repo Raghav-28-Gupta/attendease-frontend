@@ -54,6 +54,7 @@ class SubjectAttendanceInfo with _$SubjectAttendanceInfo {
     required String subjectCode,
     required String subjectName,
     required String semester,
+    required String teacherName,
     required AttendanceStats stats,
   }) = _SubjectAttendanceInfo;
 
