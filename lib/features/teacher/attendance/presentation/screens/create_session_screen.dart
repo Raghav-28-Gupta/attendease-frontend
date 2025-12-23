@@ -1,3 +1,4 @@
+import 'package:attendease_frontend/core/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,7 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../../core/config/theme/app_colors.dart';
 import '../../../../../core/widgets/app_button.dart';
 import '../../../../../core/utils/snackbar_utils.dart';
-import '../../../enrollment/presentation/providers/enrollment_provider.dart';  // ✅ ADD THIS
+import '../../../enrollment/presentation/providers/enrollment_provider.dart'; // ✅ ADD THIS
 import '../../data/models/attendance_session_model.dart';
 import '../providers/attendance_provider.dart';
 
@@ -19,18 +20,20 @@ class CreateSessionScreen extends ConsumerStatefulWidget {
 
 class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
   final _formKey = GlobalKey<FormState>();
-  
-  String? _selectedEnrollmentId;  // ✅ Changed from EnrollmentInfo to String
+
+  String? _selectedEnrollmentId; // ✅ Changed from EnrollmentInfo to String
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _startTime = TimeOfDay.now();
-  TimeOfDay _endTime = TimeOfDay.now().replacing(hour: TimeOfDay.now().hour + 1);
+  TimeOfDay _endTime =
+      TimeOfDay.now().replacing(hour: TimeOfDay.now().hour + 1);
   String _sessionType = 'REGULAR';
 
   bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    final enrollmentsAsync = ref.watch(myEnrollmentsProvider);  // ✅ Use new provider
+    final enrollmentsAsync =
+        ref.watch(myEnrollmentsProvider); // ✅ Use new provider
 
     return Scaffold(
       appBar: AppBar(
@@ -52,7 +55,7 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              
+
               enrollmentsAsync.when(
                 data: (enrollments) {
                   if (enrollments.isEmpty) {
@@ -223,7 +226,9 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
                         ),
                         const SizedBox(height: 8),
                         InkWell(
-                          onTap: _isLoading ? null : () => _selectStartTime(context),
+                          onTap: _isLoading
+                              ? null
+                              : () => _selectStartTime(context),
                           child: InputDecorator(
                             decoration: InputDecoration(
                               prefixIcon: const Icon(Icons.access_time),
@@ -257,7 +262,8 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
                         ),
                         const SizedBox(height: 8),
                         InkWell(
-                          onTap: _isLoading ? null : () => _selectEndTime(context),
+                          onTap:
+                              _isLoading ? null : () => _selectEndTime(context),
                           child: InputDecorator(
                             decoration: InputDecoration(
                               prefixIcon: const Icon(Icons.access_time),
@@ -388,15 +394,22 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
   Future<void> _handleCreateSession() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_selectedEnrollmentId == null) {  // ✅ Updated check
+    if (_selectedEnrollmentId == null) {
+      // ✅ Updated check
       SnackbarUtils.showError(context, 'Please select a class');
       return;
     }
 
     setState(() => _isLoading = true);
 
+    // ✅ Format times with padding for hours and minutes
+    final startHour = _startTime.hour.toString().padLeft(2, '0');
+    final startMinute = _startTime.minute.toString().padLeft(2, '0');
+    final endHour = _endTime.hour.toString().padLeft(2, '0');
+    final endMinute = _endTime.minute.toString().padLeft(2, '0');
+
     final request = CreateSessionRequest(
-      subjectEnrollmentId: _selectedEnrollmentId!,  // ✅ Use enrollment ID
+      subjectEnrollmentId: _selectedEnrollmentId!, // ✅ Use enrollment ID
       date: DateFormat('yyyy-MM-dd').format(_selectedDate),
       startTime: '${_startTime.hour.toString().padLeft(2, '0')}:'
           '${_startTime.minute.toString().padLeft(2, '0')}:00',
@@ -405,9 +418,15 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
       type: _sessionType,
     );
 
-    final success = await ref
-        .read(createSessionProvider.notifier)
-        .createSession(request);
+    AppLogger.info(
+      '📝 Creating session: '
+      'enrollment=$_selectedEnrollmentId, '
+      'date=${request.date}, '
+      'time=${request.startTime} - ${request.endTime}',
+    );
+
+    final success =
+        await ref.read(createSessionProvider.notifier).createSession(request);
 
     if (mounted) {
       setState(() => _isLoading = false);

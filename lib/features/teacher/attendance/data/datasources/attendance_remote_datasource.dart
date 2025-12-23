@@ -1,3 +1,4 @@
+import 'package:attendease_frontend/core/utils/logger.dart';
 import 'package:dio/dio.dart';
 import '../../../../../core/network/api_endpoints.dart';
 import '../../../../../core/network/network_exceptions.dart';
@@ -23,6 +24,9 @@ class AttendanceRemoteDatasourceImpl implements AttendanceRemoteDatasource {
     CreateSessionRequest request,
   ) async {
     try {
+      AppLogger.info('🌐 Creating attendance session...');
+      AppLogger.info('📝 Request data: ${request.toJson()}');
+
       final response = await dio.post(
         ApiEndpoints.attendanceSessions,
         data: request.toJson(),
