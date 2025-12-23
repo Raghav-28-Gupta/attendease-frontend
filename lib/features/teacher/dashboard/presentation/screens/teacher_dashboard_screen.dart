@@ -33,7 +33,6 @@ class _TeacherDashboardScreenState
   @override
   void initState() {
     super.initState();
-    // Load dashboard data on init
     Future.microtask(() {
       ref.read(teacherDashboardProvider.notifier).refresh();
     });
@@ -44,19 +43,16 @@ class _TeacherDashboardScreenState
     final authState = ref.watch(authProvider);
     final dashboardState = ref.watch(teacherDashboardProvider);
     
-    // Extract user from auth state
     final user = authState.maybeWhen(
       authenticated: (u) => u,
       orElse: () => null,
     );
 
-    // Initialize socket connection and listen for real-time updates
     ref.listen(initializeSocketProvider, (previous, next) {
       next.when(
         data: (_) {
           if (user != null) {
             AppLogger.info('✅ Socket initialized, joining teacher room');
-            // Join teacher room for real-time updates
             final socketNotifier = ref.read(attendanceSocketProvider);
             socketNotifier.joinTeacherRoom(user.id);
           }
@@ -70,7 +66,6 @@ class _TeacherDashboardScreenState
       );
     });
 
-    // Initialize Firebase (NEW)
     ref.listen(initializeFirebaseProvider, (previous, next) {
       next.when(
         data: (_) {
@@ -116,10 +111,7 @@ class _TeacherDashboardScreenState
       ),
       body: Column(
         children: [
-          // Connection status indicator
           const ConnectionStatusWidget(),
-          
-          // Main dashboard content
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
@@ -143,7 +135,6 @@ class _TeacherDashboardScreenState
       floatingActionButton: dashboardState.maybeWhen(
         loaded: (_) => FloatingActionButton.extended(
           onPressed: () {
-            // Navigate to create session screen
             context.push('/teacher/create-session');
           },
           icon: const Icon(Icons.add),
@@ -161,6 +152,7 @@ class _TeacherDashboardScreenState
   ) {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 80), // Add padding for FAB
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -184,7 +176,7 @@ class _TeacherDashboardScreenState
                     'Welcome back,',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white.withAlpha((0.9 * 255).round()),
+                      color: Colors.white.withOpacity(0.9),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -201,7 +193,7 @@ class _TeacherDashboardScreenState
                     'Let\'s take attendance today! 📝',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white.withAlpha((0.9 * 255).round()),
+                      color: Colors.white.withOpacity(0.9),
                     ),
                   ),
                 ],
@@ -220,7 +212,8 @@ class _TeacherDashboardScreenState
               crossAxisCount: 2,
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
-              childAspectRatio: 1.3,
+              // CHANGED: Reduced from 1.3 to 1.1 to give cards more height
+              childAspectRatio: 1.1, 
               children: [
                 StatsCard(
                   title: 'Enrollments',
@@ -266,7 +259,8 @@ class _TeacherDashboardScreenState
               crossAxisCount: 2,
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
-              childAspectRatio: 1.3,
+              // CHANGED: Reduced from 1.3 to 1.1 to match StatsCard
+              childAspectRatio: 1.1,
               children: [
                 _ManagementCard(
                   title: 'Batches',
@@ -326,18 +320,21 @@ class _TeacherDashboardScreenState
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 16), // Added horizontal padding
               itemCount: data.enrollments.length > 3 ? 3 : data.enrollments.length,
               itemBuilder: (context, index) {
                 final enrollment = data.enrollments[index];
-                return EnrollmentCard(
-                  enrollment: enrollment,
-                  onTap: () {
-                    // Navigate to enrollment details
-                    context.push(
-                      '/teacher/enrollment/${enrollment.id}',
-                      extra: enrollment,
-                    );
-                  },
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0), // Spacing between items
+                  child: EnrollmentCard(
+                    enrollment: enrollment,
+                    onTap: () {
+                      context.push(
+                        '/teacher/enrollment/${enrollment.id}',
+                        extra: enrollment,
+                      );
+                    },
+                  ),
                 );
               },
             ),
@@ -404,6 +401,8 @@ class _ManagementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
@@ -414,31 +413,35 @@ class _ManagementCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: color.withAlpha((0.1 * 255).round()),
+                  color: color.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(icon, color: color, size: 18),
+                child: Icon(icon, color: color, size: 20),
               ),
-              const SizedBox(height:4),
+              const Spacer(),
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 2),
-              Text(
-                count,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: color,
+              const SizedBox(height: 4),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  count,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
                 ),
               ),
             ],

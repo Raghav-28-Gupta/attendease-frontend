@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dio/dio.dart';
 import '../config/socket_config.dart';
 import '../storage/secure_storage.dart';
+import '../network/api_endpoints.dart';
 import '../utils/logger.dart';
 
 final socketServiceProvider = Provider<SocketService>((ref) {
@@ -19,7 +22,7 @@ class SocketService {
   bool get isConnected => _isConnected;
   IO.Socket? get socket => _socket;
 
-  /// Initialize socket connection
+  /// Initialize socket connection with token refresh
   Future<void> connect() async {
     if (_socket != null && _isConnected) {
       AppLogger.info('Socket already connected');
@@ -27,14 +30,23 @@ class SocketService {
     }
 
     try {
-      // Get auth token
-      final token = await _secureStorage.read('access_token');
+      // ✅ Get and validate token
+      String? token = await _secureStorage.read('access_token');
+      
       if (token == null) {
         AppLogger.error('No auth token found, cannot connect socket');
         return;
       }
 
-      // Initialize socket
+      // ✅ Check if token is expired and refresh if needed
+      token = await _ensureValidToken(token);
+      
+      if (token == null) {
+        AppLogger.error('Failed to get valid token, cannot connect socket');
+        return;
+      }
+
+      // Initialize socket with fresh token
       _socket = IO.io(
         SocketConfig.socketUrl,
         IO.OptionBuilder()
@@ -56,6 +68,85 @@ class SocketService {
     }
   }
 
+  /// ✅ Ensure token is valid, refresh if expired
+  Future<String?> _ensureValidToken(String token) async {
+    try {
+      // Decode JWT to check expiry (basic check without verification)
+      final parts = token.split('.');
+      if (parts.length != 3) {
+        AppLogger.warning('⚠️ Invalid token format');
+        return await _refreshToken();
+      }
+
+      // Decode payload
+      final payload = parts[1];
+      final normalized = base64.normalize(payload);
+      final decoded = utf8.decode(base64.decode(normalized));
+      final Map<String, dynamic> data = json.decode(decoded);
+
+      // Check expiry (exp is in seconds since epoch)
+      final exp = data['exp'] as int?;
+      if (exp == null) {
+        AppLogger.warning('⚠️ Token has no expiry, refreshing');
+        return await _refreshToken();
+      }
+
+      final expiryTime = DateTime.fromMillisecondsSinceEpoch(exp * 1000);
+      final now = DateTime.now();
+      
+      // If token expires in less than 1 minute, refresh it
+      if (expiryTime.isBefore(now.add(const Duration(minutes: 1)))) {
+        AppLogger.info('🔄 Token expiring soon, refreshing...');
+        return await _refreshToken();
+      }
+
+      AppLogger.info('✅ Token is valid');
+      return token;
+    } catch (e) {
+      AppLogger.error('❌ Error checking token validity', e);
+      return await _refreshToken();
+    }
+  }
+
+  /// ✅ Refresh access token
+  Future<String?> _refreshToken() async {
+    try {
+      final refreshToken = await _secureStorage.read('refresh_token');
+      
+      if (refreshToken == null) {
+        AppLogger.error('❌ No refresh token found');
+        return null;
+      }
+
+      AppLogger.info('🔄 Refreshing access token...');
+
+      final dio = Dio(BaseOptions(
+        baseUrl: ApiEndpoints.baseUrl.replaceAll('/api', ''), // Remove /api
+      ));
+
+      final response = await dio.post(
+        '${ApiEndpoints.baseUrl}/auth/refresh-token',
+        data: {'refreshToken': refreshToken},
+      );
+
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        final newAccessToken = response.data['accessToken'] as String;
+        
+        // Save new token
+        await _secureStorage.write('access_token', newAccessToken);
+        
+        AppLogger.info('✅ Token refreshed successfully');
+        return newAccessToken;
+      } else {
+        AppLogger.error('❌ Token refresh failed: ${response.data}');
+        return null;
+      }
+    } catch (e) {
+      AppLogger.error('❌ Token refresh error', e);
+      return null;
+    }
+  }
+
   /// Setup socket event listeners
   void _setupListeners() {
     _socket?.on(SocketConfig.eventConnect, (_) {
@@ -71,34 +162,56 @@ class SocketService {
     _socket?.on(SocketConfig.eventConnectError, (data) {
       _isConnected = false;
       AppLogger.error('❌ Socket connection error: $data');
+      
+      // ✅ If token expired error, try to reconnect with new token
+      if (data.toString().contains('expired') || 
+          data.toString().contains('Invalid token')) {
+        AppLogger.info('🔄 Token expired during connection, reconnecting...');
+        reconnect();
+      }
     });
 
     _socket?.on(SocketConfig.eventConnectTimeout, (_) {
       _isConnected = false;
-      AppLogger.error('⏱️ Socket connection timeout');
+      AppLogger.error('❌ Socket connection timeout');
+    });
+
+    _socket?.on('error', (data) {
+      AppLogger.error('❌ Socket error: $data');
     });
   }
 
-  /// Join a room
-  void joinRoom(String roomName) {
-    if (!_isConnected || _socket == null) {
-      AppLogger.warning('Cannot join room, socket not connected');
-      return;
+  /// ✅ NEW: Join a socket room
+  void joinRoom(String room) {
+    if (_isConnected && _socket != null) {
+      _socket!.emit(SocketConfig.eventJoinRoom, {'room': room});
+      AppLogger.info('🚪 Joining room: $room');
+    } else {
+      AppLogger.warning('⚠️ Cannot join room $room - socket not connected');
     }
-
-    _socket!.emit(SocketConfig.eventJoinRoom, roomName);
-    AppLogger.info('📥 Joined room: $roomName');
   }
 
-  /// Leave a room
-  void leaveRoom(String roomName) {
-    if (!_isConnected || _socket == null) return;
-
-    _socket!.emit(SocketConfig.eventLeaveRoom, roomName);
-    AppLogger.info('📤 Left room: $roomName');
+  /// ✅ NEW: Leave a socket room
+  void leaveRoom(String room) {
+    if (_isConnected && _socket != null) {
+      _socket!.emit(SocketConfig.eventLeaveRoom, {'room': room});
+      AppLogger.info('🚪 Leaving room: $room');
+    } else {
+      AppLogger.warning('⚠️ Cannot leave room $room - socket not connected');
+    }
   }
 
-  /// Listen to custom event
+  /// Emit event to server
+  void emit(String event, dynamic data) {
+    if (_isConnected && _socket != null) {
+      _socket!.emit(event, data);
+      AppLogger.info('📤 Emitted: $event');
+    } else {
+      AppLogger.warning('⚠️ Cannot emit $event - socket not connected');
+    }
+  }
+
+  /// Listen to event from server
   void on(String event, Function(dynamic) callback) {
     _socket?.on(event, callback);
   }
@@ -119,10 +232,10 @@ class SocketService {
     }
   }
 
-  /// Reconnect socket
+  /// Reconnect socket with fresh token
   Future<void> reconnect() async {
     disconnect();
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 2));
     await connect();
   }
 }
