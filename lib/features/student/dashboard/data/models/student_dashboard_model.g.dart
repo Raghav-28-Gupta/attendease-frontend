@@ -149,28 +149,3 @@ Map<String, dynamic> _$$TodayClassInfoImplToJson(
       'room': instance.room,
       'teacherName': instance.teacherName,
     };
-
-_$DashboardStatsImpl _$$DashboardStatsImplFromJson(Map<String, dynamic> json) =>
-    _$DashboardStatsImpl(
-      totalEnrollments: (json['totalEnrollments'] as num).toInt(),
-      totalSessions: (json['totalSessions'] as num).toInt(),
-      todaySessions: (json['todaySessions'] as num).toInt(),
-      pendingSessions: (json['pendingSessions'] as num).toInt(),
-      overallAttendance: (json['overallAttendance'] as num).toDouble(),
-      totalBatches: (json['totalBatches'] as num?)?.toInt() ?? 0,
-      totalSubjects: (json['totalSubjects'] as num?)?.toInt() ?? 0,
-      totalStudents: (json['totalStudents'] as num?)?.toInt() ?? 0,
-    );
-
-Map<String, dynamic> _$$DashboardStatsImplToJson(
-        _$DashboardStatsImpl instance) =>
-    <String, dynamic>{
-      'totalEnrollments': instance.totalEnrollments,
-      'totalSessions': instance.totalSessions,
-      'todaySessions': instance.todaySessions,
-      'pendingSessions': instance.pendingSessions,
-      'overallAttendance': instance.overallAttendance,
-      'totalBatches': instance.totalBatches,
-      'totalSubjects': instance.totalSubjects,
-      'totalStudents': instance.totalStudents,
-    };

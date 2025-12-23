@@ -1092,246 +1092,6 @@ abstract class _EnrollmentStats implements EnrollmentStats {
       throw _privateConstructorUsedError;
 }
 
-DashboardStats _$DashboardStatsFromJson(Map<String, dynamic> json) {
-  return _DashboardStats.fromJson(json);
-}
-
-/// @nodoc
-mixin _$DashboardStats {
-  int get totalEnrollments => throw _privateConstructorUsedError;
-  int get totalBatchesTeaching => throw _privateConstructorUsedError;
-  int get totalStudents => throw _privateConstructorUsedError;
-  int get totalSessions => throw _privateConstructorUsedError;
-  double get averageAttendance => throw _privateConstructorUsedError;
-
-  /// Serializes this DashboardStats to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of DashboardStats
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $DashboardStatsCopyWith<DashboardStats> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $DashboardStatsCopyWith<$Res> {
-  factory $DashboardStatsCopyWith(
-          DashboardStats value, $Res Function(DashboardStats) then) =
-      _$DashboardStatsCopyWithImpl<$Res, DashboardStats>;
-  @useResult
-  $Res call(
-      {int totalEnrollments,
-      int totalBatchesTeaching,
-      int totalStudents,
-      int totalSessions,
-      double averageAttendance});
-}
-
-/// @nodoc
-class _$DashboardStatsCopyWithImpl<$Res, $Val extends DashboardStats>
-    implements $DashboardStatsCopyWith<$Res> {
-  _$DashboardStatsCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of DashboardStats
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? totalEnrollments = null,
-    Object? totalBatchesTeaching = null,
-    Object? totalStudents = null,
-    Object? totalSessions = null,
-    Object? averageAttendance = null,
-  }) {
-    return _then(_value.copyWith(
-      totalEnrollments: null == totalEnrollments
-          ? _value.totalEnrollments
-          : totalEnrollments // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalBatchesTeaching: null == totalBatchesTeaching
-          ? _value.totalBatchesTeaching
-          : totalBatchesTeaching // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalStudents: null == totalStudents
-          ? _value.totalStudents
-          : totalStudents // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalSessions: null == totalSessions
-          ? _value.totalSessions
-          : totalSessions // ignore: cast_nullable_to_non_nullable
-              as int,
-      averageAttendance: null == averageAttendance
-          ? _value.averageAttendance
-          : averageAttendance // ignore: cast_nullable_to_non_nullable
-              as double,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$DashboardStatsImplCopyWith<$Res>
-    implements $DashboardStatsCopyWith<$Res> {
-  factory _$$DashboardStatsImplCopyWith(_$DashboardStatsImpl value,
-          $Res Function(_$DashboardStatsImpl) then) =
-      __$$DashboardStatsImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {int totalEnrollments,
-      int totalBatchesTeaching,
-      int totalStudents,
-      int totalSessions,
-      double averageAttendance});
-}
-
-/// @nodoc
-class __$$DashboardStatsImplCopyWithImpl<$Res>
-    extends _$DashboardStatsCopyWithImpl<$Res, _$DashboardStatsImpl>
-    implements _$$DashboardStatsImplCopyWith<$Res> {
-  __$$DashboardStatsImplCopyWithImpl(
-      _$DashboardStatsImpl _value, $Res Function(_$DashboardStatsImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of DashboardStats
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? totalEnrollments = null,
-    Object? totalBatchesTeaching = null,
-    Object? totalStudents = null,
-    Object? totalSessions = null,
-    Object? averageAttendance = null,
-  }) {
-    return _then(_$DashboardStatsImpl(
-      totalEnrollments: null == totalEnrollments
-          ? _value.totalEnrollments
-          : totalEnrollments // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalBatchesTeaching: null == totalBatchesTeaching
-          ? _value.totalBatchesTeaching
-          : totalBatchesTeaching // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalStudents: null == totalStudents
-          ? _value.totalStudents
-          : totalStudents // ignore: cast_nullable_to_non_nullable
-              as int,
-      totalSessions: null == totalSessions
-          ? _value.totalSessions
-          : totalSessions // ignore: cast_nullable_to_non_nullable
-              as int,
-      averageAttendance: null == averageAttendance
-          ? _value.averageAttendance
-          : averageAttendance // ignore: cast_nullable_to_non_nullable
-              as double,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$DashboardStatsImpl implements _DashboardStats {
-  const _$DashboardStatsImpl(
-      {required this.totalEnrollments,
-      required this.totalBatchesTeaching,
-      required this.totalStudents,
-      required this.totalSessions,
-      required this.averageAttendance});
-
-  factory _$DashboardStatsImpl.fromJson(Map<String, dynamic> json) =>
-      _$$DashboardStatsImplFromJson(json);
-
-  @override
-  final int totalEnrollments;
-  @override
-  final int totalBatchesTeaching;
-  @override
-  final int totalStudents;
-  @override
-  final int totalSessions;
-  @override
-  final double averageAttendance;
-
-  @override
-  String toString() {
-    return 'DashboardStats(totalEnrollments: $totalEnrollments, totalBatchesTeaching: $totalBatchesTeaching, totalStudents: $totalStudents, totalSessions: $totalSessions, averageAttendance: $averageAttendance)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$DashboardStatsImpl &&
-            (identical(other.totalEnrollments, totalEnrollments) ||
-                other.totalEnrollments == totalEnrollments) &&
-            (identical(other.totalBatchesTeaching, totalBatchesTeaching) ||
-                other.totalBatchesTeaching == totalBatchesTeaching) &&
-            (identical(other.totalStudents, totalStudents) ||
-                other.totalStudents == totalStudents) &&
-            (identical(other.totalSessions, totalSessions) ||
-                other.totalSessions == totalSessions) &&
-            (identical(other.averageAttendance, averageAttendance) ||
-                other.averageAttendance == averageAttendance));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, totalEnrollments,
-      totalBatchesTeaching, totalStudents, totalSessions, averageAttendance);
-
-  /// Create a copy of DashboardStats
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$DashboardStatsImplCopyWith<_$DashboardStatsImpl> get copyWith =>
-      __$$DashboardStatsImplCopyWithImpl<_$DashboardStatsImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$DashboardStatsImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _DashboardStats implements DashboardStats {
-  const factory _DashboardStats(
-      {required final int totalEnrollments,
-      required final int totalBatchesTeaching,
-      required final int totalStudents,
-      required final int totalSessions,
-      required final double averageAttendance}) = _$DashboardStatsImpl;
-
-  factory _DashboardStats.fromJson(Map<String, dynamic> json) =
-      _$DashboardStatsImpl.fromJson;
-
-  @override
-  int get totalEnrollments;
-  @override
-  int get totalBatchesTeaching;
-  @override
-  int get totalStudents;
-  @override
-  int get totalSessions;
-  @override
-  double get averageAttendance;
-
-  /// Create a copy of DashboardStats
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$DashboardStatsImplCopyWith<_$DashboardStatsImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
 RecentSession _$RecentSessionFromJson(Map<String, dynamic> json) {
   return _RecentSession.fromJson(json);
 }
@@ -2208,4 +1968,274 @@ abstract class _LowAttendanceStudent implements LowAttendanceStudent {
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$LowAttendanceStudentImplCopyWith<_$LowAttendanceStudentImpl>
       get copyWith => throw _privateConstructorUsedError;
+}
+
+DashboardStats _$DashboardStatsFromJson(Map<String, dynamic> json) {
+  return _DashboardStats.fromJson(json);
+}
+
+/// @nodoc
+mixin _$DashboardStats {
+  int get totalEnrollments => throw _privateConstructorUsedError;
+  int get totalBatchesTeaching => throw _privateConstructorUsedError;
+  int get totalSubjects => throw _privateConstructorUsedError;
+  int get totalStudents => throw _privateConstructorUsedError;
+  int get totalSessions => throw _privateConstructorUsedError;
+  double get averageAttendance => throw _privateConstructorUsedError;
+
+  /// Serializes this DashboardStats to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of DashboardStats
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DashboardStatsCopyWith<DashboardStats> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DashboardStatsCopyWith<$Res> {
+  factory $DashboardStatsCopyWith(
+          DashboardStats value, $Res Function(DashboardStats) then) =
+      _$DashboardStatsCopyWithImpl<$Res, DashboardStats>;
+  @useResult
+  $Res call(
+      {int totalEnrollments,
+      int totalBatchesTeaching,
+      int totalSubjects,
+      int totalStudents,
+      int totalSessions,
+      double averageAttendance});
+}
+
+/// @nodoc
+class _$DashboardStatsCopyWithImpl<$Res, $Val extends DashboardStats>
+    implements $DashboardStatsCopyWith<$Res> {
+  _$DashboardStatsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of DashboardStats
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? totalEnrollments = null,
+    Object? totalBatchesTeaching = null,
+    Object? totalSubjects = null,
+    Object? totalStudents = null,
+    Object? totalSessions = null,
+    Object? averageAttendance = null,
+  }) {
+    return _then(_value.copyWith(
+      totalEnrollments: null == totalEnrollments
+          ? _value.totalEnrollments
+          : totalEnrollments // ignore: cast_nullable_to_non_nullable
+              as int,
+      totalBatchesTeaching: null == totalBatchesTeaching
+          ? _value.totalBatchesTeaching
+          : totalBatchesTeaching // ignore: cast_nullable_to_non_nullable
+              as int,
+      totalSubjects: null == totalSubjects
+          ? _value.totalSubjects
+          : totalSubjects // ignore: cast_nullable_to_non_nullable
+              as int,
+      totalStudents: null == totalStudents
+          ? _value.totalStudents
+          : totalStudents // ignore: cast_nullable_to_non_nullable
+              as int,
+      totalSessions: null == totalSessions
+          ? _value.totalSessions
+          : totalSessions // ignore: cast_nullable_to_non_nullable
+              as int,
+      averageAttendance: null == averageAttendance
+          ? _value.averageAttendance
+          : averageAttendance // ignore: cast_nullable_to_non_nullable
+              as double,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$DashboardStatsImplCopyWith<$Res>
+    implements $DashboardStatsCopyWith<$Res> {
+  factory _$$DashboardStatsImplCopyWith(_$DashboardStatsImpl value,
+          $Res Function(_$DashboardStatsImpl) then) =
+      __$$DashboardStatsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {int totalEnrollments,
+      int totalBatchesTeaching,
+      int totalSubjects,
+      int totalStudents,
+      int totalSessions,
+      double averageAttendance});
+}
+
+/// @nodoc
+class __$$DashboardStatsImplCopyWithImpl<$Res>
+    extends _$DashboardStatsCopyWithImpl<$Res, _$DashboardStatsImpl>
+    implements _$$DashboardStatsImplCopyWith<$Res> {
+  __$$DashboardStatsImplCopyWithImpl(
+      _$DashboardStatsImpl _value, $Res Function(_$DashboardStatsImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of DashboardStats
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? totalEnrollments = null,
+    Object? totalBatchesTeaching = null,
+    Object? totalSubjects = null,
+    Object? totalStudents = null,
+    Object? totalSessions = null,
+    Object? averageAttendance = null,
+  }) {
+    return _then(_$DashboardStatsImpl(
+      totalEnrollments: null == totalEnrollments
+          ? _value.totalEnrollments
+          : totalEnrollments // ignore: cast_nullable_to_non_nullable
+              as int,
+      totalBatchesTeaching: null == totalBatchesTeaching
+          ? _value.totalBatchesTeaching
+          : totalBatchesTeaching // ignore: cast_nullable_to_non_nullable
+              as int,
+      totalSubjects: null == totalSubjects
+          ? _value.totalSubjects
+          : totalSubjects // ignore: cast_nullable_to_non_nullable
+              as int,
+      totalStudents: null == totalStudents
+          ? _value.totalStudents
+          : totalStudents // ignore: cast_nullable_to_non_nullable
+              as int,
+      totalSessions: null == totalSessions
+          ? _value.totalSessions
+          : totalSessions // ignore: cast_nullable_to_non_nullable
+              as int,
+      averageAttendance: null == averageAttendance
+          ? _value.averageAttendance
+          : averageAttendance // ignore: cast_nullable_to_non_nullable
+              as double,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DashboardStatsImpl implements _DashboardStats {
+  const _$DashboardStatsImpl(
+      {required this.totalEnrollments,
+      required this.totalBatchesTeaching,
+      required this.totalSubjects,
+      required this.totalStudents,
+      required this.totalSessions,
+      required this.averageAttendance});
+
+  factory _$DashboardStatsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DashboardStatsImplFromJson(json);
+
+  @override
+  final int totalEnrollments;
+  @override
+  @JsonKey()
+  final int totalBatchesTeaching;
+  @override
+  @JsonKey()
+  final int totalSubjects;
+  @override
+  @JsonKey()
+  final int totalStudents;
+  @override
+  final int totalSessions;
+  @override
+  final double averageAttendance;
+
+  @override
+  String toString() {
+    return 'DashboardStats(totalEnrollments: $totalEnrollments, totalBatchesTeaching: $totalBatchesTeaching, totalSubjects: $totalSubjects, totalStudents: $totalStudents, totalSessions: $totalSessions, averageAttendance: $averageAttendance)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DashboardStatsImpl &&
+            (identical(other.totalEnrollments, totalEnrollments) ||
+                other.totalEnrollments == totalEnrollments) &&
+            (identical(other.totalBatchesTeaching, totalBatchesTeaching) ||
+                other.totalBatchesTeaching == totalBatchesTeaching) &&
+            (identical(other.totalSubjects, totalSubjects) ||
+                other.totalSubjects == totalSubjects) &&
+            (identical(other.totalStudents, totalStudents) ||
+                other.totalStudents == totalStudents) &&
+            (identical(other.totalSessions, totalSessions) ||
+                other.totalSessions == totalSessions) &&
+            (identical(other.averageAttendance, averageAttendance) ||
+                other.averageAttendance == averageAttendance));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      totalEnrollments,
+      totalBatchesTeaching,
+      totalSubjects,
+      totalStudents,
+      totalSessions,
+      averageAttendance);
+
+  /// Create a copy of DashboardStats
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DashboardStatsImplCopyWith<_$DashboardStatsImpl> get copyWith =>
+      __$$DashboardStatsImplCopyWithImpl<_$DashboardStatsImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DashboardStatsImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _DashboardStats implements DashboardStats {
+  const factory _DashboardStats(
+      {required final int totalEnrollments,
+      required final int totalBatchesTeaching,
+      required final int totalSubjects,
+      required final int totalStudents,
+      required final int totalSessions,
+      required final double averageAttendance}) = _$DashboardStatsImpl;
+
+  factory _DashboardStats.fromJson(Map<String, dynamic> json) =
+      _$DashboardStatsImpl.fromJson;
+
+  @override
+  int get totalEnrollments;
+  @override
+  int get totalBatchesTeaching;
+  @override
+  int get totalSubjects;
+  @override
+  int get totalStudents;
+  @override
+  int get totalSessions;
+  @override
+  double get averageAttendance;
+
+  /// Create a copy of DashboardStats
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DashboardStatsImplCopyWith<_$DashboardStatsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

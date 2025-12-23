@@ -93,25 +93,6 @@ Map<String, dynamic> _$$EnrollmentStatsImplToJson(
       'lastSession': instance.lastSession?.toIso8601String(),
     };
 
-_$DashboardStatsImpl _$$DashboardStatsImplFromJson(Map<String, dynamic> json) =>
-    _$DashboardStatsImpl(
-      totalEnrollments: (json['totalEnrollments'] as num).toInt(),
-      totalBatchesTeaching: (json['totalBatchesTeaching'] as num).toInt(),
-      totalStudents: (json['totalStudents'] as num).toInt(),
-      totalSessions: (json['totalSessions'] as num).toInt(),
-      averageAttendance: (json['averageAttendance'] as num).toDouble(),
-    );
-
-Map<String, dynamic> _$$DashboardStatsImplToJson(
-        _$DashboardStatsImpl instance) =>
-    <String, dynamic>{
-      'totalEnrollments': instance.totalEnrollments,
-      'totalBatchesTeaching': instance.totalBatchesTeaching,
-      'totalStudents': instance.totalStudents,
-      'totalSessions': instance.totalSessions,
-      'averageAttendance': instance.averageAttendance,
-    };
-
 _$RecentSessionImpl _$$RecentSessionImplFromJson(Map<String, dynamic> json) =>
     _$RecentSessionImpl(
       id: json['id'] as String,
@@ -175,4 +156,26 @@ Map<String, dynamic> _$$LowAttendanceStudentImplToJson(
       'batchCode': instance.batchCode,
       'subjectCode': instance.subjectCode,
       'percentage': instance.percentage,
+    };
+
+_$DashboardStatsImpl _$$DashboardStatsImplFromJson(Map<String, dynamic> json) =>
+    _$DashboardStatsImpl(
+      totalEnrollments: (json['totalEnrollments'] as num).toInt(),
+      totalBatchesTeaching:
+          (json['totalBatchesTeaching'] as num?)?.toInt() ?? 0,
+      totalSubjects: (json['totalSubjects'] as num?)?.toInt() ?? 0,
+      totalStudents: (json['totalStudents'] as num?)?.toInt() ?? 0,
+      totalSessions: (json['totalSessions'] as num).toInt(),
+      averageAttendance: (json['averageAttendance'] as num).toDouble(),
+    );
+
+Map<String, dynamic> _$$DashboardStatsImplToJson(
+        _$DashboardStatsImpl instance) =>
+    <String, dynamic>{
+      'totalEnrollments': instance.totalEnrollments,
+      'totalBatchesTeaching': instance.totalBatchesTeaching,
+      'totalSubjects': instance.totalSubjects,
+      'totalStudents': instance.totalStudents,
+      'totalSessions': instance.totalSessions,
+      'averageAttendance': instance.averageAttendance,
     };

@@ -15,10 +15,14 @@ final socketStateProvider = StateProvider<SocketConnectionState>((ref) {
   return SocketConnectionState.disconnected;
 });
 
-// Initialize socket connection
-final initializeSocketProvider = FutureProvider<void>((ref) async {
+// ✅ FIX: Use a separate notifier that doesn't modify state during build
+final initializeSocketProvider = FutureProvider.autoDispose<void>((ref) async {
   final socketService = ref.watch(socketServiceProvider);
-  ref.read(socketStateProvider.notifier).state = SocketConnectionState.connecting;
+  
+  // ✅ Use Future.microtask to defer state modification
+  Future.microtask(() {
+    ref.read(socketStateProvider.notifier).state = SocketConnectionState.connecting;
+  });
 
   try {
     await socketService.connect();
@@ -27,14 +31,21 @@ final initializeSocketProvider = FutureProvider<void>((ref) async {
     await Future.delayed(const Duration(seconds: 1));
     
     if (socketService.isConnected) {
-      ref.read(socketStateProvider.notifier).state = SocketConnectionState.connected;
-      AppLogger.info('Socket initialized successfully');
+      Future.microtask(() {
+        ref.read(socketStateProvider.notifier).state = SocketConnectionState.connected;
+      });
+      AppLogger.info('✅ Socket initialized successfully');
     } else {
-      ref.read(socketStateProvider.notifier).state = SocketConnectionState.error;
-      AppLogger.error('Socket failed to connect');
+      Future.microtask(() {
+        ref.read(socketStateProvider.notifier).state = SocketConnectionState.disconnected;
+      });
+      AppLogger.warning('⚠️ Socket failed to connect - continuing without real-time updates');
     }
   } catch (e) {
-    ref.read(socketStateProvider.notifier).state = SocketConnectionState.error;
-    AppLogger.error('Socket initialization error', e);
+    Future.microtask(() {
+      ref.read(socketStateProvider.notifier).state = SocketConnectionState.error;
+    });
+    AppLogger.error('❌ Socket initialization error', e);
+    // Don't rethrow - app should work without socket
   }
 });

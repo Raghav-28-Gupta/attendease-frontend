@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +39,14 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   AppLogger.info('🚀 App starting...');
+
+  try {
+    await Firebase.initializeApp();
+    AppLogger.info('✅ Firebase initialized');
+  } catch (e) {
+    AppLogger.error('❌ Firebase initialization failed', e);
+    // Continue anyway - app should work without Firebase
+  }
 
   runApp(
     const ProviderScope(

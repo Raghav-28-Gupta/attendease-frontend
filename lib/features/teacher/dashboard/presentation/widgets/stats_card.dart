@@ -6,6 +6,7 @@ class StatsCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color color;
+  final String? subtitle;
 
   const StatsCard({
     super.key,
@@ -13,6 +14,7 @@ class StatsCard extends StatelessWidget {
     required this.value,
     required this.icon,
     required this.color,
+    this.subtitle,
   });
 
   @override
@@ -31,15 +33,29 @@ class StatsCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withAlpha((0.1 * 255).round()),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(icon, color: color, size: 20),
+                  child: Icon(icon, color: color, size: 18),
                 ),
+
+                if (subtitle != null)
+                  Flexible(
+                    child: Text(
+                      subtitle!,
+                      style: const TextStyle(
+                        fontSize: 9,  // ✅ Reduced from 12
+                        color: AppColors.textSecondary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
               ],
             ),
 
             const Spacer(), // ✅ Added spacer
+
             Text(
               title,
               style: const TextStyle(
@@ -50,19 +66,19 @@ class StatsCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
 
-            const SizedBox(height: 2),
+            const SizedBox(height: 4),
             Text(
               title,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 11,
                 color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               value,
               style: const TextStyle(
-                fontSize: 24,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),

@@ -39,7 +39,7 @@ class SocketService {
         SocketConfig.socketUrl,
         IO.OptionBuilder()
             .setTransports(['websocket'])
-            .setAuth({'token': 'Bearer $token'})
+            .setAuth({'token': token})
             .setReconnectionAttempts(SocketConfig.reconnectionAttempts)
             .setReconnectionDelay(SocketConfig.reconnectionDelay)
             .setTimeout(SocketConfig.timeout)

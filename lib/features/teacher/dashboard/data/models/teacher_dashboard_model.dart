@@ -66,20 +66,6 @@ class EnrollmentStats with _$EnrollmentStats {
 }
 
 @freezed
-class DashboardStats with _$DashboardStats {
-  const factory DashboardStats({
-    required int totalEnrollments,
-    required int totalBatchesTeaching,
-    required int totalStudents,
-    required int totalSessions,
-    required double averageAttendance,
-  }) = _DashboardStats;
-
-  factory DashboardStats.fromJson(Map<String, dynamic> json) =>
-      _$DashboardStatsFromJson(json);
-}
-
-@freezed
 class RecentSession with _$RecentSession {
   const factory RecentSession({
     required String id,
@@ -127,4 +113,19 @@ class LowAttendanceStudent with _$LowAttendanceStudent {
 
   factory LowAttendanceStudent.fromJson(Map<String, dynamic> json) =>
       _$LowAttendanceStudentFromJson(json);
+}
+
+@freezed
+class DashboardStats with _$DashboardStats {
+  const factory DashboardStats({
+    required int totalEnrollments,
+    @Default(0) required int totalBatchesTeaching,
+    @Default(0) required int totalSubjects,        
+    @Default(0) required int totalStudents,
+    required int totalSessions,
+    required double averageAttendance,
+  }) = _DashboardStats;
+
+  factory DashboardStats.fromJson(Map<String, dynamic> json) =>
+      _$DashboardStatsFromJson(json);
 }

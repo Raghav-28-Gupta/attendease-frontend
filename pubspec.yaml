@@ -23,7 +23,7 @@ dependencies:
 
   # Code Generation
   freezed_annotation: ^2.4.1
-  json_annotation: ^4.8.1
+  json_annotation: ^4.9.0
 
   # Secure Storage (tokens)
   flutter_secure_storage: ^9.0.0

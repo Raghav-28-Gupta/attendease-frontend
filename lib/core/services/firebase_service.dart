@@ -28,15 +28,27 @@ class FirebaseService {
 
   FirebaseService(this._secureStorage);
 
-  /// Initialize Firebase and notifications
+  /// Initialize Firebase Messaging (Firebase.initializeApp() already called in main.dart)
   Future<void> initialize() async {
     try {
-      // Initialize Firebase
-      await Firebase.initializeApp();
-      AppLogger.info('✅ Firebase initialized');
+      // ✅ REMOVED: Firebase.initializeApp() - already called in main.dart
 
       // Request permission
-      await _requestPermission();
+      final settings = await _messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+        provisional: false,
+      );
+
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        AppLogger.info('✅ Notification permission granted');
+      } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+        AppLogger.info('⚠️ Notification permission granted provisionally');
+      } else {
+        AppLogger.warning('❌ Notification permission denied');
+        return; // ✅ Exit early if no permission
+      }
 
       // Initialize local notifications
       await _initializeLocalNotifications();
@@ -47,27 +59,10 @@ class FirebaseService {
       // Setup message handlers
       _setupMessageHandlers();
 
-      AppLogger.info('✅ Firebase service initialized');
+      AppLogger.info('✅ Firebase Messaging initialized');
     } catch (e) {
-      AppLogger.error('❌ Firebase initialization error', e);
-    }
-  }
-
-  /// Request notification permission
-  Future<void> _requestPermission() async {
-    final settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-      provisional: false,
-    );
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      AppLogger.info('✅ Notification permission granted');
-    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-      AppLogger.info('⚠️ Notification permission granted provisionally');
-    } else {
-      AppLogger.warning('❌ Notification permission denied');
+      AppLogger.error('❌ Firebase Messaging initialization error', e);
+      // Don't rethrow - app should work without notifications
     }
   }
 
@@ -92,8 +87,8 @@ class FirebaseService {
 
     // Create notification channel for Android
     const androidChannel = AndroidNotificationChannel(
-      'attendance_channel',
-      'Attendance Notifications',
+      'attendease_channel',
+      'AttendEase Notifications',
       description: 'Notifications for attendance updates',
       importance: Importance.high,
     );
@@ -111,46 +106,68 @@ class FirebaseService {
     try {
       final token = await _messaging.getToken();
       if (token != null) {
-        AppLogger.info('📱 FCM Token: $token');
+        AppLogger.info('📱 FCM Token: ${token.substring(0, 20)}...');
         
         // Save token locally
         await _secureStorage.write(AppConfig.fcmTokenKey, token);
         
-        // Register token with backend
-        await _registerTokenWithBackend(token);
-      }
+        // ✅ Only register if user is authenticated
+        final accessToken = await _secureStorage.read(AppConfig.accessTokenKey);
+        if (accessToken != null && accessToken.isNotEmpty) {
+          await _registerTokenWithBackend(token, accessToken);
+        } else {
+          AppLogger.warning('⚠️ User not authenticated - skipping FCM registration');
+        }
 
-      // Listen for token refresh
-      _messaging.onTokenRefresh.listen((newToken) {
-        AppLogger.info('🔄 FCM Token refreshed: $newToken');
-        _secureStorage.write(AppConfig.fcmTokenKey, newToken);
-        _registerTokenWithBackend(newToken);
-      });
+        // Listen for token refresh
+        _messaging.onTokenRefresh.listen((newToken) async {
+          AppLogger.info('🔄 FCM Token refreshed');
+          await _secureStorage.write(AppConfig.fcmTokenKey, newToken);
+          final token = await _secureStorage.read(AppConfig.accessTokenKey);
+          if (token != null) {
+            _registerTokenWithBackend(newToken, token);
+          }
+        });
+      }
     } catch (e) {
       AppLogger.error('❌ Error getting FCM token', e);
     }
   }
 
   /// Register FCM token with backend
-  Future<void> _registerTokenWithBackend(String token) async {
+  Future<void> _registerTokenWithBackend(String token, String accessToken) async {
     try {
-      final accessToken = await _secureStorage.read(AppConfig.accessTokenKey);
-      if (accessToken == null) return;
-
       final dio = Dio(BaseOptions(
         baseUrl: ApiEndpoints.baseUrl,
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
         },
+        validateStatus: (status) {
+          // ✅ Accept 200-299 and 404 (endpoint might not exist yet)
+          return status != null && (status >= 200 && status < 300 || status == 404);
+        },
       ));
 
-      await dio.post(
+      final response = await dio.post(
         ApiEndpoints.registerFCM,
         data: {'token': token},
       );
 
-      AppLogger.info('✅ FCM token registered with backend');
+      if (response.statusCode == 404) {
+        AppLogger.warning('⚠️ FCM registration endpoint not found - continuing without notifications');
+      } else if (response.statusCode == 200 || response.statusCode == 201) {
+        AppLogger.info('✅ FCM token registered with backend');
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 403) {
+        AppLogger.warning('⚠️ FCM registration forbidden - user may not have permission');
+      } else if (e.response?.statusCode == 404) {
+        AppLogger.warning('⚠️ FCM registration endpoint not found');
+      } else {
+        AppLogger.error('❌ Failed to register FCM token: ${e.response?.statusCode}', e);
+      }
+      // ✅ Don't throw - app should work without FCM
     } catch (e) {
       AppLogger.error('❌ Failed to register FCM token', e);
     }
@@ -161,10 +178,10 @@ class FirebaseService {
     // Foreground messages
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
-    // Background messages (when app is in background but not terminated)
+    // Background messages
     FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
 
-    // Terminated state (when app is completely closed)
+    // Check initial message
     _checkInitialMessage();
   }
 
@@ -188,7 +205,7 @@ class FirebaseService {
     _handleNotificationAction(message.data);
   }
 
-  /// Check initial message (app opened from terminated state)
+  /// Check initial message
   Future<void> _checkInitialMessage() async {
     final message = await _messaging.getInitialMessage();
     if (message != null) {
@@ -204,8 +221,8 @@ class FirebaseService {
     String? payload,
   }) async {
     const androidDetails = AndroidNotificationDetails(
-      'attendance_channel',
-      'Attendance Notifications',
+      'attendease_channel',
+      'AttendEase Notifications',
       channelDescription: 'Notifications for attendance updates',
       importance: Importance.high,
       priority: Priority.high,
@@ -235,7 +252,6 @@ class FirebaseService {
   /// Handle notification tap
   void _onNotificationTapped(NotificationResponse response) {
     AppLogger.info('👆 Local notification tapped: ${response.payload}');
-    // Handle navigation based on payload
   }
 
   /// Handle notification action
@@ -248,10 +264,7 @@ class FirebaseService {
       case 'attendance_marked':
         // Navigate to attendance screen
         break;
-      case 'low_attendance':
-        // Navigate to subject details
-        break;
-      case 'session_created':
+      case 'session_started':
         // Navigate to session details
         break;
       default:
@@ -259,32 +272,14 @@ class FirebaseService {
     }
   }
 
-  /// Unregister FCM token from backend
-  Future<void> unregisterToken() async {
+  /// Delete FCM token on logout
+  Future<void> deleteToken() async {
     try {
-      final token = await _secureStorage.read(AppConfig.fcmTokenKey);
-      if (token == null) return;
-
-      final accessToken = await _secureStorage.read(AppConfig.accessTokenKey);
-      if (accessToken == null) return;
-
-      final dio = Dio(BaseOptions(
-        baseUrl: ApiEndpoints.baseUrl,
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        },
-      ));
-
-      await dio.post(
-        ApiEndpoints.unregisterFCM,
-        data: {'token': token},
-      );
-
+      await _messaging.deleteToken();
       await _secureStorage.delete(AppConfig.fcmTokenKey);
-      AppLogger.info('✅ FCM token unregistered');
+      AppLogger.info('🗑️ FCM token deleted');
     } catch (e) {
-      AppLogger.error('❌ Failed to unregister FCM token', e);
+      AppLogger.error('❌ Failed to delete FCM token', e);
     }
   }
 }
