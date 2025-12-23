@@ -85,7 +85,7 @@ class TimetableRemoteDatasourceImpl implements TimetableRemoteDatasource {
   ) async {
     try {
       final response = await dio.post(
-        ApiEndpoints.teacherTimetable,
+        ApiEndpoints.timetable,
         data: request.toJson(),
       );
 

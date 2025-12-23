@@ -66,14 +66,16 @@ _$BatchInfoImpl _$$BatchInfoImplFromJson(Map<String, dynamic> json) =>
     _$BatchInfoImpl(
       code: json['code'] as String,
       name: json['name'] as String,
-      academicYear: json['academicYear'] as String,
+      department: json['department'] as String?,
+      academicYear: json['year'] as String,
     );
 
 Map<String, dynamic> _$$BatchInfoImplToJson(_$BatchInfoImpl instance) =>
     <String, dynamic>{
       'code': instance.code,
       'name': instance.name,
-      'academicYear': instance.academicYear,
+      'department': instance.department,
+      'year': instance.academicYear,
     };
 
 _$TeacherInfoImpl _$$TeacherInfoImplFromJson(Map<String, dynamic> json) =>
@@ -92,6 +94,7 @@ _$CreateTimetableEntryRequestImpl _$$CreateTimetableEntryRequestImplFromJson(
         Map<String, dynamic> json) =>
     _$CreateTimetableEntryRequestImpl(
       enrollmentId: json['subjectEnrollmentId'] as String,
+      batchId: json['batchId'] as String,
       dayOfWeek: json['dayOfWeek'] as String,
       startTime: json['startTime'] as String,
       endTime: json['endTime'] as String,
@@ -102,6 +105,7 @@ Map<String, dynamic> _$$CreateTimetableEntryRequestImplToJson(
         _$CreateTimetableEntryRequestImpl instance) =>
     <String, dynamic>{
       'subjectEnrollmentId': instance.enrollmentId,
+      'batchId': instance.batchId,
       'dayOfWeek': instance.dayOfWeek,
       'startTime': instance.startTime,
       'endTime': instance.endTime,

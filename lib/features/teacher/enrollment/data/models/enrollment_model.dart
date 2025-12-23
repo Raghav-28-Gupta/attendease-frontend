@@ -37,6 +37,7 @@ class SubjectInfo with _$SubjectInfo {
 @freezed
 class BatchInfo with _$BatchInfo {
   const factory BatchInfo({
+    required String id,
     required String code,
     required String name,
     @JsonKey(name: 'year') required String academicYear,
@@ -65,6 +66,7 @@ class TeacherInfo with _$TeacherInfo {
 
 @freezed
 class EnrollBatchesRequest with _$EnrollBatchesRequest {
+  @JsonSerializable(includeIfNull: false)
   const factory EnrollBatchesRequest({
     required String subjectId,
     required List<String> batchIds,  // ✅ ARRAY, not single batchId

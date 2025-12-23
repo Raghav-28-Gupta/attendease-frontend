@@ -119,10 +119,10 @@ class LowAttendanceStudent with _$LowAttendanceStudent {
 class DashboardStats with _$DashboardStats {
   const factory DashboardStats({
     required int totalEnrollments,
-    @Default(0) required int totalBatchesTeaching,
-    @Default(0) required int totalSubjects,        
-    @Default(0) required int totalStudents,
-    @Default(0) int totalTimetableEntries,
+    required int totalBatchesTeaching,
+    required int totalSubjects,        
+    required int totalStudents,
+    required int totalTimetableEntries,
     required int totalSessions,
     required double averageAttendance,
   }) = _DashboardStats;

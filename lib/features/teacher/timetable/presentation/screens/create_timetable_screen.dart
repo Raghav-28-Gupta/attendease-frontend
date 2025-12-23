@@ -301,8 +301,20 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
         return;
       }
 
+      final enrollmentsAsync = ref.read(myEnrollmentsProvider);
+      final selectedEnrollment = enrollmentsAsync.value?.firstWhere(
+        (e) => e.id == _selectedEnrollmentId,
+      );
+
+      if (selectedEnrollment == null) {
+        SnackbarUtils.showError(context, 'Invalid enrollment selected');
+        setState(() => _isSubmitting = false);
+        return;
+      }
+
       final request = CreateTimetableEntryRequest(
         enrollmentId: _selectedEnrollmentId!,
+        batchId: selectedEnrollment.batch.id, // ✅ ADD THIS
         dayOfWeek: _selectedDay,
         startTime: _formatTimeOfDay(_startTime),
         endTime: _formatTimeOfDay(_endTime),

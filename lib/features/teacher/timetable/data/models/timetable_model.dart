@@ -49,7 +49,8 @@ class BatchInfo with _$BatchInfo {
   const factory BatchInfo({
     required String code,
     required String name,
-    required String academicYear,
+    String? department,
+    @JsonKey(name: 'year') required String academicYear,
   }) = _BatchInfo;
 
   factory BatchInfo.fromJson(Map<String, dynamic> json) =>
@@ -75,6 +76,7 @@ class TeacherInfo with _$TeacherInfo {
 class CreateTimetableEntryRequest with _$CreateTimetableEntryRequest {
   const factory CreateTimetableEntryRequest({
     @JsonKey(name: 'subjectEnrollmentId') required String enrollmentId, // ✅ Rename for backend
+    required String batchId,
     required String dayOfWeek,
     required String startTime, // Format as "HH:MM:SS"
     required String endTime,   // Format as "HH:MM:SS"

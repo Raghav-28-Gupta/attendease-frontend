@@ -764,6 +764,8 @@ BatchInfo _$BatchInfoFromJson(Map<String, dynamic> json) {
 mixin _$BatchInfo {
   String get code => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  String? get department => throw _privateConstructorUsedError;
+  @JsonKey(name: 'year')
   String get academicYear => throw _privateConstructorUsedError;
 
   /// Serializes this BatchInfo to a JSON map.
@@ -781,7 +783,11 @@ abstract class $BatchInfoCopyWith<$Res> {
   factory $BatchInfoCopyWith(BatchInfo value, $Res Function(BatchInfo) then) =
       _$BatchInfoCopyWithImpl<$Res, BatchInfo>;
   @useResult
-  $Res call({String code, String name, String academicYear});
+  $Res call(
+      {String code,
+      String name,
+      String? department,
+      @JsonKey(name: 'year') String academicYear});
 }
 
 /// @nodoc
@@ -801,6 +807,7 @@ class _$BatchInfoCopyWithImpl<$Res, $Val extends BatchInfo>
   $Res call({
     Object? code = null,
     Object? name = null,
+    Object? department = freezed,
     Object? academicYear = null,
   }) {
     return _then(_value.copyWith(
@@ -812,6 +819,10 @@ class _$BatchInfoCopyWithImpl<$Res, $Val extends BatchInfo>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      department: freezed == department
+          ? _value.department
+          : department // ignore: cast_nullable_to_non_nullable
+              as String?,
       academicYear: null == academicYear
           ? _value.academicYear
           : academicYear // ignore: cast_nullable_to_non_nullable
@@ -828,7 +839,11 @@ abstract class _$$BatchInfoImplCopyWith<$Res>
       __$$BatchInfoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String code, String name, String academicYear});
+  $Res call(
+      {String code,
+      String name,
+      String? department,
+      @JsonKey(name: 'year') String academicYear});
 }
 
 /// @nodoc
@@ -846,6 +861,7 @@ class __$$BatchInfoImplCopyWithImpl<$Res>
   $Res call({
     Object? code = null,
     Object? name = null,
+    Object? department = freezed,
     Object? academicYear = null,
   }) {
     return _then(_$BatchInfoImpl(
@@ -857,6 +873,10 @@ class __$$BatchInfoImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      department: freezed == department
+          ? _value.department
+          : department // ignore: cast_nullable_to_non_nullable
+              as String?,
       academicYear: null == academicYear
           ? _value.academicYear
           : academicYear // ignore: cast_nullable_to_non_nullable
@@ -869,7 +889,10 @@ class __$$BatchInfoImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$BatchInfoImpl implements _BatchInfo {
   const _$BatchInfoImpl(
-      {required this.code, required this.name, required this.academicYear});
+      {required this.code,
+      required this.name,
+      this.department,
+      @JsonKey(name: 'year') required this.academicYear});
 
   factory _$BatchInfoImpl.fromJson(Map<String, dynamic> json) =>
       _$$BatchInfoImplFromJson(json);
@@ -879,11 +902,14 @@ class _$BatchInfoImpl implements _BatchInfo {
   @override
   final String name;
   @override
+  final String? department;
+  @override
+  @JsonKey(name: 'year')
   final String academicYear;
 
   @override
   String toString() {
-    return 'BatchInfo(code: $code, name: $name, academicYear: $academicYear)';
+    return 'BatchInfo(code: $code, name: $name, department: $department, academicYear: $academicYear)';
   }
 
   @override
@@ -893,13 +919,16 @@ class _$BatchInfoImpl implements _BatchInfo {
             other is _$BatchInfoImpl &&
             (identical(other.code, code) || other.code == code) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.department, department) ||
+                other.department == department) &&
             (identical(other.academicYear, academicYear) ||
                 other.academicYear == academicYear));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, code, name, academicYear);
+  int get hashCode =>
+      Object.hash(runtimeType, code, name, department, academicYear);
 
   /// Create a copy of BatchInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -919,9 +948,11 @@ class _$BatchInfoImpl implements _BatchInfo {
 
 abstract class _BatchInfo implements BatchInfo {
   const factory _BatchInfo(
-      {required final String code,
-      required final String name,
-      required final String academicYear}) = _$BatchInfoImpl;
+          {required final String code,
+          required final String name,
+          final String? department,
+          @JsonKey(name: 'year') required final String academicYear}) =
+      _$BatchInfoImpl;
 
   factory _BatchInfo.fromJson(Map<String, dynamic> json) =
       _$BatchInfoImpl.fromJson;
@@ -931,6 +962,9 @@ abstract class _BatchInfo implements BatchInfo {
   @override
   String get name;
   @override
+  String? get department;
+  @override
+  @JsonKey(name: 'year')
   String get academicYear;
 
   /// Create a copy of BatchInfo
@@ -1122,6 +1156,7 @@ mixin _$CreateTimetableEntryRequest {
   @JsonKey(name: 'subjectEnrollmentId')
   String get enrollmentId =>
       throw _privateConstructorUsedError; // ✅ Rename for backend
+  String get batchId => throw _privateConstructorUsedError;
   String get dayOfWeek => throw _privateConstructorUsedError;
   String get startTime =>
       throw _privateConstructorUsedError; // Format as "HH:MM:SS"
@@ -1150,6 +1185,7 @@ abstract class $CreateTimetableEntryRequestCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'subjectEnrollmentId') String enrollmentId,
+      String batchId,
       String dayOfWeek,
       String startTime,
       String endTime,
@@ -1173,6 +1209,7 @@ class _$CreateTimetableEntryRequestCopyWithImpl<$Res,
   @override
   $Res call({
     Object? enrollmentId = null,
+    Object? batchId = null,
     Object? dayOfWeek = null,
     Object? startTime = null,
     Object? endTime = null,
@@ -1182,6 +1219,10 @@ class _$CreateTimetableEntryRequestCopyWithImpl<$Res,
       enrollmentId: null == enrollmentId
           ? _value.enrollmentId
           : enrollmentId // ignore: cast_nullable_to_non_nullable
+              as String,
+      batchId: null == batchId
+          ? _value.batchId
+          : batchId // ignore: cast_nullable_to_non_nullable
               as String,
       dayOfWeek: null == dayOfWeek
           ? _value.dayOfWeek
@@ -1214,6 +1255,7 @@ abstract class _$$CreateTimetableEntryRequestImplCopyWith<$Res>
   @useResult
   $Res call(
       {@JsonKey(name: 'subjectEnrollmentId') String enrollmentId,
+      String batchId,
       String dayOfWeek,
       String startTime,
       String endTime,
@@ -1236,6 +1278,7 @@ class __$$CreateTimetableEntryRequestImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? enrollmentId = null,
+    Object? batchId = null,
     Object? dayOfWeek = null,
     Object? startTime = null,
     Object? endTime = null,
@@ -1245,6 +1288,10 @@ class __$$CreateTimetableEntryRequestImplCopyWithImpl<$Res>
       enrollmentId: null == enrollmentId
           ? _value.enrollmentId
           : enrollmentId // ignore: cast_nullable_to_non_nullable
+              as String,
+      batchId: null == batchId
+          ? _value.batchId
+          : batchId // ignore: cast_nullable_to_non_nullable
               as String,
       dayOfWeek: null == dayOfWeek
           ? _value.dayOfWeek
@@ -1272,6 +1319,7 @@ class _$CreateTimetableEntryRequestImpl
     implements _CreateTimetableEntryRequest {
   const _$CreateTimetableEntryRequestImpl(
       {@JsonKey(name: 'subjectEnrollmentId') required this.enrollmentId,
+      required this.batchId,
       required this.dayOfWeek,
       required this.startTime,
       required this.endTime,
@@ -1286,6 +1334,8 @@ class _$CreateTimetableEntryRequestImpl
   final String enrollmentId;
 // ✅ Rename for backend
   @override
+  final String batchId;
+  @override
   final String dayOfWeek;
   @override
   final String startTime;
@@ -1299,7 +1349,7 @@ class _$CreateTimetableEntryRequestImpl
 
   @override
   String toString() {
-    return 'CreateTimetableEntryRequest(enrollmentId: $enrollmentId, dayOfWeek: $dayOfWeek, startTime: $startTime, endTime: $endTime, room: $room)';
+    return 'CreateTimetableEntryRequest(enrollmentId: $enrollmentId, batchId: $batchId, dayOfWeek: $dayOfWeek, startTime: $startTime, endTime: $endTime, room: $room)';
   }
 
   @override
@@ -1309,6 +1359,7 @@ class _$CreateTimetableEntryRequestImpl
             other is _$CreateTimetableEntryRequestImpl &&
             (identical(other.enrollmentId, enrollmentId) ||
                 other.enrollmentId == enrollmentId) &&
+            (identical(other.batchId, batchId) || other.batchId == batchId) &&
             (identical(other.dayOfWeek, dayOfWeek) ||
                 other.dayOfWeek == dayOfWeek) &&
             (identical(other.startTime, startTime) ||
@@ -1320,7 +1371,7 @@ class _$CreateTimetableEntryRequestImpl
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, enrollmentId, dayOfWeek, startTime, endTime, room);
+      runtimeType, enrollmentId, batchId, dayOfWeek, startTime, endTime, room);
 
   /// Create a copy of CreateTimetableEntryRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -1343,6 +1394,7 @@ abstract class _CreateTimetableEntryRequest
     implements CreateTimetableEntryRequest {
   const factory _CreateTimetableEntryRequest(
       {@JsonKey(name: 'subjectEnrollmentId') required final String enrollmentId,
+      required final String batchId,
       required final String dayOfWeek,
       required final String startTime,
       required final String endTime,
@@ -1355,6 +1407,8 @@ abstract class _CreateTimetableEntryRequest
   @override
   @JsonKey(name: 'subjectEnrollmentId')
   String get enrollmentId; // ✅ Rename for backend
+  @override
+  String get batchId;
   @override
   String get dayOfWeek;
   @override

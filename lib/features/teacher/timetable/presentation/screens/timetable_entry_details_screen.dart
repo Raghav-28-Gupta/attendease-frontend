@@ -167,7 +167,7 @@ class TimetableEntryDetailsScreen extends ConsumerWidget {
                     dense: true,
                     leading: const Icon(Icons.calendar_today),
                     title: const Text('Academic Year'),
-                    trailing: Text(entry.enrollment.batch.academicYear),
+                    trailing: Text(entry.enrollment.batch.academicYear ?? 'N/A'),
                   ),
                 ],
               ),

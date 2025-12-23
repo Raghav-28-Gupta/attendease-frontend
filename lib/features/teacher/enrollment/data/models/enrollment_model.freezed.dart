@@ -588,6 +588,7 @@ BatchInfo _$BatchInfoFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$BatchInfo {
+  String get id => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   @JsonKey(name: 'year')
@@ -609,7 +610,10 @@ abstract class $BatchInfoCopyWith<$Res> {
       _$BatchInfoCopyWithImpl<$Res, BatchInfo>;
   @useResult
   $Res call(
-      {String code, String name, @JsonKey(name: 'year') String academicYear});
+      {String id,
+      String code,
+      String name,
+      @JsonKey(name: 'year') String academicYear});
 }
 
 /// @nodoc
@@ -627,11 +631,16 @@ class _$BatchInfoCopyWithImpl<$Res, $Val extends BatchInfo>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? code = null,
     Object? name = null,
     Object? academicYear = null,
   }) {
     return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
       code: null == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
@@ -657,7 +666,10 @@ abstract class _$$BatchInfoImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String code, String name, @JsonKey(name: 'year') String academicYear});
+      {String id,
+      String code,
+      String name,
+      @JsonKey(name: 'year') String academicYear});
 }
 
 /// @nodoc
@@ -673,11 +685,16 @@ class __$$BatchInfoImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? code = null,
     Object? name = null,
     Object? academicYear = null,
   }) {
     return _then(_$BatchInfoImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
       code: null == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
@@ -698,13 +715,16 @@ class __$$BatchInfoImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$BatchInfoImpl implements _BatchInfo {
   const _$BatchInfoImpl(
-      {required this.code,
+      {required this.id,
+      required this.code,
       required this.name,
       @JsonKey(name: 'year') required this.academicYear});
 
   factory _$BatchInfoImpl.fromJson(Map<String, dynamic> json) =>
       _$$BatchInfoImplFromJson(json);
 
+  @override
+  final String id;
   @override
   final String code;
   @override
@@ -715,7 +735,7 @@ class _$BatchInfoImpl implements _BatchInfo {
 
   @override
   String toString() {
-    return 'BatchInfo(code: $code, name: $name, academicYear: $academicYear)';
+    return 'BatchInfo(id: $id, code: $code, name: $name, academicYear: $academicYear)';
   }
 
   @override
@@ -723,6 +743,7 @@ class _$BatchInfoImpl implements _BatchInfo {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$BatchInfoImpl &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.code, code) || other.code == code) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.academicYear, academicYear) ||
@@ -731,7 +752,7 @@ class _$BatchInfoImpl implements _BatchInfo {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, code, name, academicYear);
+  int get hashCode => Object.hash(runtimeType, id, code, name, academicYear);
 
   /// Create a copy of BatchInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -751,7 +772,8 @@ class _$BatchInfoImpl implements _BatchInfo {
 
 abstract class _BatchInfo implements BatchInfo {
   const factory _BatchInfo(
-          {required final String code,
+          {required final String id,
+          required final String code,
           required final String name,
           @JsonKey(name: 'year') required final String academicYear}) =
       _$BatchInfoImpl;
@@ -759,6 +781,8 @@ abstract class _BatchInfo implements BatchInfo {
   factory _BatchInfo.fromJson(Map<String, dynamic> json) =
       _$BatchInfoImpl.fromJson;
 
+  @override
+  String get id;
   @override
   String get code;
   @override
@@ -1108,7 +1132,8 @@ class __$$EnrollBatchesRequestImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
+@JsonSerializable(includeIfNull: false)
 class _$EnrollBatchesRequestImpl implements _EnrollBatchesRequest {
   const _$EnrollBatchesRequestImpl(
       {required this.subjectId,

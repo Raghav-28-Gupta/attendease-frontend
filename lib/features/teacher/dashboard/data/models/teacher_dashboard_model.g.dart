@@ -161,12 +161,10 @@ Map<String, dynamic> _$$LowAttendanceStudentImplToJson(
 _$DashboardStatsImpl _$$DashboardStatsImplFromJson(Map<String, dynamic> json) =>
     _$DashboardStatsImpl(
       totalEnrollments: (json['totalEnrollments'] as num).toInt(),
-      totalBatchesTeaching:
-          (json['totalBatchesTeaching'] as num?)?.toInt() ?? 0,
-      totalSubjects: (json['totalSubjects'] as num?)?.toInt() ?? 0,
-      totalStudents: (json['totalStudents'] as num?)?.toInt() ?? 0,
-      totalTimetableEntries:
-          (json['totalTimetableEntries'] as num?)?.toInt() ?? 0,
+      totalBatchesTeaching: (json['totalBatchesTeaching'] as num).toInt(),
+      totalSubjects: (json['totalSubjects'] as num).toInt(),
+      totalStudents: (json['totalStudents'] as num).toInt(),
+      totalTimetableEntries: (json['totalTimetableEntries'] as num).toInt(),
       totalSessions: (json['totalSessions'] as num).toInt(),
       averageAttendance: (json['averageAttendance'] as num).toDouble(),
     );

@@ -52,6 +52,7 @@ Map<String, dynamic> _$$SubjectInfoImplToJson(_$SubjectInfoImpl instance) =>
 
 _$BatchInfoImpl _$$BatchInfoImplFromJson(Map<String, dynamic> json) =>
     _$BatchInfoImpl(
+      id: json['id'] as String,
       code: json['code'] as String,
       name: json['name'] as String,
       academicYear: json['year'] as String,
@@ -59,6 +60,7 @@ _$BatchInfoImpl _$$BatchInfoImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$BatchInfoImplToJson(_$BatchInfoImpl instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'code': instance.code,
       'name': instance.name,
       'year': instance.academicYear,
@@ -94,7 +96,7 @@ Map<String, dynamic> _$$EnrollBatchesRequestImplToJson(
     <String, dynamic>{
       'subjectId': instance.subjectId,
       'batchIds': instance.batchIds,
-      'semester': instance.semester,
+      if (instance.semester case final value?) 'semester': value,
     };
 
 _$EnrollBatchesResponseImpl _$$EnrollBatchesResponseImplFromJson(

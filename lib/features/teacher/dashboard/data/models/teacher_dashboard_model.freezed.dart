@@ -2146,7 +2146,7 @@ class _$DashboardStatsImpl implements _DashboardStats {
       required this.totalBatchesTeaching,
       required this.totalSubjects,
       required this.totalStudents,
-      this.totalTimetableEntries = 0,
+      required this.totalTimetableEntries,
       required this.totalSessions,
       required this.averageAttendance});
 
@@ -2156,16 +2156,12 @@ class _$DashboardStatsImpl implements _DashboardStats {
   @override
   final int totalEnrollments;
   @override
-  @JsonKey()
   final int totalBatchesTeaching;
   @override
-  @JsonKey()
   final int totalSubjects;
   @override
-  @JsonKey()
   final int totalStudents;
   @override
-  @JsonKey()
   final int totalTimetableEntries;
   @override
   final int totalSessions;
@@ -2233,7 +2229,7 @@ abstract class _DashboardStats implements DashboardStats {
       required final int totalBatchesTeaching,
       required final int totalSubjects,
       required final int totalStudents,
-      final int totalTimetableEntries,
+      required final int totalTimetableEntries,
       required final int totalSessions,
       required final double averageAttendance}) = _$DashboardStatsImpl;
 
