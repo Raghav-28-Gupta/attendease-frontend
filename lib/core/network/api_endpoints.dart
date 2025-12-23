@@ -49,9 +49,12 @@ class ApiEndpoints {
 
   // Teacher - Timetable
   static const String timetable = '/timetable';
+  static const String teacherTimetable = '/timetable/teacher'; 
+  static String timetableEntry(String id) => '/timetable/$id'; 
   static String batchTimetable(String batchId) => '/batches/$batchId/timetable';
   static String bulkTimetable(String batchId) => '/batches/$batchId/timetable/bulk';
-
+  static String enrollmentTimetable(String enrollmentId) => '/timetable/enrollments/$enrollmentId';
+ 
   // Student - Dashboard
   static const String studentDashboard = '/dashboard/student';
 

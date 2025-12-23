@@ -25,6 +25,10 @@ import '../../../features/student/timetable/presentation/screens/timetable_scree
 import '../../../features/student/profile/presentation/screens/profile_screen.dart';
 import '../../../features/student/subject/presentation/screens/subject_details_screen.dart';
 import '../../../features/student/dashboard/data/models/student_dashboard_model.dart';
+import '../../../features/teacher/timetable/presentation/screens/teacher_timetable_screen.dart';
+import '../../../features/teacher/timetable/presentation/screens/create_timetable_screen.dart';
+import '../../../features/teacher/timetable/presentation/screens/timetable_entry_details_screen.dart';
+import '../../../features/teacher/timetable/data/models/timetable_model.dart';
 
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -204,6 +208,32 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'create',
                 builder: (context, state) => const EnrollmentFormScreen(),
+              ),
+            ],
+          ),
+
+          // Timetable Routes
+          GoRoute(
+            path: 'timetable',
+            builder: (context, state) => const TeacherTimetableScreen(),
+            routes: [
+              GoRoute(
+                path: 'create',
+                builder: (context, state) => const CreateTimetableScreen(),
+              ),
+              GoRoute(
+                path: 'edit/:id',
+                builder: (context, state) {
+                  final entry = state.extra as TimetableEntryModel?;
+                  return CreateTimetableScreen(entry: entry);
+                },
+              ),
+              GoRoute(
+                path: ':id',
+                builder: (context, state) {
+                  final entry = state.extra as TimetableEntryModel;
+                  return TimetableEntryDetailsScreen(entry: entry);
+                },
               ),
             ],
           ),

@@ -1980,6 +1980,7 @@ mixin _$DashboardStats {
   int get totalBatchesTeaching => throw _privateConstructorUsedError;
   int get totalSubjects => throw _privateConstructorUsedError;
   int get totalStudents => throw _privateConstructorUsedError;
+  int get totalTimetableEntries => throw _privateConstructorUsedError;
   int get totalSessions => throw _privateConstructorUsedError;
   double get averageAttendance => throw _privateConstructorUsedError;
 
@@ -2004,6 +2005,7 @@ abstract class $DashboardStatsCopyWith<$Res> {
       int totalBatchesTeaching,
       int totalSubjects,
       int totalStudents,
+      int totalTimetableEntries,
       int totalSessions,
       double averageAttendance});
 }
@@ -2027,6 +2029,7 @@ class _$DashboardStatsCopyWithImpl<$Res, $Val extends DashboardStats>
     Object? totalBatchesTeaching = null,
     Object? totalSubjects = null,
     Object? totalStudents = null,
+    Object? totalTimetableEntries = null,
     Object? totalSessions = null,
     Object? averageAttendance = null,
   }) {
@@ -2046,6 +2049,10 @@ class _$DashboardStatsCopyWithImpl<$Res, $Val extends DashboardStats>
       totalStudents: null == totalStudents
           ? _value.totalStudents
           : totalStudents // ignore: cast_nullable_to_non_nullable
+              as int,
+      totalTimetableEntries: null == totalTimetableEntries
+          ? _value.totalTimetableEntries
+          : totalTimetableEntries // ignore: cast_nullable_to_non_nullable
               as int,
       totalSessions: null == totalSessions
           ? _value.totalSessions
@@ -2072,6 +2079,7 @@ abstract class _$$DashboardStatsImplCopyWith<$Res>
       int totalBatchesTeaching,
       int totalSubjects,
       int totalStudents,
+      int totalTimetableEntries,
       int totalSessions,
       double averageAttendance});
 }
@@ -2093,6 +2101,7 @@ class __$$DashboardStatsImplCopyWithImpl<$Res>
     Object? totalBatchesTeaching = null,
     Object? totalSubjects = null,
     Object? totalStudents = null,
+    Object? totalTimetableEntries = null,
     Object? totalSessions = null,
     Object? averageAttendance = null,
   }) {
@@ -2112,6 +2121,10 @@ class __$$DashboardStatsImplCopyWithImpl<$Res>
       totalStudents: null == totalStudents
           ? _value.totalStudents
           : totalStudents // ignore: cast_nullable_to_non_nullable
+              as int,
+      totalTimetableEntries: null == totalTimetableEntries
+          ? _value.totalTimetableEntries
+          : totalTimetableEntries // ignore: cast_nullable_to_non_nullable
               as int,
       totalSessions: null == totalSessions
           ? _value.totalSessions
@@ -2133,6 +2146,7 @@ class _$DashboardStatsImpl implements _DashboardStats {
       required this.totalBatchesTeaching,
       required this.totalSubjects,
       required this.totalStudents,
+      this.totalTimetableEntries = 0,
       required this.totalSessions,
       required this.averageAttendance});
 
@@ -2151,13 +2165,16 @@ class _$DashboardStatsImpl implements _DashboardStats {
   @JsonKey()
   final int totalStudents;
   @override
+  @JsonKey()
+  final int totalTimetableEntries;
+  @override
   final int totalSessions;
   @override
   final double averageAttendance;
 
   @override
   String toString() {
-    return 'DashboardStats(totalEnrollments: $totalEnrollments, totalBatchesTeaching: $totalBatchesTeaching, totalSubjects: $totalSubjects, totalStudents: $totalStudents, totalSessions: $totalSessions, averageAttendance: $averageAttendance)';
+    return 'DashboardStats(totalEnrollments: $totalEnrollments, totalBatchesTeaching: $totalBatchesTeaching, totalSubjects: $totalSubjects, totalStudents: $totalStudents, totalTimetableEntries: $totalTimetableEntries, totalSessions: $totalSessions, averageAttendance: $averageAttendance)';
   }
 
   @override
@@ -2173,6 +2190,8 @@ class _$DashboardStatsImpl implements _DashboardStats {
                 other.totalSubjects == totalSubjects) &&
             (identical(other.totalStudents, totalStudents) ||
                 other.totalStudents == totalStudents) &&
+            (identical(other.totalTimetableEntries, totalTimetableEntries) ||
+                other.totalTimetableEntries == totalTimetableEntries) &&
             (identical(other.totalSessions, totalSessions) ||
                 other.totalSessions == totalSessions) &&
             (identical(other.averageAttendance, averageAttendance) ||
@@ -2187,6 +2206,7 @@ class _$DashboardStatsImpl implements _DashboardStats {
       totalBatchesTeaching,
       totalSubjects,
       totalStudents,
+      totalTimetableEntries,
       totalSessions,
       averageAttendance);
 
@@ -2213,6 +2233,7 @@ abstract class _DashboardStats implements DashboardStats {
       required final int totalBatchesTeaching,
       required final int totalSubjects,
       required final int totalStudents,
+      final int totalTimetableEntries,
       required final int totalSessions,
       required final double averageAttendance}) = _$DashboardStatsImpl;
 
@@ -2227,6 +2248,8 @@ abstract class _DashboardStats implements DashboardStats {
   int get totalSubjects;
   @override
   int get totalStudents;
+  @override
+  int get totalTimetableEntries;
   @override
   int get totalSessions;
   @override

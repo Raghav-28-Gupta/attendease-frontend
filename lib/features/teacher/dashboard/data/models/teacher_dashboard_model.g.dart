@@ -165,6 +165,8 @@ _$DashboardStatsImpl _$$DashboardStatsImplFromJson(Map<String, dynamic> json) =>
           (json['totalBatchesTeaching'] as num?)?.toInt() ?? 0,
       totalSubjects: (json['totalSubjects'] as num?)?.toInt() ?? 0,
       totalStudents: (json['totalStudents'] as num?)?.toInt() ?? 0,
+      totalTimetableEntries:
+          (json['totalTimetableEntries'] as num?)?.toInt() ?? 0,
       totalSessions: (json['totalSessions'] as num).toInt(),
       averageAttendance: (json['averageAttendance'] as num).toDouble(),
     );
@@ -176,6 +178,7 @@ Map<String, dynamic> _$$DashboardStatsImplToJson(
       'totalBatchesTeaching': instance.totalBatchesTeaching,
       'totalSubjects': instance.totalSubjects,
       'totalStudents': instance.totalStudents,
+      'totalTimetableEntries': instance.totalTimetableEntries,
       'totalSessions': instance.totalSessions,
       'averageAttendance': instance.averageAttendance,
     };

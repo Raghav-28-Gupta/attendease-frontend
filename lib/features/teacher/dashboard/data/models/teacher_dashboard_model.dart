@@ -122,6 +122,7 @@ class DashboardStats with _$DashboardStats {
     @Default(0) required int totalBatchesTeaching,
     @Default(0) required int totalSubjects,        
     @Default(0) required int totalStudents,
+    @Default(0) int totalTimetableEntries,
     required int totalSessions,
     required double averageAttendance,
   }) = _DashboardStats;

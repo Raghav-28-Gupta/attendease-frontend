@@ -284,6 +284,13 @@ class _TeacherDashboardScreenState
                   onTap: () => context.push('/teacher/enrollments'),
                 ),
                 _ManagementCard(
+                  title: 'Timetable',
+                  icon: Icons.calendar_month,
+                  color: Colors.teal,
+                  count: '${data.stats.totalTimetableEntries ?? 0}',
+                  onTap: () => context.push('/teacher/timetable'),
+                ),
+                _ManagementCard(
                   title: 'Import Students',
                   icon: Icons.upload_file,
                   color: Colors.green,
