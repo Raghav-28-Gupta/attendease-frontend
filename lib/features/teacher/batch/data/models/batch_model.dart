@@ -10,6 +10,7 @@ class BatchModel with _$BatchModel {
     required String code,
     required String name,
     @JsonKey(name: 'year') required String academicYear,
+    String? department,
     String? description,
     required DateTime createdAt,
     required int studentCount,
@@ -21,11 +22,13 @@ class BatchModel with _$BatchModel {
 
 @freezed
 class CreateBatchRequest with _$CreateBatchRequest {
+  @JsonSerializable(includeIfNull: false)
   const factory CreateBatchRequest({
     required String code,
     required String name,
     @JsonKey(name: 'year') required String academicYear,
     String? description,
+    String? department,
   }) = _CreateBatchRequest;
 
   factory CreateBatchRequest.fromJson(Map<String, dynamic> json) =>
@@ -34,11 +37,13 @@ class CreateBatchRequest with _$CreateBatchRequest {
 
 @freezed
 class UpdateBatchRequest with _$UpdateBatchRequest {
+  @JsonSerializable(includeIfNull: false)
   const factory UpdateBatchRequest({
     String? code,
     String? name,
     String? academicYear,
     String? description,
+    String? department,
   }) = _UpdateBatchRequest;
 
   factory UpdateBatchRequest.fromJson(Map<String, dynamic> json) =>

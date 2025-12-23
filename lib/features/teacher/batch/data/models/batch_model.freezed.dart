@@ -25,6 +25,7 @@ mixin _$BatchModel {
   String get name => throw _privateConstructorUsedError;
   @JsonKey(name: 'year')
   String get academicYear => throw _privateConstructorUsedError;
+  String? get department => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   int get studentCount => throw _privateConstructorUsedError;
@@ -50,6 +51,7 @@ abstract class $BatchModelCopyWith<$Res> {
       String code,
       String name,
       @JsonKey(name: 'year') String academicYear,
+      String? department,
       String? description,
       DateTime createdAt,
       int studentCount});
@@ -74,6 +76,7 @@ class _$BatchModelCopyWithImpl<$Res, $Val extends BatchModel>
     Object? code = null,
     Object? name = null,
     Object? academicYear = null,
+    Object? department = freezed,
     Object? description = freezed,
     Object? createdAt = null,
     Object? studentCount = null,
@@ -95,6 +98,10 @@ class _$BatchModelCopyWithImpl<$Res, $Val extends BatchModel>
           ? _value.academicYear
           : academicYear // ignore: cast_nullable_to_non_nullable
               as String,
+      department: freezed == department
+          ? _value.department
+          : department // ignore: cast_nullable_to_non_nullable
+              as String?,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -124,6 +131,7 @@ abstract class _$$BatchModelImplCopyWith<$Res>
       String code,
       String name,
       @JsonKey(name: 'year') String academicYear,
+      String? department,
       String? description,
       DateTime createdAt,
       int studentCount});
@@ -146,6 +154,7 @@ class __$$BatchModelImplCopyWithImpl<$Res>
     Object? code = null,
     Object? name = null,
     Object? academicYear = null,
+    Object? department = freezed,
     Object? description = freezed,
     Object? createdAt = null,
     Object? studentCount = null,
@@ -167,6 +176,10 @@ class __$$BatchModelImplCopyWithImpl<$Res>
           ? _value.academicYear
           : academicYear // ignore: cast_nullable_to_non_nullable
               as String,
+      department: freezed == department
+          ? _value.department
+          : department // ignore: cast_nullable_to_non_nullable
+              as String?,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -191,6 +204,7 @@ class _$BatchModelImpl implements _BatchModel {
       required this.code,
       required this.name,
       @JsonKey(name: 'year') required this.academicYear,
+      this.department,
       this.description,
       required this.createdAt,
       required this.studentCount});
@@ -208,6 +222,8 @@ class _$BatchModelImpl implements _BatchModel {
   @JsonKey(name: 'year')
   final String academicYear;
   @override
+  final String? department;
+  @override
   final String? description;
   @override
   final DateTime createdAt;
@@ -216,7 +232,7 @@ class _$BatchModelImpl implements _BatchModel {
 
   @override
   String toString() {
-    return 'BatchModel(id: $id, code: $code, name: $name, academicYear: $academicYear, description: $description, createdAt: $createdAt, studentCount: $studentCount)';
+    return 'BatchModel(id: $id, code: $code, name: $name, academicYear: $academicYear, department: $department, description: $description, createdAt: $createdAt, studentCount: $studentCount)';
   }
 
   @override
@@ -229,6 +245,8 @@ class _$BatchModelImpl implements _BatchModel {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.academicYear, academicYear) ||
                 other.academicYear == academicYear) &&
+            (identical(other.department, department) ||
+                other.department == department) &&
             (identical(other.description, description) ||
                 other.description == description) &&
             (identical(other.createdAt, createdAt) ||
@@ -240,7 +258,7 @@ class _$BatchModelImpl implements _BatchModel {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, code, name, academicYear,
-      description, createdAt, studentCount);
+      department, description, createdAt, studentCount);
 
   /// Create a copy of BatchModel
   /// with the given fields replaced by the non-null parameter values.
@@ -264,6 +282,7 @@ abstract class _BatchModel implements BatchModel {
       required final String code,
       required final String name,
       @JsonKey(name: 'year') required final String academicYear,
+      final String? department,
       final String? description,
       required final DateTime createdAt,
       required final int studentCount}) = _$BatchModelImpl;
@@ -280,6 +299,8 @@ abstract class _BatchModel implements BatchModel {
   @override
   @JsonKey(name: 'year')
   String get academicYear;
+  @override
+  String? get department;
   @override
   String? get description;
   @override
@@ -306,6 +327,7 @@ mixin _$CreateBatchRequest {
   @JsonKey(name: 'year')
   String get academicYear => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  String? get department => throw _privateConstructorUsedError;
 
   /// Serializes this CreateBatchRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -327,7 +349,8 @@ abstract class $CreateBatchRequestCopyWith<$Res> {
       {String code,
       String name,
       @JsonKey(name: 'year') String academicYear,
-      String? description});
+      String? description,
+      String? department});
 }
 
 /// @nodoc
@@ -349,6 +372,7 @@ class _$CreateBatchRequestCopyWithImpl<$Res, $Val extends CreateBatchRequest>
     Object? name = null,
     Object? academicYear = null,
     Object? description = freezed,
+    Object? department = freezed,
   }) {
     return _then(_value.copyWith(
       code: null == code
@@ -367,6 +391,10 @@ class _$CreateBatchRequestCopyWithImpl<$Res, $Val extends CreateBatchRequest>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
+      department: freezed == department
+          ? _value.department
+          : department // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -383,7 +411,8 @@ abstract class _$$CreateBatchRequestImplCopyWith<$Res>
       {String code,
       String name,
       @JsonKey(name: 'year') String academicYear,
-      String? description});
+      String? description,
+      String? department});
 }
 
 /// @nodoc
@@ -403,6 +432,7 @@ class __$$CreateBatchRequestImplCopyWithImpl<$Res>
     Object? name = null,
     Object? academicYear = null,
     Object? description = freezed,
+    Object? department = freezed,
   }) {
     return _then(_$CreateBatchRequestImpl(
       code: null == code
@@ -421,18 +451,24 @@ class __$$CreateBatchRequestImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
+      department: freezed == department
+          ? _value.department
+          : department // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
 
 /// @nodoc
-@JsonSerializable()
+
+@JsonSerializable(includeIfNull: false)
 class _$CreateBatchRequestImpl implements _CreateBatchRequest {
   const _$CreateBatchRequestImpl(
       {required this.code,
       required this.name,
       @JsonKey(name: 'year') required this.academicYear,
-      this.description});
+      this.description,
+      this.department});
 
   factory _$CreateBatchRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$CreateBatchRequestImplFromJson(json);
@@ -446,10 +482,12 @@ class _$CreateBatchRequestImpl implements _CreateBatchRequest {
   final String academicYear;
   @override
   final String? description;
+  @override
+  final String? department;
 
   @override
   String toString() {
-    return 'CreateBatchRequest(code: $code, name: $name, academicYear: $academicYear, description: $description)';
+    return 'CreateBatchRequest(code: $code, name: $name, academicYear: $academicYear, description: $description, department: $department)';
   }
 
   @override
@@ -462,13 +500,15 @@ class _$CreateBatchRequestImpl implements _CreateBatchRequest {
             (identical(other.academicYear, academicYear) ||
                 other.academicYear == academicYear) &&
             (identical(other.description, description) ||
-                other.description == description));
+                other.description == description) &&
+            (identical(other.department, department) ||
+                other.department == department));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, code, name, academicYear, description);
+  int get hashCode => Object.hash(
+      runtimeType, code, name, academicYear, description, department);
 
   /// Create a copy of CreateBatchRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -492,7 +532,8 @@ abstract class _CreateBatchRequest implements CreateBatchRequest {
       {required final String code,
       required final String name,
       @JsonKey(name: 'year') required final String academicYear,
-      final String? description}) = _$CreateBatchRequestImpl;
+      final String? description,
+      final String? department}) = _$CreateBatchRequestImpl;
 
   factory _CreateBatchRequest.fromJson(Map<String, dynamic> json) =
       _$CreateBatchRequestImpl.fromJson;
@@ -506,6 +547,8 @@ abstract class _CreateBatchRequest implements CreateBatchRequest {
   String get academicYear;
   @override
   String? get description;
+  @override
+  String? get department;
 
   /// Create a copy of CreateBatchRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -525,6 +568,7 @@ mixin _$UpdateBatchRequest {
   String? get name => throw _privateConstructorUsedError;
   String? get academicYear => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  String? get department => throw _privateConstructorUsedError;
 
   /// Serializes this UpdateBatchRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -543,7 +587,11 @@ abstract class $UpdateBatchRequestCopyWith<$Res> {
       _$UpdateBatchRequestCopyWithImpl<$Res, UpdateBatchRequest>;
   @useResult
   $Res call(
-      {String? code, String? name, String? academicYear, String? description});
+      {String? code,
+      String? name,
+      String? academicYear,
+      String? description,
+      String? department});
 }
 
 /// @nodoc
@@ -565,6 +613,7 @@ class _$UpdateBatchRequestCopyWithImpl<$Res, $Val extends UpdateBatchRequest>
     Object? name = freezed,
     Object? academicYear = freezed,
     Object? description = freezed,
+    Object? department = freezed,
   }) {
     return _then(_value.copyWith(
       code: freezed == code
@@ -583,6 +632,10 @@ class _$UpdateBatchRequestCopyWithImpl<$Res, $Val extends UpdateBatchRequest>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
+      department: freezed == department
+          ? _value.department
+          : department // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -596,7 +649,11 @@ abstract class _$$UpdateBatchRequestImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String? code, String? name, String? academicYear, String? description});
+      {String? code,
+      String? name,
+      String? academicYear,
+      String? description,
+      String? department});
 }
 
 /// @nodoc
@@ -616,6 +673,7 @@ class __$$UpdateBatchRequestImplCopyWithImpl<$Res>
     Object? name = freezed,
     Object? academicYear = freezed,
     Object? description = freezed,
+    Object? department = freezed,
   }) {
     return _then(_$UpdateBatchRequestImpl(
       code: freezed == code
@@ -634,15 +692,24 @@ class __$$UpdateBatchRequestImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
+      department: freezed == department
+          ? _value.department
+          : department // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
 
 /// @nodoc
-@JsonSerializable()
+
+@JsonSerializable(includeIfNull: false)
 class _$UpdateBatchRequestImpl implements _UpdateBatchRequest {
   const _$UpdateBatchRequestImpl(
-      {this.code, this.name, this.academicYear, this.description});
+      {this.code,
+      this.name,
+      this.academicYear,
+      this.description,
+      this.department});
 
   factory _$UpdateBatchRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$UpdateBatchRequestImplFromJson(json);
@@ -655,10 +722,12 @@ class _$UpdateBatchRequestImpl implements _UpdateBatchRequest {
   final String? academicYear;
   @override
   final String? description;
+  @override
+  final String? department;
 
   @override
   String toString() {
-    return 'UpdateBatchRequest(code: $code, name: $name, academicYear: $academicYear, description: $description)';
+    return 'UpdateBatchRequest(code: $code, name: $name, academicYear: $academicYear, description: $description, department: $department)';
   }
 
   @override
@@ -671,13 +740,15 @@ class _$UpdateBatchRequestImpl implements _UpdateBatchRequest {
             (identical(other.academicYear, academicYear) ||
                 other.academicYear == academicYear) &&
             (identical(other.description, description) ||
-                other.description == description));
+                other.description == description) &&
+            (identical(other.department, department) ||
+                other.department == department));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, code, name, academicYear, description);
+  int get hashCode => Object.hash(
+      runtimeType, code, name, academicYear, description, department);
 
   /// Create a copy of UpdateBatchRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -701,7 +772,8 @@ abstract class _UpdateBatchRequest implements UpdateBatchRequest {
       {final String? code,
       final String? name,
       final String? academicYear,
-      final String? description}) = _$UpdateBatchRequestImpl;
+      final String? description,
+      final String? department}) = _$UpdateBatchRequestImpl;
 
   factory _UpdateBatchRequest.fromJson(Map<String, dynamic> json) =
       _$UpdateBatchRequestImpl.fromJson;
@@ -714,6 +786,8 @@ abstract class _UpdateBatchRequest implements UpdateBatchRequest {
   String? get academicYear;
   @override
   String? get description;
+  @override
+  String? get department;
 
   /// Create a copy of UpdateBatchRequest
   /// with the given fields replaced by the non-null parameter values.

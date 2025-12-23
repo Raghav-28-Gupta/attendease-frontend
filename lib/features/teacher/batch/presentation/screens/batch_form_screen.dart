@@ -1,3 +1,4 @@
+import 'package:attendease_frontend/core/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -39,7 +40,7 @@ class _BatchFormScreenState extends ConsumerState<BatchFormScreen> {
     _academicYearController = TextEditingController(
       text: widget.batch?.academicYear ?? DateTime.now().year.toString(),
     );
-    _departmentController = TextEditingController();
+    _departmentController = TextEditingController(text: widget.batch?.department ?? '',);
     _descriptionController = TextEditingController(
       text: widget.batch?.description ?? '',
     );
@@ -92,6 +93,13 @@ class _BatchFormScreenState extends ConsumerState<BatchFormScreen> {
               validator: Validators.required,
               textCapitalization: TextCapitalization.none,
             ),
+            AppTextField(
+              controller: _departmentController,
+              label: 'Department (Optional)',
+              hint: 'e.g., Computer Science',
+              prefixIcon: Icons.business,
+              textCapitalization: TextCapitalization.words,
+            ),
             const SizedBox(height: 16),
             AppTextField(
               controller: _descriptionController,
@@ -126,11 +134,15 @@ class _BatchFormScreenState extends ConsumerState<BatchFormScreen> {
         code: _codeController.text.trim(),
         name: _nameController.text.trim(),
         academicYear: _academicYearController.text.trim(),
+        department: _departmentController.text.trim().isEmpty  // ✅ ADD department
+            ? null
+            : _departmentController.text.trim(),
         description: _descriptionController.text.trim().isEmpty
             ? null
             : _descriptionController.text.trim(),
       );
 
+      AppLogger.info('CreateBatch payload: ${request.toJson()}');
       success = await ref
           .read(batchOperationsProvider.notifier)
           .updateBatch(widget.batch!.id, request);
@@ -140,6 +152,9 @@ class _BatchFormScreenState extends ConsumerState<BatchFormScreen> {
         code: _codeController.text.trim(),
         name: _nameController.text.trim(),
         academicYear: _academicYearController.text.trim(),
+        department: _departmentController.text.trim().isEmpty  // ✅ ADD department
+            ? null
+            : _departmentController.text.trim(),
         description: _descriptionController.text.trim().isEmpty
             ? null
             : _descriptionController.text.trim(),

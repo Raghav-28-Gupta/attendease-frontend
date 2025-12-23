@@ -1,3 +1,4 @@
+import 'package:attendease_frontend/core/utils/logger.dart';
 import 'package:dio/dio.dart';
 import '../../../../../core/network/api_endpoints.dart';
 import '../../../../../core/network/network_exceptions.dart';
@@ -50,6 +51,7 @@ class BatchRemoteDatasourceImpl implements BatchRemoteDatasource {
   @override
   Future<BatchModel> createBatch(CreateBatchRequest request) async {
     try {
+      AppLogger.info('POST ${ApiEndpoints.batches} payload: ${request.toJson()}');
       final response = await dio.post(
         ApiEndpoints.batches,
         data: request.toJson(),
@@ -63,6 +65,7 @@ class BatchRemoteDatasourceImpl implements BatchRemoteDatasource {
         );
       }
     } on DioException catch (e) {
+      AppLogger.error('Create batch failed - response: ${e.response?.data}', e);
       throw NetworkException.getDioException(e);
     }
   }
