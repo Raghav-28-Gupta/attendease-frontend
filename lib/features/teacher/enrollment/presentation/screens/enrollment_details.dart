@@ -2,12 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../core/config/theme/app_colors.dart';
-import '../../../../../core/widgets/loading_widget.dart';
-import '../../../../../core/widgets/error_widget.dart';
-import '../../../../../core/widgets/section_header.dart';
 import '../../../dashboard/data/models/teacher_dashboard_model.dart';
-import '../../../attendance/presentation/providers/session_history_provider.dart';
-import '../../../students/presentation/providers/student_provider.dart';
 
 class EnrollmentDetailsScreen extends ConsumerWidget {
   final EnrollmentInfo enrollment;
@@ -19,9 +14,6 @@ class EnrollmentDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sessionsAsync = ref.watch(enrollmentSessionsProvider(enrollment.id));
-    final studentsAsync = ref.watch(enrollmentStudentsProvider(enrollment.id));
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Enrollment Details'),
@@ -42,140 +34,20 @@ class EnrollmentDetailsScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(enrollmentSessionsProvider(enrollment.id));
-          ref.invalidate(enrollmentStudentsProvider(enrollment.id));
-        },
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // Header Card
-            _buildHeaderCard(),
-            const SizedBox(height: 24),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Header Card
+          _buildHeaderCard(),
+          const SizedBox(height: 24),
 
-            // Quick Actions
-            _buildQuickActions(context),
-            const SizedBox(height: 24),
+          // Quick Actions
+          _buildQuickActions(context),
+          const SizedBox(height: 24),
 
-            // Stats Overview
-            _buildStatsOverview(),
-            const SizedBox(height: 24),
-
-            // Recent Sessions
-            const SectionHeader(
-              title: 'Recent Sessions',
-              subtitle: 'Last 5 attendance sessions',
-            ),
-            const SizedBox(height: 12),
-            sessionsAsync.when(
-              data: (sessions) {
-                if (sessions.isEmpty) {
-                  return const Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Center(
-                        child: Text('No sessions yet'),
-                      ),
-                    ),
-                  );
-                }
-                return Column(
-                  children: sessions.take(5).map((session) {
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      child: ListTile(
-                        leading: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.event,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        title: Text(
-                          _formatDate(session.date),
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        subtitle: Text(
-                          '${session.count?.records ?? 0} students marked',
-                        ),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () {
-                          context.push(
-                            '/teacher/session-details/${session.id}',
-                          );
-                        },
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-              loading: () => const LoadingWidget(),
-              error: (err, _) => AppErrorWidget(
-                message: err.toString(),
-                onRetry: () =>
-                    ref.invalidate(enrollmentSessionsProvider(enrollment.id)),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Enrolled Students
-            const SectionHeader(
-              title: 'Enrolled Students',
-              subtitle: 'Students in this class',
-            ),
-            const SizedBox(height: 12),
-            studentsAsync.when(
-              data: (students) {
-                if (students.isEmpty) {
-                  return const Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Center(
-                        child: Text('No students enrolled in this batch'),
-                      ),
-                    ),
-                  );
-                }
-                return Column(
-                  children: students.map((student) {
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: AppColors.primary.withOpacity(0.1),
-                          child: Text(
-                            student.firstName[0].toUpperCase(),
-                            style: const TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        title: Text(
-                          '${student.firstName} ${student.lastName}',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        subtitle: Text(student.studentId),
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-              loading: () => const LoadingWidget(),
-              error: (err, _) => AppErrorWidget(
-                message: err.toString(),
-                onRetry: () =>
-                    ref.invalidate(enrollmentStudentsProvider(enrollment.id)),
-              ),
-            ),
-          ],
-        ),
+          // Stats Overview
+          _buildStatsOverview(),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {

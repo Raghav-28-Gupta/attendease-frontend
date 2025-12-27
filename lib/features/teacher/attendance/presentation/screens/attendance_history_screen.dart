@@ -21,6 +21,7 @@ class AttendanceHistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ✅ Now returns SessionWithDetails
     final sessionsAsync = ref.watch(enrollmentSessionsProvider(enrollmentId));
 
     return Scaffold(
@@ -30,18 +31,25 @@ class AttendanceHistoryScreen extends ConsumerWidget {
           children: [
             Text(enrollmentName),
             const SizedBox(height: 2),
-            Text(
+            const Text(
               'Attendance History',
-              style: Theme.of(context).textTheme.bodySmall,
+              style: TextStyle(fontSize: 12),
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () =>
+                ref.invalidate(enrollmentSessionsProvider(enrollmentId)),
+          ),
+        ],
       ),
       body: sessionsAsync.when(
         data: (sessions) {
           if (sessions.isEmpty) {
             return const EmptyStateWidget(
-              message: 'No attendance sessions found',
+              message: 'No attendance sessions yet',
               icon: Icons.event_busy,
             );
           }
@@ -56,24 +64,16 @@ class AttendanceHistoryScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final session = sessions[index];
                 return _SessionCard(
-                  session: session,
-                  onTap: () {
-                    context.push(
-                      '/teacher/session-details/${session.id}',
-                      extra: session,
-                    );
-                  },
-                );
+                    session: session); // ✅ Now SessionWithDetails
               },
             ),
           );
         },
         loading: () => const LoadingWidget(message: 'Loading sessions...'),
-        error: (error, stack) => AppErrorWidget(
-          message: error.toString(),
-          onRetry: () {
-            ref.invalidate(enrollmentSessionsProvider(enrollmentId));
-          },
+        error: (err, _) => AppErrorWidget(
+          message: err.toString(),
+          onRetry: () =>
+              ref.invalidate(enrollmentSessionsProvider(enrollmentId)),
         ),
       ),
     );
@@ -81,31 +81,25 @@ class AttendanceHistoryScreen extends ConsumerWidget {
 }
 
 class _SessionCard extends StatelessWidget {
-  final SessionWithDetails session;
-  final VoidCallback onTap;
+  final SessionWithDetails session; // ✅ CHANGED from AttendanceSessionModel
 
-  const _SessionCard({
-    required this.session,
-    required this.onTap,
-  });
+  const _SessionCard({required this.session});
 
   @override
   Widget build(BuildContext context) {
-    final attendedCount = session.count.records;
-    // ignore: unused_local_variable
-    final attendancePercentage = attendedCount > 0 ? 100.0 : 0.0;
-
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
-        onTap: onTap,
+        onTap: () {
+          context.push('/teacher/session-details/${session.id}');
+        },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Date & Type Row
+              // Date and Type Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -118,7 +112,8 @@ class _SessionCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        session.date.format('dd MMM yyyy'),
+                        session.date
+                            .format('dd MMM yyyy'), // ✅ Works with DateTime
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -132,10 +127,12 @@ class _SessionCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _getTypeColor(session.type).withAlpha((0.1 * 255).round()),
+                      color: _getTypeColor(session.type)
+                          .withAlpha((0.1 * 255).round()),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: _getTypeColor(session.type).withAlpha((0.3 * 255).round()),
+                        color: _getTypeColor(session.type)
+                            .withAlpha((0.3 * 255).round()),
                       ),
                     ),
                     child: Text(
@@ -162,9 +159,9 @@ class _SessionCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    '${_formatTime(session.startTime)} - ${_formatTime(session.endTime)}',
+                    '${session.startTime} - ${session.endTime}',
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 13,
                       color: AppColors.textSecondary,
                     ),
                   ),
@@ -173,37 +170,26 @@ class _SessionCard extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // Stats Row
+              // Attendance Stats
               Row(
                 children: [
-                  Expanded(
-                    child: _StatItem(
-                      icon: Icons.people,
-                      label: 'Students',
-                      value: attendedCount.toString(),
-                    ),
+                  _StatChip(
+                    label: 'Present',
+                    value:
+                        session.count.records.toString(), // ✅ Use count field
+                    color: AppColors.success,
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _StatItem(
-                      icon: Icons.timelapse,
-                      label: 'Time',
-                      value: session.date.relativeTime,
-                    ),
+                  const SizedBox(width: 8),
+                  _StatChip(
+                    label: 'Absent',
+                    value: '0',
+                    color: AppColors.error,
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 12),
-
-              // Action Button
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    onPressed: onTap,
-                    icon: const Icon(Icons.visibility, size: 16),
-                    label: const Text('View Details'),
+                  const SizedBox(width: 8),
+                  _StatChip(
+                    label: 'Late',
+                    value: '0',
+                    color: AppColors.warning,
                   ),
                 ],
               ),
@@ -215,66 +201,61 @@ class _SessionCard extends StatelessWidget {
   }
 
   Color _getTypeColor(String type) {
-    switch (type) {
-      case 'REGULAR':
+    switch (type.toUpperCase()) {
+      case 'LECTURE':
         return AppColors.primary;
-      case 'MAKEUP':
+      case 'LAB':
+        return AppColors.info;
+      case 'TUTORIAL':
         return AppColors.warning;
-      case 'EXTRA':
-        return AppColors.success;
+      case 'EXAM':
+        return AppColors.error;
       default:
         return AppColors.textSecondary;
     }
   }
-
-  String _formatTime(String time) {
-    final parts = time.split(':');
-    final hour = int.parse(parts[0]);
-    final minute = parts[1];
-    final period = hour >= 12 ? 'PM' : 'AM';
-    final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
-    return '$displayHour:$minute $period';
-  }
 }
 
-class _StatItem extends StatelessWidget {
-  final IconData icon;
+class _StatChip extends StatelessWidget {
   final String label;
   final String value;
+  final Color color;
 
-  const _StatItem({
-    required this.icon,
+  const _StatChip({
     required this.label,
     required this.value,
+    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: AppColors.textSecondary),
-        const SizedBox(width: 6),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 11,
-                color: AppColors.textSecondary,
-              ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withAlpha((0.1 * 255).round()),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: color,
             ),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: color,
             ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }
