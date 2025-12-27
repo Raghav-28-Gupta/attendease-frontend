@@ -29,10 +29,12 @@ class SessionDetailsScreen extends ConsumerWidget {
       ),
       body: detailsAsync.when(
         data: (details) {
-          final session = details['session'];
+          final session = details;
           final records = (details['records'] as List?)
-              ?.map((r) => AttendanceRecordDetail.fromJson(r))
-              .toList() ?? [];
+                  ?.map((r) => AttendanceRecordDetail.fromJson(
+                      r as Map<String, dynamic>))
+                  .toList() ??
+              [];
 
           return _buildDetails(context, ref, session, records);
         },
@@ -53,6 +55,11 @@ class SessionDetailsScreen extends ConsumerWidget {
     Map<String, dynamic> session,
     List<AttendanceRecordDetail> records,
   ) {
+    final dateString = session['date'] as String?;
+    if (dateString == null) {
+      return const Center(child: Text('Invalid session data'));
+    }
+
     final date = DateTime.parse(session['date']);
     final startTime = session['startTime'] as String;
     final endTime = session['endTime'] as String;
@@ -97,10 +104,12 @@ class SessionDetailsScreen extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildStatColumn('Present', presentCount, AppColors.present),
+                    _buildStatColumn(
+                        'Present', presentCount, AppColors.present),
                     _buildStatColumn('Absent', absentCount, AppColors.absent),
                     _buildStatColumn('Late', lateCount, AppColors.late),
-                    _buildStatColumn('Excused', excusedCount, AppColors.excused),
+                    _buildStatColumn(
+                        'Excused', excusedCount, AppColors.excused),
                   ],
                 ),
               ],
@@ -176,10 +185,12 @@ class SessionDetailsScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: _getStatusColor(record.status).withAlpha((0.1 * 255).round()),
+                color: _getStatusColor(record.status)
+                    .withAlpha((0.1 * 255).round()),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: _getStatusColor(record.status).withAlpha((0.3 * 255).round()),
+                  color: _getStatusColor(record.status)
+                      .withAlpha((0.3 * 255).round()),
                 ),
               ),
               child: Text(
@@ -218,9 +229,10 @@ class SessionDetailsScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Select Status:', style: TextStyle(fontWeight: FontWeight.w500)),
+              const Text('Select Status:',
+                  style: TextStyle(fontWeight: FontWeight.w500)),
               const SizedBox(height: 12),
-              
+
               // Status Radio Buttons
               ...['PRESENT', 'ABSENT', 'LATE', 'EXCUSED'].map((status) {
                 return RadioListTile<String>(
@@ -236,7 +248,7 @@ class SessionDetailsScreen extends ConsumerWidget {
               }).toList(),
 
               const SizedBox(height: 16),
-              
+
               // Reason TextField
               TextField(
                 controller: reasonController,

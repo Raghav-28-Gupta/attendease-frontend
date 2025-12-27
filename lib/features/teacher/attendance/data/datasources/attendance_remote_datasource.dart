@@ -120,25 +120,7 @@ class AttendanceRemoteDatasourceImpl implements AttendanceRemoteDatasource {
 
       if (response.data['success'] == true) {
         final List data = response.data['data'] ?? [];
-
-        // ✅ ADD THIS DEBUG LOGGING
-        print('=== RAW RESPONSE ===');
-        for (var session in data) {
-          print('Session ID: ${session['id']}');
-          print('Count field: ${session['_count']}');
-          print('Full session: ${session.toString()}');
-        }
-        print('====================');
-
-        return data.map((json) {
-          try {
-            return SessionWithDetails.fromJson(json);
-          } catch (e) {
-            print('❌ Failed to parse session: $e');
-            print('Session data: $json');
-            rethrow;
-          }
-        }).toList();
+        return data.map((json) => SessionWithDetails.fromJson(json)).toList();
       } else {
         throw const NetworkException.defaultError('Failed to fetch sessions');
       }
@@ -155,7 +137,15 @@ class AttendanceRemoteDatasourceImpl implements AttendanceRemoteDatasource {
       );
 
       if (response.data['success'] == true) {
-        return response.data['data'];
+        final data = response.data['data'];
+
+        // ✅ DEBUG LOGGING
+        print('=== SESSION DETAILS RESPONSE ===');
+        print('Data: ${data.toString()}');
+        print('Type: ${data.runtimeType}');
+        print('================================');
+
+        return data;
       } else {
         throw const NetworkException.defaultError(
             'Failed to fetch session details');
