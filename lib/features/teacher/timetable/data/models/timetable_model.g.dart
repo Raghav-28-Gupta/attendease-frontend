@@ -16,7 +16,7 @@ _$TimetableEntryModelImpl _$$TimetableEntryModelImplFromJson(
       endTime: json['endTime'] as String,
       room: json['classRoom'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
-      enrollment: EnrollmentInfo.fromJson(
+      enrollment: TimetableEnrollmentInfo.fromJson(
           json['subjectEnrollment'] as Map<String, dynamic>),
     );
 
@@ -33,15 +33,16 @@ Map<String, dynamic> _$$TimetableEntryModelImplToJson(
       'subjectEnrollment': instance.enrollment,
     };
 
-_$EnrollmentInfoImpl _$$EnrollmentInfoImplFromJson(Map<String, dynamic> json) =>
-    _$EnrollmentInfoImpl(
+_$TimetableEnrollmentInfoImpl _$$TimetableEnrollmentInfoImplFromJson(
+        Map<String, dynamic> json) =>
+    _$TimetableEnrollmentInfoImpl(
       subject: SubjectInfo.fromJson(json['subject'] as Map<String, dynamic>),
       batch: BatchInfo.fromJson(json['batch'] as Map<String, dynamic>),
       teacher: TeacherInfo.fromJson(json['teacher'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$EnrollmentInfoImplToJson(
-        _$EnrollmentInfoImpl instance) =>
+Map<String, dynamic> _$$TimetableEnrollmentInfoImplToJson(
+        _$TimetableEnrollmentInfoImpl instance) =>
     <String, dynamic>{
       'subject': instance.subject,
       'batch': instance.batch,

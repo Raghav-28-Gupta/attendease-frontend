@@ -26,7 +26,7 @@ mixin _$EnrollmentModel {
   String get teacherId => throw _privateConstructorUsedError;
   SubjectInfo get subject => throw _privateConstructorUsedError;
   BatchInfo get batch => throw _privateConstructorUsedError;
-  TeacherInfo get teacher => throw _privateConstructorUsedError;
+  TeacherInfo? get teacher => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -53,13 +53,13 @@ abstract class $EnrollmentModelCopyWith<$Res> {
       String teacherId,
       SubjectInfo subject,
       BatchInfo batch,
-      TeacherInfo teacher,
+      TeacherInfo? teacher,
       DateTime createdAt,
       DateTime updatedAt});
 
   $SubjectInfoCopyWith<$Res> get subject;
   $BatchInfoCopyWith<$Res> get batch;
-  $TeacherInfoCopyWith<$Res> get teacher;
+  $TeacherInfoCopyWith<$Res>? get teacher;
 }
 
 /// @nodoc
@@ -83,7 +83,7 @@ class _$EnrollmentModelCopyWithImpl<$Res, $Val extends EnrollmentModel>
     Object? teacherId = null,
     Object? subject = null,
     Object? batch = null,
-    Object? teacher = null,
+    Object? teacher = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -112,10 +112,10 @@ class _$EnrollmentModelCopyWithImpl<$Res, $Val extends EnrollmentModel>
           ? _value.batch
           : batch // ignore: cast_nullable_to_non_nullable
               as BatchInfo,
-      teacher: null == teacher
+      teacher: freezed == teacher
           ? _value.teacher
           : teacher // ignore: cast_nullable_to_non_nullable
-              as TeacherInfo,
+              as TeacherInfo?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -151,8 +151,12 @@ class _$EnrollmentModelCopyWithImpl<$Res, $Val extends EnrollmentModel>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $TeacherInfoCopyWith<$Res> get teacher {
-    return $TeacherInfoCopyWith<$Res>(_value.teacher, (value) {
+  $TeacherInfoCopyWith<$Res>? get teacher {
+    if (_value.teacher == null) {
+      return null;
+    }
+
+    return $TeacherInfoCopyWith<$Res>(_value.teacher!, (value) {
       return _then(_value.copyWith(teacher: value) as $Val);
     });
   }
@@ -173,7 +177,7 @@ abstract class _$$EnrollmentModelImplCopyWith<$Res>
       String teacherId,
       SubjectInfo subject,
       BatchInfo batch,
-      TeacherInfo teacher,
+      TeacherInfo? teacher,
       DateTime createdAt,
       DateTime updatedAt});
 
@@ -182,7 +186,7 @@ abstract class _$$EnrollmentModelImplCopyWith<$Res>
   @override
   $BatchInfoCopyWith<$Res> get batch;
   @override
-  $TeacherInfoCopyWith<$Res> get teacher;
+  $TeacherInfoCopyWith<$Res>? get teacher;
 }
 
 /// @nodoc
@@ -204,7 +208,7 @@ class __$$EnrollmentModelImplCopyWithImpl<$Res>
     Object? teacherId = null,
     Object? subject = null,
     Object? batch = null,
-    Object? teacher = null,
+    Object? teacher = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -233,10 +237,10 @@ class __$$EnrollmentModelImplCopyWithImpl<$Res>
           ? _value.batch
           : batch // ignore: cast_nullable_to_non_nullable
               as BatchInfo,
-      teacher: null == teacher
+      teacher: freezed == teacher
           ? _value.teacher
           : teacher // ignore: cast_nullable_to_non_nullable
-              as TeacherInfo,
+              as TeacherInfo?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -259,7 +263,7 @@ class _$EnrollmentModelImpl implements _EnrollmentModel {
       required this.teacherId,
       required this.subject,
       required this.batch,
-      required this.teacher,
+      this.teacher,
       required this.createdAt,
       required this.updatedAt});
 
@@ -279,7 +283,7 @@ class _$EnrollmentModelImpl implements _EnrollmentModel {
   @override
   final BatchInfo batch;
   @override
-  final TeacherInfo teacher;
+  final TeacherInfo? teacher;
   @override
   final DateTime createdAt;
   @override
@@ -340,7 +344,7 @@ abstract class _EnrollmentModel implements EnrollmentModel {
       required final String teacherId,
       required final SubjectInfo subject,
       required final BatchInfo batch,
-      required final TeacherInfo teacher,
+      final TeacherInfo? teacher,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$EnrollmentModelImpl;
 
@@ -360,7 +364,7 @@ abstract class _EnrollmentModel implements EnrollmentModel {
   @override
   BatchInfo get batch;
   @override
-  TeacherInfo get teacher;
+  TeacherInfo? get teacher;
   @override
   DateTime get createdAt;
   @override
@@ -1026,8 +1030,7 @@ EnrollBatchesRequest _$EnrollBatchesRequestFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$EnrollBatchesRequest {
   String get subjectId => throw _privateConstructorUsedError;
-  List<String> get batchIds =>
-      throw _privateConstructorUsedError; // ✅ ARRAY, not single batchId
+  List<String> get batchIds => throw _privateConstructorUsedError;
   String? get semester => throw _privateConstructorUsedError;
 
   /// Serializes this EnrollBatchesRequest to a JSON map.
@@ -1154,7 +1157,6 @@ class _$EnrollBatchesRequestImpl implements _EnrollBatchesRequest {
     return EqualUnmodifiableListView(_batchIds);
   }
 
-// ✅ ARRAY, not single batchId
   @override
   final String? semester;
 
@@ -1210,7 +1212,7 @@ abstract class _EnrollBatchesRequest implements EnrollBatchesRequest {
   @override
   String get subjectId;
   @override
-  List<String> get batchIds; // ✅ ARRAY, not single batchId
+  List<String> get batchIds;
   @override
   String? get semester;
 

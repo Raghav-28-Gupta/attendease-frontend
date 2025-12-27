@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:attendease_frontend/features/teacher/students/data/models/student_model.dart';
 import 'package:dartz/dartz.dart';
 import '../../../../../core/network/network_exceptions.dart';
 import '../../../../../core/utils/logger.dart';
@@ -50,6 +51,21 @@ class StudentRepositoryImpl implements StudentRepository {
       return Right(student);
     } on NetworkException catch (e) {
       AppLogger.error('❌ Failed to fetch student', e);
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either<NetworkException, List<StudentModel>>> getEnrollmentStudents(
+    String enrollmentId,
+  ) async {
+    try {
+      final students =
+          await remoteDatasource.getEnrollmentStudents(enrollmentId);
+      AppLogger.info('✅ Fetched ${students.length} students from enrollment');
+      return Right(students);
+    } on NetworkException catch (e) {
+      AppLogger.error('❌ Failed to fetch enrollment students', e);
       return Left(e);
     }
   }

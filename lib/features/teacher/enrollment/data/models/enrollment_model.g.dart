@@ -15,7 +15,9 @@ _$EnrollmentModelImpl _$$EnrollmentModelImplFromJson(
       teacherId: json['teacherId'] as String,
       subject: SubjectInfo.fromJson(json['subject'] as Map<String, dynamic>),
       batch: BatchInfo.fromJson(json['batch'] as Map<String, dynamic>),
-      teacher: TeacherInfo.fromJson(json['teacher'] as Map<String, dynamic>),
+      teacher: json['teacher'] == null
+          ? null
+          : TeacherInfo.fromJson(json['teacher'] as Map<String, dynamic>),
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );

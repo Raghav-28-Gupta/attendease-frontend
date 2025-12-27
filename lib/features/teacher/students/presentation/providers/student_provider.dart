@@ -6,9 +6,11 @@ import '../../../../../core/utils/logger.dart';
 import '../../data/datasources/student_remote_datasource.dart';
 import '../../data/repositories/student_repository_impl.dart';
 import '../../domain/repositories/student_repository.dart';
+import '../../data/models/student_model.dart';
 
 // Datasource Provider
-final studentRemoteDatasourceProvider = Provider<StudentRemoteDatasource>((ref) {
+final studentRemoteDatasourceProvider =
+    Provider<StudentRemoteDatasource>((ref) {
   final dio = ref.watch(dioProvider);
   return StudentRemoteDatasourceImpl(dio);
 });
@@ -20,19 +22,19 @@ final studentRepositoryProvider = Provider<StudentRepository>((ref) {
 });
 
 // Import Students Provider (now requires batchId)
-final importStudentsProvider =
-    StateNotifierProvider<ImportStudentsNotifier, AsyncValue<Map<String, dynamic>?>>(
+final importStudentsProvider = StateNotifierProvider<ImportStudentsNotifier,
+    AsyncValue<Map<String, dynamic>?>>(
   (ref) {
     final repository = ref.watch(studentRepositoryProvider);
     return ImportStudentsNotifier(repository);
   },
 );
 
-class ImportStudentsNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>?>> {
+class ImportStudentsNotifier
+    extends StateNotifier<AsyncValue<Map<String, dynamic>?>> {
   final StudentRepository _repository;
 
-  ImportStudentsNotifier(this._repository)
-      : super(const AsyncValue.data(null));
+  ImportStudentsNotifier(this._repository) : super(const AsyncValue.data(null));
 
   Future<bool> importCSV(String batchId, File csvFile) async {
     state = const AsyncValue.loading();
@@ -71,3 +73,14 @@ final studentsByBatchProvider = FutureProvider.family<List<dynamic>, String>(
     );
   },
 );
+
+final enrollmentStudentsProvider =
+    FutureProvider.family<List<StudentModel>, String>(
+        (ref, enrollmentId) async {
+  final repo = ref.watch(studentRepositoryProvider);
+  final result = await repo.getEnrollmentStudents(enrollmentId);
+  return result.fold(
+    (error) => throw error,
+    (students) => students,
+  );
+});

@@ -13,7 +13,7 @@ class TimetableEntryModel with _$TimetableEntryModel {
     required String endTime,
     @JsonKey(name: 'classRoom') String? room, // ✅ Backend sends classRoom
     required DateTime createdAt,
-    @JsonKey(name: 'subjectEnrollment') required EnrollmentInfo enrollment, // ✅ Backend sends subjectEnrollment
+    @JsonKey(name: 'subjectEnrollment') required TimetableEnrollmentInfo enrollment, // ✅ Backend sends subjectEnrollment
   }) = _TimetableEntryModel;
 
   factory TimetableEntryModel.fromJson(Map<String, dynamic> json) =>
@@ -21,15 +21,15 @@ class TimetableEntryModel with _$TimetableEntryModel {
 }
 
 @freezed
-class EnrollmentInfo with _$EnrollmentInfo {
-  const factory EnrollmentInfo({
+class TimetableEnrollmentInfo with _$TimetableEnrollmentInfo {
+  const factory TimetableEnrollmentInfo({
     required SubjectInfo subject,
     required BatchInfo batch,
     required TeacherInfo teacher,
-  }) = _EnrollmentInfo;
+  }) = _TimetableEnrollmentInfo;
 
-  factory EnrollmentInfo.fromJson(Map<String, dynamic> json) =>
-      _$EnrollmentInfoFromJson(json);
+  factory TimetableEnrollmentInfo.fromJson(Map<String, dynamic> json) =>
+      _$TimetableEnrollmentInfoFromJson(json);
 }
 
 @freezed

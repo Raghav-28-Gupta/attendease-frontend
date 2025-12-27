@@ -4,6 +4,8 @@ import 'package:attendease_frontend/features/teacher/attendance/presentation/scr
 import 'package:attendease_frontend/features/teacher/batch/data/models/batch_model.dart';
 import 'package:attendease_frontend/features/teacher/batch/presentation/screens/batch_form_screen.dart';
 import 'package:attendease_frontend/features/teacher/batch/presentation/screens/batches_screen.dart';
+import 'package:attendease_frontend/features/teacher/dashboard/data/models/teacher_dashboard_model.dart';
+import 'package:attendease_frontend/features/teacher/enrollment/presentation/screens/enrollment_details.dart';
 import 'package:attendease_frontend/features/teacher/enrollment/presentation/screens/enrollment_form_screen.dart';
 import 'package:attendease_frontend/features/teacher/enrollment/presentation/screens/enrollments_screen.dart';
 import 'package:attendease_frontend/features/teacher/students/presentation/screens/import_students_screen.dart';
@@ -30,7 +32,6 @@ import '../../../features/teacher/timetable/presentation/screens/create_timetabl
 import '../../../features/teacher/timetable/presentation/screens/timetable_entry_details_screen.dart';
 import '../../../features/teacher/timetable/data/models/timetable_model.dart';
 
-
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
 
@@ -39,10 +40,11 @@ final routerProvider = Provider<GoRouter>((ref) {
     debugLogDiagnostics: true,
     redirect: (context, state) {
       final currentPath = state.matchedLocation;
-      
+
       // Log current state for debugging
-      AppLogger.info('🚦 Router redirect - path: $currentPath, authState: ${authState.runtimeType}');
-      
+      AppLogger.info(
+          '🚦 Router redirect - path: $currentPath, authState: ${authState.runtimeType}');
+
       final isAuthenticated = authState.maybeWhen(
         authenticated: (_) => true,
         orElse: () => false,
@@ -117,7 +119,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'create-session',
             builder: (context, state) => const CreateSessionScreen(),
           ),
-          
+
           // Mark Attendance
           GoRoute(
             path: 'mark-attendance/:sessionId',
@@ -131,10 +133,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'enrollment/:enrollmentId',
             builder: (context, state) {
-              // final enrollmentId = state.pathParameters['enrollmentId']!;
-              return const Scaffold(
-                body: Center(child: Text('Enrollment Details Coming Soon')),
-              );
+              final enrollment = state.extra as EnrollmentInfo;
+              return EnrollmentDetailsScreen(enrollment: enrollment);
             },
           ),
 
@@ -145,7 +145,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               final enrollmentId = state.pathParameters['enrollmentId']!;
               final extra = state.extra as Map<String, dynamic>?;
               final enrollmentName = extra?['name'] ?? 'Attendance History';
-              
+
               return AttendanceHistoryScreen(
                 enrollmentId: enrollmentId,
                 enrollmentName: enrollmentName,
@@ -256,13 +256,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'timetable',
             builder: (context, state) => const TimetableScreen(),
           ),
-          
+
           // Profile
           GoRoute(
             path: 'profile',
             builder: (context, state) => const ProfileScreen(),
           ),
-          
+
           // Subject Details
           GoRoute(
             path: 'subject/:subjectCode',

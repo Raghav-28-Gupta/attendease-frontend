@@ -12,7 +12,7 @@ class EnrollmentModel with _$EnrollmentModel {
     required String teacherId,
     required SubjectInfo subject,
     required BatchInfo batch,
-    required TeacherInfo teacher,
+    TeacherInfo? teacher,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _EnrollmentModel;
@@ -69,7 +69,7 @@ class EnrollBatchesRequest with _$EnrollBatchesRequest {
   @JsonSerializable(includeIfNull: false)
   const factory EnrollBatchesRequest({
     required String subjectId,
-    required List<String> batchIds,  // ✅ ARRAY, not single batchId
+    required List<String> batchIds,  
     String? semester,
   }) = _EnrollBatchesRequest;
 

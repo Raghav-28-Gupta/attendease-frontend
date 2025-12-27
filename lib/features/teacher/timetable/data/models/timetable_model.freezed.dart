@@ -32,7 +32,7 @@ mixin _$TimetableEntryModel {
       throw _privateConstructorUsedError; // ✅ Backend sends classRoom
   DateTime get createdAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'subjectEnrollment')
-  EnrollmentInfo get enrollment => throw _privateConstructorUsedError;
+  TimetableEnrollmentInfo get enrollment => throw _privateConstructorUsedError;
 
   /// Serializes this TimetableEntryModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -58,9 +58,9 @@ abstract class $TimetableEntryModelCopyWith<$Res> {
       String endTime,
       @JsonKey(name: 'classRoom') String? room,
       DateTime createdAt,
-      @JsonKey(name: 'subjectEnrollment') EnrollmentInfo enrollment});
+      @JsonKey(name: 'subjectEnrollment') TimetableEnrollmentInfo enrollment});
 
-  $EnrollmentInfoCopyWith<$Res> get enrollment;
+  $TimetableEnrollmentInfoCopyWith<$Res> get enrollment;
 }
 
 /// @nodoc
@@ -119,7 +119,7 @@ class _$TimetableEntryModelCopyWithImpl<$Res, $Val extends TimetableEntryModel>
       enrollment: null == enrollment
           ? _value.enrollment
           : enrollment // ignore: cast_nullable_to_non_nullable
-              as EnrollmentInfo,
+              as TimetableEnrollmentInfo,
     ) as $Val);
   }
 
@@ -127,8 +127,8 @@ class _$TimetableEntryModelCopyWithImpl<$Res, $Val extends TimetableEntryModel>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $EnrollmentInfoCopyWith<$Res> get enrollment {
-    return $EnrollmentInfoCopyWith<$Res>(_value.enrollment, (value) {
+  $TimetableEnrollmentInfoCopyWith<$Res> get enrollment {
+    return $TimetableEnrollmentInfoCopyWith<$Res>(_value.enrollment, (value) {
       return _then(_value.copyWith(enrollment: value) as $Val);
     });
   }
@@ -150,10 +150,10 @@ abstract class _$$TimetableEntryModelImplCopyWith<$Res>
       String endTime,
       @JsonKey(name: 'classRoom') String? room,
       DateTime createdAt,
-      @JsonKey(name: 'subjectEnrollment') EnrollmentInfo enrollment});
+      @JsonKey(name: 'subjectEnrollment') TimetableEnrollmentInfo enrollment});
 
   @override
-  $EnrollmentInfoCopyWith<$Res> get enrollment;
+  $TimetableEnrollmentInfoCopyWith<$Res> get enrollment;
 }
 
 /// @nodoc
@@ -210,7 +210,7 @@ class __$$TimetableEntryModelImplCopyWithImpl<$Res>
       enrollment: null == enrollment
           ? _value.enrollment
           : enrollment // ignore: cast_nullable_to_non_nullable
-              as EnrollmentInfo,
+              as TimetableEnrollmentInfo,
     ));
   }
 }
@@ -251,7 +251,7 @@ class _$TimetableEntryModelImpl implements _TimetableEntryModel {
   final DateTime createdAt;
   @override
   @JsonKey(name: 'subjectEnrollment')
-  final EnrollmentInfo enrollment;
+  final TimetableEnrollmentInfo enrollment;
 
   @override
   String toString() {
@@ -310,7 +310,8 @@ abstract class _TimetableEntryModel implements TimetableEntryModel {
       @JsonKey(name: 'classRoom') final String? room,
       required final DateTime createdAt,
       @JsonKey(name: 'subjectEnrollment')
-      required final EnrollmentInfo enrollment}) = _$TimetableEntryModelImpl;
+      required final TimetableEnrollmentInfo
+          enrollment}) = _$TimetableEntryModelImpl;
 
   factory _TimetableEntryModel.fromJson(Map<String, dynamic> json) =
       _$TimetableEntryModelImpl.fromJson;
@@ -333,7 +334,7 @@ abstract class _TimetableEntryModel implements TimetableEntryModel {
   DateTime get createdAt;
   @override
   @JsonKey(name: 'subjectEnrollment')
-  EnrollmentInfo get enrollment;
+  TimetableEnrollmentInfo get enrollment;
 
   /// Create a copy of TimetableEntryModel
   /// with the given fields replaced by the non-null parameter values.
@@ -343,31 +344,32 @@ abstract class _TimetableEntryModel implements TimetableEntryModel {
       throw _privateConstructorUsedError;
 }
 
-EnrollmentInfo _$EnrollmentInfoFromJson(Map<String, dynamic> json) {
-  return _EnrollmentInfo.fromJson(json);
+TimetableEnrollmentInfo _$TimetableEnrollmentInfoFromJson(
+    Map<String, dynamic> json) {
+  return _TimetableEnrollmentInfo.fromJson(json);
 }
 
 /// @nodoc
-mixin _$EnrollmentInfo {
+mixin _$TimetableEnrollmentInfo {
   SubjectInfo get subject => throw _privateConstructorUsedError;
   BatchInfo get batch => throw _privateConstructorUsedError;
   TeacherInfo get teacher => throw _privateConstructorUsedError;
 
-  /// Serializes this EnrollmentInfo to a JSON map.
+  /// Serializes this TimetableEnrollmentInfo to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of EnrollmentInfo
+  /// Create a copy of TimetableEnrollmentInfo
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $EnrollmentInfoCopyWith<EnrollmentInfo> get copyWith =>
+  $TimetableEnrollmentInfoCopyWith<TimetableEnrollmentInfo> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $EnrollmentInfoCopyWith<$Res> {
-  factory $EnrollmentInfoCopyWith(
-          EnrollmentInfo value, $Res Function(EnrollmentInfo) then) =
-      _$EnrollmentInfoCopyWithImpl<$Res, EnrollmentInfo>;
+abstract class $TimetableEnrollmentInfoCopyWith<$Res> {
+  factory $TimetableEnrollmentInfoCopyWith(TimetableEnrollmentInfo value,
+          $Res Function(TimetableEnrollmentInfo) then) =
+      _$TimetableEnrollmentInfoCopyWithImpl<$Res, TimetableEnrollmentInfo>;
   @useResult
   $Res call({SubjectInfo subject, BatchInfo batch, TeacherInfo teacher});
 
@@ -377,16 +379,17 @@ abstract class $EnrollmentInfoCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$EnrollmentInfoCopyWithImpl<$Res, $Val extends EnrollmentInfo>
-    implements $EnrollmentInfoCopyWith<$Res> {
-  _$EnrollmentInfoCopyWithImpl(this._value, this._then);
+class _$TimetableEnrollmentInfoCopyWithImpl<$Res,
+        $Val extends TimetableEnrollmentInfo>
+    implements $TimetableEnrollmentInfoCopyWith<$Res> {
+  _$TimetableEnrollmentInfoCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of EnrollmentInfo
+  /// Create a copy of TimetableEnrollmentInfo
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -411,7 +414,7 @@ class _$EnrollmentInfoCopyWithImpl<$Res, $Val extends EnrollmentInfo>
     ) as $Val);
   }
 
-  /// Create a copy of EnrollmentInfo
+  /// Create a copy of TimetableEnrollmentInfo
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
@@ -421,7 +424,7 @@ class _$EnrollmentInfoCopyWithImpl<$Res, $Val extends EnrollmentInfo>
     });
   }
 
-  /// Create a copy of EnrollmentInfo
+  /// Create a copy of TimetableEnrollmentInfo
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
@@ -431,7 +434,7 @@ class _$EnrollmentInfoCopyWithImpl<$Res, $Val extends EnrollmentInfo>
     });
   }
 
-  /// Create a copy of EnrollmentInfo
+  /// Create a copy of TimetableEnrollmentInfo
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
@@ -443,11 +446,12 @@ class _$EnrollmentInfoCopyWithImpl<$Res, $Val extends EnrollmentInfo>
 }
 
 /// @nodoc
-abstract class _$$EnrollmentInfoImplCopyWith<$Res>
-    implements $EnrollmentInfoCopyWith<$Res> {
-  factory _$$EnrollmentInfoImplCopyWith(_$EnrollmentInfoImpl value,
-          $Res Function(_$EnrollmentInfoImpl) then) =
-      __$$EnrollmentInfoImplCopyWithImpl<$Res>;
+abstract class _$$TimetableEnrollmentInfoImplCopyWith<$Res>
+    implements $TimetableEnrollmentInfoCopyWith<$Res> {
+  factory _$$TimetableEnrollmentInfoImplCopyWith(
+          _$TimetableEnrollmentInfoImpl value,
+          $Res Function(_$TimetableEnrollmentInfoImpl) then) =
+      __$$TimetableEnrollmentInfoImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({SubjectInfo subject, BatchInfo batch, TeacherInfo teacher});
@@ -461,14 +465,16 @@ abstract class _$$EnrollmentInfoImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$EnrollmentInfoImplCopyWithImpl<$Res>
-    extends _$EnrollmentInfoCopyWithImpl<$Res, _$EnrollmentInfoImpl>
-    implements _$$EnrollmentInfoImplCopyWith<$Res> {
-  __$$EnrollmentInfoImplCopyWithImpl(
-      _$EnrollmentInfoImpl _value, $Res Function(_$EnrollmentInfoImpl) _then)
+class __$$TimetableEnrollmentInfoImplCopyWithImpl<$Res>
+    extends _$TimetableEnrollmentInfoCopyWithImpl<$Res,
+        _$TimetableEnrollmentInfoImpl>
+    implements _$$TimetableEnrollmentInfoImplCopyWith<$Res> {
+  __$$TimetableEnrollmentInfoImplCopyWithImpl(
+      _$TimetableEnrollmentInfoImpl _value,
+      $Res Function(_$TimetableEnrollmentInfoImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of EnrollmentInfo
+  /// Create a copy of TimetableEnrollmentInfo
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -477,7 +483,7 @@ class __$$EnrollmentInfoImplCopyWithImpl<$Res>
     Object? batch = null,
     Object? teacher = null,
   }) {
-    return _then(_$EnrollmentInfoImpl(
+    return _then(_$TimetableEnrollmentInfoImpl(
       subject: null == subject
           ? _value.subject
           : subject // ignore: cast_nullable_to_non_nullable
@@ -496,12 +502,12 @@ class __$$EnrollmentInfoImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$EnrollmentInfoImpl implements _EnrollmentInfo {
-  const _$EnrollmentInfoImpl(
+class _$TimetableEnrollmentInfoImpl implements _TimetableEnrollmentInfo {
+  const _$TimetableEnrollmentInfoImpl(
       {required this.subject, required this.batch, required this.teacher});
 
-  factory _$EnrollmentInfoImpl.fromJson(Map<String, dynamic> json) =>
-      _$$EnrollmentInfoImplFromJson(json);
+  factory _$TimetableEnrollmentInfoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TimetableEnrollmentInfoImplFromJson(json);
 
   @override
   final SubjectInfo subject;
@@ -512,14 +518,14 @@ class _$EnrollmentInfoImpl implements _EnrollmentInfo {
 
   @override
   String toString() {
-    return 'EnrollmentInfo(subject: $subject, batch: $batch, teacher: $teacher)';
+    return 'TimetableEnrollmentInfo(subject: $subject, batch: $batch, teacher: $teacher)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$EnrollmentInfoImpl &&
+            other is _$TimetableEnrollmentInfoImpl &&
             (identical(other.subject, subject) || other.subject == subject) &&
             (identical(other.batch, batch) || other.batch == batch) &&
             (identical(other.teacher, teacher) || other.teacher == teacher));
@@ -529,31 +535,31 @@ class _$EnrollmentInfoImpl implements _EnrollmentInfo {
   @override
   int get hashCode => Object.hash(runtimeType, subject, batch, teacher);
 
-  /// Create a copy of EnrollmentInfo
+  /// Create a copy of TimetableEnrollmentInfo
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$EnrollmentInfoImplCopyWith<_$EnrollmentInfoImpl> get copyWith =>
-      __$$EnrollmentInfoImplCopyWithImpl<_$EnrollmentInfoImpl>(
-          this, _$identity);
+  _$$TimetableEnrollmentInfoImplCopyWith<_$TimetableEnrollmentInfoImpl>
+      get copyWith => __$$TimetableEnrollmentInfoImplCopyWithImpl<
+          _$TimetableEnrollmentInfoImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$EnrollmentInfoImplToJson(
+    return _$$TimetableEnrollmentInfoImplToJson(
       this,
     );
   }
 }
 
-abstract class _EnrollmentInfo implements EnrollmentInfo {
-  const factory _EnrollmentInfo(
+abstract class _TimetableEnrollmentInfo implements TimetableEnrollmentInfo {
+  const factory _TimetableEnrollmentInfo(
       {required final SubjectInfo subject,
       required final BatchInfo batch,
-      required final TeacherInfo teacher}) = _$EnrollmentInfoImpl;
+      required final TeacherInfo teacher}) = _$TimetableEnrollmentInfoImpl;
 
-  factory _EnrollmentInfo.fromJson(Map<String, dynamic> json) =
-      _$EnrollmentInfoImpl.fromJson;
+  factory _TimetableEnrollmentInfo.fromJson(Map<String, dynamic> json) =
+      _$TimetableEnrollmentInfoImpl.fromJson;
 
   @override
   SubjectInfo get subject;
@@ -562,12 +568,12 @@ abstract class _EnrollmentInfo implements EnrollmentInfo {
   @override
   TeacherInfo get teacher;
 
-  /// Create a copy of EnrollmentInfo
+  /// Create a copy of TimetableEnrollmentInfo
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$EnrollmentInfoImplCopyWith<_$EnrollmentInfoImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$TimetableEnrollmentInfoImplCopyWith<_$TimetableEnrollmentInfoImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 SubjectInfo _$SubjectInfoFromJson(Map<String, dynamic> json) {
