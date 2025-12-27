@@ -129,8 +129,9 @@ _$SessionWithDetailsImpl _$$SessionWithDetailsImplFromJson(
       date: DateTime.parse(json['date'] as String),
       startTime: json['startTime'] as String,
       endTime: json['endTime'] as String,
-      type: json['type'] as String,
+      type: json['type'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
       subjectEnrollment: SubjectEnrollmentDetailInfo.fromJson(
           json['subjectEnrollment'] as Map<String, dynamic>),
       count:
@@ -148,6 +149,7 @@ Map<String, dynamic> _$$SessionWithDetailsImplToJson(
       'endTime': instance.endTime,
       'type': instance.type,
       'createdAt': instance.createdAt.toIso8601String(),
+      'updatedAt': instance.updatedAt.toIso8601String(),
       'subjectEnrollment': instance.subjectEnrollment,
       'count': instance.count,
     };

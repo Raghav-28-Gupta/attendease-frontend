@@ -21,7 +21,6 @@ class AttendanceHistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ✅ Now returns SessionWithDetails
     final sessionsAsync = ref.watch(enrollmentSessionsProvider(enrollmentId));
 
     return Scaffold(
@@ -63,8 +62,7 @@ class AttendanceHistoryScreen extends ConsumerWidget {
               itemCount: sessions.length,
               itemBuilder: (context, index) {
                 final session = sessions[index];
-                return _SessionCard(
-                    session: session); // ✅ Now SessionWithDetails
+                return _SessionCard(session: session);
               },
             ),
           );
@@ -81,12 +79,15 @@ class AttendanceHistoryScreen extends ConsumerWidget {
 }
 
 class _SessionCard extends StatelessWidget {
-  final SessionWithDetails session; // ✅ CHANGED from AttendanceSessionModel
+  final SessionWithDetails session;
 
   const _SessionCard({required this.session});
 
   @override
   Widget build(BuildContext context) {
+    // ✅ FIX: Safely handle nullable type
+    final sessionType = session.type ?? 'REGULAR';
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -112,8 +113,7 @@ class _SessionCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        session.date
-                            .format('dd MMM yyyy'), // ✅ Works with DateTime
+                        session.date.format('dd MMM yyyy'),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -127,20 +127,20 @@ class _SessionCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _getTypeColor(session.type)
+                      color: _getTypeColor(sessionType)
                           .withAlpha((0.1 * 255).round()),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: _getTypeColor(session.type)
+                        color: _getTypeColor(sessionType)
                             .withAlpha((0.3 * 255).round()),
                       ),
                     ),
                     child: Text(
-                      session.type,
+                      sessionType,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: _getTypeColor(session.type),
+                        color: _getTypeColor(sessionType),
                       ),
                     ),
                   ),
@@ -175,8 +175,7 @@ class _SessionCard extends StatelessWidget {
                 children: [
                   _StatChip(
                     label: 'Present',
-                    value:
-                        session.count.records.toString(), // ✅ Use count field
+                    value: session.count.records.toString(),
                     color: AppColors.success,
                   ),
                   const SizedBox(width: 8),
@@ -202,8 +201,12 @@ class _SessionCard extends StatelessWidget {
 
   Color _getTypeColor(String type) {
     switch (type.toUpperCase()) {
-      case 'LECTURE':
+      case 'REGULAR':
         return AppColors.primary;
+      case 'MAKEUP':
+        return AppColors.warning;
+      case 'EXTRA':
+        return AppColors.info;
       case 'LAB':
         return AppColors.info;
       case 'TUTORIAL':

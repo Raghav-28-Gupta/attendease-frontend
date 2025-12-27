@@ -1411,8 +1411,9 @@ mixin _$SessionWithDetails {
   DateTime get date => throw _privateConstructorUsedError;
   String get startTime => throw _privateConstructorUsedError;
   String get endTime => throw _privateConstructorUsedError;
-  String get type => throw _privateConstructorUsedError;
+  String? get type => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get updatedAt => throw _privateConstructorUsedError;
   SubjectEnrollmentDetailInfo get subjectEnrollment =>
       throw _privateConstructorUsedError;
   SessionRecordsCount get count => throw _privateConstructorUsedError;
@@ -1440,8 +1441,9 @@ abstract class $SessionWithDetailsCopyWith<$Res> {
       DateTime date,
       String startTime,
       String endTime,
-      String type,
+      String? type,
       DateTime createdAt,
+      DateTime updatedAt,
       SubjectEnrollmentDetailInfo subjectEnrollment,
       SessionRecordsCount count});
 
@@ -1470,8 +1472,9 @@ class _$SessionWithDetailsCopyWithImpl<$Res, $Val extends SessionWithDetails>
     Object? date = null,
     Object? startTime = null,
     Object? endTime = null,
-    Object? type = null,
+    Object? type = freezed,
     Object? createdAt = null,
+    Object? updatedAt = null,
     Object? subjectEnrollment = null,
     Object? count = null,
   }) {
@@ -1500,13 +1503,17 @@ class _$SessionWithDetailsCopyWithImpl<$Res, $Val extends SessionWithDetails>
           ? _value.endTime
           : endTime // ignore: cast_nullable_to_non_nullable
               as String,
-      type: null == type
+      type: freezed == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
       subjectEnrollment: null == subjectEnrollment
           ? _value.subjectEnrollment
@@ -1556,8 +1563,9 @@ abstract class _$$SessionWithDetailsImplCopyWith<$Res>
       DateTime date,
       String startTime,
       String endTime,
-      String type,
+      String? type,
       DateTime createdAt,
+      DateTime updatedAt,
       SubjectEnrollmentDetailInfo subjectEnrollment,
       SessionRecordsCount count});
 
@@ -1586,8 +1594,9 @@ class __$$SessionWithDetailsImplCopyWithImpl<$Res>
     Object? date = null,
     Object? startTime = null,
     Object? endTime = null,
-    Object? type = null,
+    Object? type = freezed,
     Object? createdAt = null,
+    Object? updatedAt = null,
     Object? subjectEnrollment = null,
     Object? count = null,
   }) {
@@ -1616,13 +1625,17 @@ class __$$SessionWithDetailsImplCopyWithImpl<$Res>
           ? _value.endTime
           : endTime // ignore: cast_nullable_to_non_nullable
               as String,
-      type: null == type
+      type: freezed == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
       subjectEnrollment: null == subjectEnrollment
           ? _value.subjectEnrollment
@@ -1638,7 +1651,7 @@ class __$$SessionWithDetailsImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$SessionWithDetailsImpl implements _SessionWithDetails {
+class _$SessionWithDetailsImpl extends _SessionWithDetails {
   const _$SessionWithDetailsImpl(
       {required this.id,
       required this.subjectEnrollmentId,
@@ -1646,10 +1659,12 @@ class _$SessionWithDetailsImpl implements _SessionWithDetails {
       required this.date,
       required this.startTime,
       required this.endTime,
-      required this.type,
+      this.type,
       required this.createdAt,
+      required this.updatedAt,
       required this.subjectEnrollment,
-      required this.count});
+      required this.count})
+      : super._();
 
   factory _$SessionWithDetailsImpl.fromJson(Map<String, dynamic> json) =>
       _$$SessionWithDetailsImplFromJson(json);
@@ -1667,9 +1682,11 @@ class _$SessionWithDetailsImpl implements _SessionWithDetails {
   @override
   final String endTime;
   @override
-  final String type;
+  final String? type;
   @override
   final DateTime createdAt;
+  @override
+  final DateTime updatedAt;
   @override
   final SubjectEnrollmentDetailInfo subjectEnrollment;
   @override
@@ -1677,7 +1694,7 @@ class _$SessionWithDetailsImpl implements _SessionWithDetails {
 
   @override
   String toString() {
-    return 'SessionWithDetails(id: $id, subjectEnrollmentId: $subjectEnrollmentId, teacherId: $teacherId, date: $date, startTime: $startTime, endTime: $endTime, type: $type, createdAt: $createdAt, subjectEnrollment: $subjectEnrollment, count: $count)';
+    return 'SessionWithDetails(id: $id, subjectEnrollmentId: $subjectEnrollmentId, teacherId: $teacherId, date: $date, startTime: $startTime, endTime: $endTime, type: $type, createdAt: $createdAt, updatedAt: $updatedAt, subjectEnrollment: $subjectEnrollment, count: $count)';
   }
 
   @override
@@ -1697,6 +1714,8 @@ class _$SessionWithDetailsImpl implements _SessionWithDetails {
             (identical(other.type, type) || other.type == type) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
             (identical(other.subjectEnrollment, subjectEnrollment) ||
                 other.subjectEnrollment == subjectEnrollment) &&
             (identical(other.count, count) || other.count == count));
@@ -1714,6 +1733,7 @@ class _$SessionWithDetailsImpl implements _SessionWithDetails {
       endTime,
       type,
       createdAt,
+      updatedAt,
       subjectEnrollment,
       count);
 
@@ -1734,7 +1754,7 @@ class _$SessionWithDetailsImpl implements _SessionWithDetails {
   }
 }
 
-abstract class _SessionWithDetails implements SessionWithDetails {
+abstract class _SessionWithDetails extends SessionWithDetails {
   const factory _SessionWithDetails(
       {required final String id,
       required final String subjectEnrollmentId,
@@ -1742,10 +1762,12 @@ abstract class _SessionWithDetails implements SessionWithDetails {
       required final DateTime date,
       required final String startTime,
       required final String endTime,
-      required final String type,
+      final String? type,
       required final DateTime createdAt,
+      required final DateTime updatedAt,
       required final SubjectEnrollmentDetailInfo subjectEnrollment,
       required final SessionRecordsCount count}) = _$SessionWithDetailsImpl;
+  const _SessionWithDetails._() : super._();
 
   factory _SessionWithDetails.fromJson(Map<String, dynamic> json) =
       _$SessionWithDetailsImpl.fromJson;
@@ -1763,9 +1785,11 @@ abstract class _SessionWithDetails implements SessionWithDetails {
   @override
   String get endTime;
   @override
-  String get type;
+  String? get type;
   @override
   DateTime get createdAt;
+  @override
+  DateTime get updatedAt;
   @override
   SubjectEnrollmentDetailInfo get subjectEnrollment;
   @override

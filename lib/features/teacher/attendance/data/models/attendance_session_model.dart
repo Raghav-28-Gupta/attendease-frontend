@@ -98,11 +98,16 @@ class SessionWithDetails with _$SessionWithDetails {
     required DateTime date,
     required String startTime,
     required String endTime,
-    required String type,
+    String? type, 
     required DateTime createdAt,
+    required DateTime updatedAt,
     required SubjectEnrollmentDetailInfo subjectEnrollment,
     required SessionRecordsCount count,
   }) = _SessionWithDetails;
+
+  const SessionWithDetails._();
+  
+  String get sessionType => type ?? 'REGULAR';
 
   factory SessionWithDetails.fromJson(Map<String, dynamic> json) =>
       _$SessionWithDetailsFromJson(json);
