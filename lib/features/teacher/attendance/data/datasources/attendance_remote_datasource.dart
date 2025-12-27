@@ -11,7 +11,11 @@ abstract class AttendanceRemoteDatasource {
   Future<List<AttendanceSessionModel>> getTeacherSessions();
   Future<List<SessionWithDetails>> getEnrollmentSessions(String enrollmentId);
   Future<Map<String, dynamic>> getSessionDetails(String sessionId);
-  Future<Map<String, dynamic>> updateAttendanceRecord({required String recordId, required String status, String? reason,});
+  Future<Map<String, dynamic>> updateAttendanceRecord({
+    required String recordId,
+    required String status,
+    String? reason,
+  });
 }
 
 class AttendanceRemoteDatasourceImpl implements AttendanceRemoteDatasource {
@@ -106,7 +110,9 @@ class AttendanceRemoteDatasourceImpl implements AttendanceRemoteDatasource {
     }
   }
 
-  Future<List<SessionWithDetails>> getEnrollmentSessions(String enrollmentId) async {
+  @override
+  Future<List<SessionWithDetails>> getEnrollmentSessions(
+      String enrollmentId) async {
     try {
       final response = await dio.get(
         ApiEndpoints.enrollmentSessions(enrollmentId),
@@ -114,7 +120,25 @@ class AttendanceRemoteDatasourceImpl implements AttendanceRemoteDatasource {
 
       if (response.data['success'] == true) {
         final List data = response.data['data'] ?? [];
-        return data.map((json) => SessionWithDetails.fromJson(json)).toList();
+
+        // ✅ ADD THIS DEBUG LOGGING
+        print('=== RAW RESPONSE ===');
+        for (var session in data) {
+          print('Session ID: ${session['id']}');
+          print('Count field: ${session['_count']}');
+          print('Full session: ${session.toString()}');
+        }
+        print('====================');
+
+        return data.map((json) {
+          try {
+            return SessionWithDetails.fromJson(json);
+          } catch (e) {
+            print('❌ Failed to parse session: $e');
+            print('Session data: $json');
+            rethrow;
+          }
+        }).toList();
       } else {
         throw const NetworkException.defaultError('Failed to fetch sessions');
       }
@@ -123,6 +147,7 @@ class AttendanceRemoteDatasourceImpl implements AttendanceRemoteDatasource {
     }
   }
 
+  @override
   Future<Map<String, dynamic>> getSessionDetails(String sessionId) async {
     try {
       final response = await dio.get(
@@ -132,13 +157,15 @@ class AttendanceRemoteDatasourceImpl implements AttendanceRemoteDatasource {
       if (response.data['success'] == true) {
         return response.data['data'];
       } else {
-        throw const NetworkException.defaultError('Failed to fetch session details');
+        throw const NetworkException.defaultError(
+            'Failed to fetch session details');
       }
     } on DioException catch (e) {
       throw NetworkException.getDioException(e);
     }
   }
-  
+
+  @override
   Future<Map<String, dynamic>> updateAttendanceRecord({
     required String recordId,
     required String status,

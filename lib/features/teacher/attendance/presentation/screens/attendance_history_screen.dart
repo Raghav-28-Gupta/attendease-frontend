@@ -86,7 +86,7 @@ class _SessionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // ✅ FIX: Safely handle nullable type
-    final sessionType = session.type ?? 'REGULAR';
+    final sessionType = session.sessionType;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),

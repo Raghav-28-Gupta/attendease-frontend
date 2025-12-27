@@ -135,7 +135,7 @@ _$SessionWithDetailsImpl _$$SessionWithDetailsImplFromJson(
       subjectEnrollment: SubjectEnrollmentDetailInfo.fromJson(
           json['subjectEnrollment'] as Map<String, dynamic>),
       count:
-          SessionRecordsCount.fromJson(json['count'] as Map<String, dynamic>),
+          SessionRecordsCount.fromJson(json['_count'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$SessionWithDetailsImplToJson(
@@ -151,21 +151,78 @@ Map<String, dynamic> _$$SessionWithDetailsImplToJson(
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
       'subjectEnrollment': instance.subjectEnrollment,
-      'count': instance.count,
+      '_count': instance.count,
     };
 
 _$SubjectEnrollmentDetailInfoImpl _$$SubjectEnrollmentDetailInfoImplFromJson(
         Map<String, dynamic> json) =>
     _$SubjectEnrollmentDetailInfoImpl(
-      subject: SubjectInfo.fromJson(json['subject'] as Map<String, dynamic>),
-      batch: BatchInfo.fromJson(json['batch'] as Map<String, dynamic>),
+      id: json['id'] as String,
+      subject: AttendanceSubjectInfo.fromJson(
+          json['subject'] as Map<String, dynamic>),
+      batch:
+          AttendanceBatchInfo.fromJson(json['batch'] as Map<String, dynamic>),
+      teacher: AttendanceTeacherInfo.fromJson(
+          json['teacher'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$SubjectEnrollmentDetailInfoImplToJson(
         _$SubjectEnrollmentDetailInfoImpl instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'subject': instance.subject,
       'batch': instance.batch,
+      'teacher': instance.teacher,
+    };
+
+_$AttendanceSubjectInfoImpl _$$AttendanceSubjectInfoImplFromJson(
+        Map<String, dynamic> json) =>
+    _$AttendanceSubjectInfoImpl(
+      id: json['id'] as String,
+      code: json['code'] as String,
+      name: json['name'] as String,
+    );
+
+Map<String, dynamic> _$$AttendanceSubjectInfoImplToJson(
+        _$AttendanceSubjectInfoImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'code': instance.code,
+      'name': instance.name,
+    };
+
+_$AttendanceBatchInfoImpl _$$AttendanceBatchInfoImplFromJson(
+        Map<String, dynamic> json) =>
+    _$AttendanceBatchInfoImpl(
+      id: json['id'] as String,
+      code: json['code'] as String,
+      name: json['name'] as String,
+    );
+
+Map<String, dynamic> _$$AttendanceBatchInfoImplToJson(
+        _$AttendanceBatchInfoImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'code': instance.code,
+      'name': instance.name,
+    };
+
+_$AttendanceTeacherInfoImpl _$$AttendanceTeacherInfoImplFromJson(
+        Map<String, dynamic> json) =>
+    _$AttendanceTeacherInfoImpl(
+      id: json['id'] as String,
+      firstName: json['firstName'] as String,
+      lastName: json['lastName'] as String,
+      employeeId: json['employeeId'] as String,
+    );
+
+Map<String, dynamic> _$$AttendanceTeacherInfoImplToJson(
+        _$AttendanceTeacherInfoImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'firstName': instance.firstName,
+      'lastName': instance.lastName,
+      'employeeId': instance.employeeId,
     };
 
 _$SessionRecordsCountImpl _$$SessionRecordsCountImplFromJson(
@@ -200,4 +257,20 @@ Map<String, dynamic> _$$AttendanceRecordDetailImplToJson(
       'status': instance.status,
       'markedAt': instance.markedAt.toIso8601String(),
       'student': instance.student,
+    };
+
+_$TeacherInfoImpl _$$TeacherInfoImplFromJson(Map<String, dynamic> json) =>
+    _$TeacherInfoImpl(
+      id: json['id'] as String,
+      firstName: json['firstName'] as String,
+      lastName: json['lastName'] as String,
+      employeeId: json['employeeId'] as String,
+    );
+
+Map<String, dynamic> _$$TeacherInfoImplToJson(_$TeacherInfoImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'firstName': instance.firstName,
+      'lastName': instance.lastName,
+      'employeeId': instance.employeeId,
     };

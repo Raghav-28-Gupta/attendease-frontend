@@ -102,11 +102,11 @@ class SessionWithDetails with _$SessionWithDetails {
     required DateTime createdAt,
     required DateTime updatedAt,
     required SubjectEnrollmentDetailInfo subjectEnrollment,
-    required SessionRecordsCount count,
+    @JsonKey(name: '_count') required SessionRecordsCount count,
   }) = _SessionWithDetails;
 
   const SessionWithDetails._();
-  
+
   String get sessionType => type ?? 'REGULAR';
 
   factory SessionWithDetails.fromJson(Map<String, dynamic> json) =>
@@ -116,8 +116,10 @@ class SessionWithDetails with _$SessionWithDetails {
 @freezed
 class SubjectEnrollmentDetailInfo with _$SubjectEnrollmentDetailInfo {
   const factory SubjectEnrollmentDetailInfo({
-    required SubjectInfo subject,
-    required BatchInfo batch,
+    required String id, 
+    required AttendanceSubjectInfo subject,
+    required AttendanceBatchInfo batch,
+    required AttendanceTeacherInfo teacher,
   }) = _SubjectEnrollmentDetailInfo;
 
   factory SubjectEnrollmentDetailInfo.fromJson(Map<String, dynamic> json) =>
@@ -125,9 +127,50 @@ class SubjectEnrollmentDetailInfo with _$SubjectEnrollmentDetailInfo {
 }
 
 @freezed
+class AttendanceSubjectInfo with _$AttendanceSubjectInfo {
+  const factory AttendanceSubjectInfo({
+    required String id,
+    required String code,
+    required String name,
+  }) = _AttendanceSubjectInfo;
+
+  factory AttendanceSubjectInfo.fromJson(Map<String, dynamic> json) =>
+      _$AttendanceSubjectInfoFromJson(json);
+}
+
+@freezed
+class AttendanceBatchInfo with _$AttendanceBatchInfo {
+  const factory AttendanceBatchInfo({
+    required String id,
+    required String code,
+    required String name,
+  }) = _AttendanceBatchInfo;
+
+  factory AttendanceBatchInfo.fromJson(Map<String, dynamic> json) =>
+      _$AttendanceBatchInfoFromJson(json);
+}
+
+@freezed
+class AttendanceTeacherInfo with _$AttendanceTeacherInfo {
+  const factory AttendanceTeacherInfo({
+    required String id,
+    required String firstName,
+    required String lastName,
+    required String employeeId,
+  }) = _AttendanceTeacherInfo;
+
+  const AttendanceTeacherInfo._();
+
+  String get fullName => '$firstName $lastName';
+
+  factory AttendanceTeacherInfo.fromJson(Map<String, dynamic> json) =>
+      _$AttendanceTeacherInfoFromJson(json);
+}
+
+@freezed
 class SessionRecordsCount with _$SessionRecordsCount {
   const factory SessionRecordsCount({
-    required int records,
+    @JsonKey(name: 'records') required int records,
   }) = _SessionRecordsCount;
 
   factory SessionRecordsCount.fromJson(Map<String, dynamic> json) =>
@@ -147,4 +190,21 @@ class AttendanceRecordDetail with _$AttendanceRecordDetail {
 
   factory AttendanceRecordDetail.fromJson(Map<String, dynamic> json) =>
       _$AttendanceRecordDetailFromJson(json);
+}
+
+@freezed
+class TeacherInfo with _$TeacherInfo {
+  const factory TeacherInfo({
+    required String id,
+    required String firstName,
+    required String lastName,
+    required String employeeId,
+  }) = _TeacherInfo;
+
+  const TeacherInfo._();
+
+  String get fullName => '$firstName $lastName';
+
+  factory TeacherInfo.fromJson(Map<String, dynamic> json) =>
+      _$TeacherInfoFromJson(json);
 }
