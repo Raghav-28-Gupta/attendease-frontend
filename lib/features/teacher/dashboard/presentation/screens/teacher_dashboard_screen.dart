@@ -10,6 +10,8 @@ import '../../../../../core/widgets/section_header.dart';
 import '../../../../../core/widgets/connection_status_widget.dart';
 import '../../../../../core/utils/logger.dart';
 import '../../../../../core/services/socket_service.dart';
+import '../../../../../core/services/class_reminder_service.dart';
+import '../../../../../core/services/firebase_service.dart';
 import '../../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/dashboard_provider.dart';
 import '../providers/dashboard_state.dart';
@@ -29,20 +31,69 @@ class TeacherDashboardScreen extends ConsumerStatefulWidget {
 
 class _TeacherDashboardScreenState
     extends ConsumerState<TeacherDashboardScreen> {
-  
+  bool _remindersInitialized = false;
+
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       ref.read(teacherDashboardProvider.notifier).refresh();
+      _initializeClassReminders();
     });
+  }
+
+  /// Initialize class reminders for today
+  Future<void> _initializeClassReminders() async {
+    if (_remindersInitialized) return;
+    _remindersInitialized = true;
+
+    try {
+      // Register teacher FCM token
+      final firebaseService = ref.read(firebaseServiceProvider);
+      await firebaseService.registerTeacherFCMToken();
+      AppLogger.info('✅ Teacher FCM token registered');
+
+      // Initialize and schedule class reminders
+      final reminderService = ref.read(classReminderServiceProvider);
+      await reminderService.initialize();
+      final count = await reminderService.scheduleRemindersForToday();
+
+      if (count > 0) {
+        AppLogger.info('✅ Scheduled $count class reminders for today');
+        // Optionally show a snackbar
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('📚 Scheduled $count class reminders for today'),
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      }
+
+      // Check for pending navigation from notification tap
+      final pendingNav = await reminderService.checkPendingNavigation();
+      if (pendingNav != null && pendingNav['action'] == 'CREATE_SESSION') {
+        if (mounted) {
+          context.push('/teacher/create-session', extra: {
+            'enrollmentId': pendingNav['enrollmentId'],
+            'subjectCode': pendingNav['subjectCode'],
+            'subjectName': pendingNav['subjectName'],
+            'batchCode': pendingNav['batchCode'],
+          });
+        }
+      }
+    } catch (e) {
+      AppLogger.error('❌ Failed to initialize class reminders', e);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final dashboardState = ref.watch(teacherDashboardProvider);
-    
+
     final user = authState.maybeWhen(
       authenticated: (u) => u,
       orElse: () => null,
@@ -118,9 +169,12 @@ class _TeacherDashboardScreenState
                 await ref.read(teacherDashboardProvider.notifier).refresh();
               },
               child: dashboardState.when(
-                initial: () => const LoadingWidget(message: 'Loading dashboard...'),
-                loading: () => const LoadingWidget(message: 'Loading dashboard...'),
-                loaded: (data) => _buildDashboard(context, data, user?.displayName),
+                initial: () =>
+                    const LoadingWidget(message: 'Loading dashboard...'),
+                loading: () =>
+                    const LoadingWidget(message: 'Loading dashboard...'),
+                loaded: (data) =>
+                    _buildDashboard(context, data, user?.displayName),
                 error: (message) => AppErrorWidget(
                   message: message,
                   onRetry: () {
@@ -213,7 +267,7 @@ class _TeacherDashboardScreenState
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
               // CHANGED: Reduced from 1.3 to 1.1 to give cards more height
-              childAspectRatio: 1.1, 
+              childAspectRatio: 1.1,
               children: [
                 StatsCard(
                   title: 'Enrollments',
@@ -327,12 +381,15 @@ class _TeacherDashboardScreenState
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16), // Added horizontal padding
-              itemCount: data.enrollments.length > 3 ? 3 : data.enrollments.length,
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16), // Added horizontal padding
+              itemCount:
+                  data.enrollments.length > 3 ? 3 : data.enrollments.length,
               itemBuilder: (context, index) {
                 final enrollment = data.enrollments[index];
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0), // Spacing between items
+                  padding: const EdgeInsets.only(
+                      bottom: 12.0), // Spacing between items
                   child: EnrollmentCard(
                     enrollment: enrollment,
                     onTap: () {
@@ -352,7 +409,8 @@ class _TeacherDashboardScreenState
           if (data.lowAttendanceStudents.isNotEmpty) ...[
             SectionHeader(
               title: 'Low Attendance Alerts',
-              subtitle: '${data.lowAttendanceStudents.length} students need attention',
+              subtitle:
+                  '${data.lowAttendanceStudents.length} students need attention',
             ),
             LowAttendanceList(students: data.lowAttendanceStudents),
           ],

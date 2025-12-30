@@ -23,17 +23,21 @@ class ApiEndpoints {
 
   // Teacher - Enrollments
   static const String enrollments = '/enrollments';
-  static const String myEnrollments = '/enrollments';   // (alias for clarity)
+  static const String myEnrollments = '/enrollments'; // (alias for clarity)
   static String enrollmentById(String id) => '/enrollments/$id';
-  static String subjectEnrollments(String subjectId) => '/enrollments/subjects/$subjectId';
-  static String batchSubjects(String batchId) => '/enrollments/batches/$batchId/subjects';
-  static String enrollmentStudents(String enrollmentId) => '/enrollments/$enrollmentId/students';
+  static String subjectEnrollments(String subjectId) =>
+      '/enrollments/subjects/$subjectId';
+  static String batchSubjects(String batchId) =>
+      '/enrollments/batches/$batchId/subjects';
+  static String enrollmentStudents(String enrollmentId) =>
+      '/enrollments/$enrollmentId/students';
 
   // Teacher - Batches
   static const String batches = '/batches';
   static String batchById(String id) => '/batches/$id';
   static String batchStudents(String id) => '/batches/$id/students';
-  static String importStudents(String batchId) => '/batches/$batchId/students/import';
+  static String importStudents(String batchId) =>
+      '/batches/$batchId/students/import';
 
   // Teacher - Students
   static String studentById(String id) => '/students/$id';
@@ -41,21 +45,27 @@ class ApiEndpoints {
   // Teacher - Attendance
   static const String attendanceSessions = '/attendance/sessions';
   static String sessionById(String id) => '/attendance/sessions/$id';
-  static String sessionStudents(String id) => '/attendance/sessions/$id/students';
+  static String sessionStudents(String id) =>
+      '/attendance/sessions/$id/students';
   static const String markAttendance = '/attendance/mark';
-  static String updateRecord(String recordId) => '/attendance/records/$recordId';
+  static String updateRecord(String recordId) =>
+      '/attendance/records/$recordId';
   static const String teacherSessions = '/attendance/sessions';
-  static String enrollmentSessions(String id) => '/attendance/enrollments/$id/sessions';
-  static String enrollmentSummary(String id) => '/attendance/enrollments/$id/summary';
+  static String enrollmentSessions(String id) =>
+      '/attendance/enrollments/$id/sessions';
+  static String enrollmentSummary(String id) =>
+      '/attendance/enrollments/$id/summary';
 
   // Teacher - Timetable
   static const String timetable = '/timetable';
-  static const String teacherTimetable = '/timetable/teacher'; 
-  static String timetableEntry(String id) => '/timetable/$id'; 
+  static const String teacherTimetable = '/timetable/teacher';
+  static String timetableEntry(String id) => '/timetable/$id';
   static String batchTimetable(String batchId) => '/batches/$batchId/timetable';
-  static String bulkTimetable(String batchId) => '/batches/$batchId/timetable/bulk';
-  static String enrollmentTimetable(String enrollmentId) => '/timetable/enrollments/$enrollmentId';
- 
+  static String bulkTimetable(String batchId) =>
+      '/batches/$batchId/timetable/bulk';
+  static String enrollmentTimetable(String enrollmentId) =>
+      '/timetable/enrollments/$enrollmentId';
+
   // Student - Dashboard
   static const String studentDashboard = '/dashboard/student';
 
@@ -64,13 +74,22 @@ class ApiEndpoints {
   static const String myBatch = '/students/me/batch';
   static const String myTimetable = '/students/me/timetable';
   static const String todayClasses = '/students/me/today';
-  static String subjectAttendance(String subjectCode) => '/attendance/subjects/$subjectCode/my-attendance';
+  static String subjectAttendance(String subjectCode) =>
+      '/attendance/subjects/$subjectCode/my-attendance';
 
   // Student - Attendance
-  static String studentStats(String studentId) => '/attendance/students/$studentId/stats';
+  static String studentStats(String studentId) =>
+      '/attendance/students/$studentId/stats';
 
   // Notifications
   static const String registerFCM = '/notifications/fcm/register';
   static const String unregisterFCM = '/notifications/fcm/unregister';
   static const String testNotification = '/notifications/test';
+
+  // Teacher Notifications
+  static const String registerTeacherFCM =
+      '/notifications/fcm/teacher/register';
+  static const String teacherTodayClasses =
+      '/notifications/teacher/today-classes';
+  static const String testTeacherNotification = '/notifications/teacher/test';
 }

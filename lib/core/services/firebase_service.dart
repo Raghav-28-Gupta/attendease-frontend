@@ -43,7 +43,8 @@ class FirebaseService {
 
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
         AppLogger.info('✅ Notification permission granted');
-      } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+      } else if (settings.authorizationStatus ==
+          AuthorizationStatus.provisional) {
         AppLogger.info('⚠️ Notification permission granted provisionally');
       } else {
         AppLogger.warning('❌ Notification permission denied');
@@ -68,7 +69,8 @@ class FirebaseService {
 
   /// Initialize local notifications
   Future<void> _initializeLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -107,16 +109,17 @@ class FirebaseService {
       final token = await _messaging.getToken();
       if (token != null) {
         AppLogger.info('📱 FCM Token: ${token.substring(0, 20)}...');
-        
+
         // Save token locally
         await _secureStorage.write(AppConfig.fcmTokenKey, token);
-        
+
         // ✅ Only register if user is authenticated
         final accessToken = await _secureStorage.read(AppConfig.accessTokenKey);
         if (accessToken != null && accessToken.isNotEmpty) {
           await _registerTokenWithBackend(token, accessToken);
         } else {
-          AppLogger.warning('⚠️ User not authenticated - skipping FCM registration');
+          AppLogger.warning(
+              '⚠️ User not authenticated - skipping FCM registration');
         }
 
         // Listen for token refresh
@@ -135,7 +138,8 @@ class FirebaseService {
   }
 
   /// Register FCM token with backend
-  Future<void> _registerTokenWithBackend(String token, String accessToken) async {
+  Future<void> _registerTokenWithBackend(
+      String token, String accessToken) async {
     try {
       final dio = Dio(BaseOptions(
         baseUrl: ApiEndpoints.baseUrl,
@@ -145,7 +149,8 @@ class FirebaseService {
         },
         validateStatus: (status) {
           // ✅ Accept 200-299 and 404 (endpoint might not exist yet)
-          return status != null && (status >= 200 && status < 300 || status == 404);
+          return status != null &&
+              (status >= 200 && status < 300 || status == 404);
         },
       ));
 
@@ -155,21 +160,71 @@ class FirebaseService {
       );
 
       if (response.statusCode == 404) {
-        AppLogger.warning('⚠️ FCM registration endpoint not found - continuing without notifications');
+        AppLogger.warning(
+            '⚠️ FCM registration endpoint not found - continuing without notifications');
       } else if (response.statusCode == 200 || response.statusCode == 201) {
         AppLogger.info('✅ FCM token registered with backend');
       }
     } on DioException catch (e) {
       if (e.response?.statusCode == 403) {
-        AppLogger.warning('⚠️ FCM registration forbidden - user may not have permission');
+        AppLogger.warning(
+            '⚠️ FCM registration forbidden - user may not have permission');
       } else if (e.response?.statusCode == 404) {
         AppLogger.warning('⚠️ FCM registration endpoint not found');
       } else {
-        AppLogger.error('❌ Failed to register FCM token: ${e.response?.statusCode}', e);
+        AppLogger.error(
+            '❌ Failed to register FCM token: ${e.response?.statusCode}', e);
       }
       // ✅ Don't throw - app should work without FCM
     } catch (e) {
       AppLogger.error('❌ Failed to register FCM token', e);
+    }
+  }
+
+  /// Register FCM token for teacher with backend
+  Future<void> registerTeacherFCMToken() async {
+    try {
+      final token = await _secureStorage.read(AppConfig.fcmTokenKey);
+      final accessToken = await _secureStorage.read(AppConfig.accessTokenKey);
+
+      if (token == null || accessToken == null) {
+        AppLogger.warning(
+            '⚠️ Missing token or access token for teacher FCM registration');
+        return;
+      }
+
+      final dio = Dio(BaseOptions(
+        baseUrl: ApiEndpoints.baseUrl,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+        validateStatus: (status) {
+          return status != null &&
+              (status >= 200 && status < 300 || status == 404);
+        },
+      ));
+
+      final response = await dio.post(
+        ApiEndpoints.registerTeacherFCM,
+        data: {'token': token},
+      );
+
+      if (response.statusCode == 404) {
+        AppLogger.warning('⚠️ Teacher FCM registration endpoint not found');
+      } else if (response.statusCode == 200 || response.statusCode == 201) {
+        AppLogger.info('✅ Teacher FCM token registered with backend');
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 403) {
+        AppLogger.warning('⚠️ Teacher FCM registration forbidden');
+      } else {
+        AppLogger.error(
+            '❌ Failed to register teacher FCM token: ${e.response?.statusCode}',
+            e);
+      }
+    } catch (e) {
+      AppLogger.error('❌ Failed to register teacher FCM token', e);
     }
   }
 
@@ -257,9 +312,9 @@ class FirebaseService {
   /// Handle notification action
   void _handleNotificationAction(Map<String, dynamic> data) {
     AppLogger.info('🎯 Handling notification action: $data');
-    
+
     final type = data['type'] as String?;
-    
+
     switch (type) {
       case 'attendance_marked':
         // Navigate to attendance screen
