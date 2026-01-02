@@ -1,5 +1,5 @@
 class SocketConfig {
-  static const String socketUrl = 'http://192.168.1.8:5000';
+  static const String socketUrl = 'http://192.168.1.4:5000';
   // static const String socketUrl = 'http://10.0.2.2:5000'; // Android emulator
   // For iOS simulator: http://localhost:5000
   // For physical device: http://YOUR_IP:5000
