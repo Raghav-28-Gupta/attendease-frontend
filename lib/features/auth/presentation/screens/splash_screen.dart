@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/config/theme/app_colors.dart';
+import '../../../../core/config/theme/app_spacing.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -41,16 +41,25 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppColors.primaryGradient,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              colorScheme.primary,
+              colorScheme.tertiary,
+            ],
+          ),
         ),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Animated Logo
               ScaleTransition(
                 scale: _scaleAnimation,
                 child: FadeTransition(
@@ -59,57 +68,52 @@ class _SplashScreenState extends State<SplashScreen>
                     width: 120,
                     height: 120,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: colorScheme.surface,
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withAlpha((0.2 * 255).round()),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius: 30,
                           offset: const Offset(0, 15),
                         ),
                       ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.check_circle,
                       size: 64,
-                      color: AppColors.primary,
+                      color: colorScheme.primary,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
-
-              // Animated Text
+              const SizedBox(height: AppSpacing.xl),
               FadeTransition(
                 opacity: _fadeAnimation,
-                child: const Column(
+                child: Column(
                   children: [
                     Text(
                       'AttendEase',
-                      style: TextStyle(
-                        fontSize: 36,
+                      style: textTheme.displaySmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: colorScheme.onPrimary,
                         letterSpacing: 1.2,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.sm),
                     Text(
                       'Smart Attendance Management',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
+                      style: textTheme.bodyLarge?.copyWith(
+                        color: colorScheme.onPrimary.withValues(alpha: 0.8),
                         letterSpacing: 0.5,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 48),
-
-              // Loading Indicator
-              const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              const SizedBox(height: AppSpacing.xxl),
+              CircularProgressIndicator(
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(colorScheme.onPrimary),
                 strokeWidth: 3,
               ),
             ],
