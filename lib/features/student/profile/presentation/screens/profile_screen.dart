@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../../../core/widgets/loading_widget.dart';
 import '../../../../../core/widgets/error_widget.dart';
 import '../../../../../core/widgets/app_button.dart';
 import '../../../../../core/widgets/app_text_field.dart';
+import '../../../../../core/widgets/student_navigation_bar.dart';
 import '../../../../../core/utils/snackbar_utils.dart';
 import '../../../../../core/utils/validators.dart';
 import '../../../../../core/extensions/datetime_extensions.dart';
@@ -25,7 +26,7 @@ class ProfileScreen extends ConsumerWidget {
         title: const Text('My Profile'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.lock),
+            icon: const Icon(Icons.lock_outline),
             onPressed: () {
               context.push('/change-password');
             },
@@ -43,30 +44,7 @@ class ProfileScreen extends ConsumerWidget {
           },
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2,
-        onTap: (index) {
-          if (index == 0) {
-            context.go('/student');
-          } else if (index == 1) {
-            context.push('/student/timetable');
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Timetable',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
+      bottomNavigationBar: const StudentNavigationBar(currentIndex: 2),
     );
   }
 }
@@ -91,7 +69,8 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
   @override
   void initState() {
     super.initState();
-    _firstNameController = TextEditingController(text: widget.profile.firstName);
+    _firstNameController =
+        TextEditingController(text: widget.profile.firstName);
     _lastNameController = TextEditingController(text: widget.profile.lastName);
     _phoneController = TextEditingController(text: widget.profile.phone ?? '');
   }
@@ -106,16 +85,19 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Profile Header
+          // Profile Header - M3 styled
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              borderRadius: BorderRadius.only(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer,
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(24),
                 bottomRight: Radius.circular(24),
               ),
@@ -125,25 +107,23 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
                 // Avatar
                 CircleAvatar(
                   radius: 50,
-                  backgroundColor: Colors.white,
+                  backgroundColor: colorScheme.surface,
                   child: Text(
                     widget.profile.firstName[0].toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 40,
+                    style: textTheme.displaySmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
+                      color: colorScheme.primary,
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
 
                 // Name
                 Text(
                   widget.profile.fullName,
-                  style: const TextStyle(
-                    fontSize: 24,
+                  style: textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: colorScheme.onPrimaryContainer,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -151,72 +131,80 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
                 // Student ID
                 Text(
                   'ID: ${widget.profile.studentId}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withAlpha((0.9 * 255).round()),
+                  style: textTheme.bodyLarge?.copyWith(
+                    color:
+                        colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                   ),
                 ),
               ],
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
 
           // Profile Information
           if (_isEditing)
-            _buildEditForm()
+            _buildEditForm(colorScheme)
           else
-            _buildProfileInfo(),
+            _buildProfileInfo(context),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
         ],
       ),
     );
   }
 
-  Widget _buildProfileInfo() {
+  Widget _buildProfileInfo(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Column(
         children: [
           _buildInfoCard(
-            icon: Icons.email,
+            context,
+            icon: Icons.email_outlined,
             label: 'Email',
             value: widget.profile.email,
-            color: AppColors.primary,
+            color: colorScheme.primary,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.smd),
           _buildInfoCard(
-            icon: Icons.phone,
+            context,
+            icon: Icons.phone_outlined,
             label: 'Phone',
             value: widget.profile.phone ?? 'Not provided',
-            color: AppColors.success,
+            color: colorScheme.tertiary,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.smd),
           _buildInfoCard(
-            icon: Icons.group,
+            context,
+            icon: Icons.group_outlined,
             label: 'Batch',
-            value: '${widget.profile.batch.code} - ${widget.profile.batch.name}',
-            color: AppColors.warning,
+            value:
+                '${widget.profile.batch.code} - ${widget.profile.batch.name}',
+            color: colorScheme.secondary,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.smd),
           _buildInfoCard(
-            icon: Icons.school,
+            context,
+            icon: Icons.school_outlined,
             label: 'Academic Year',
             value: widget.profile.batch.academicYear,
-            color: AppColors.secondary,
+            color: colorScheme.primary,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.smd),
           _buildInfoCard(
-            icon: Icons.calendar_today,
+            context,
+            icon: Icons.calendar_today_outlined,
             label: 'Member Since',
             value: widget.profile.createdAt.formattedDate,
-            color: AppColors.textSecondary,
+            color: colorScheme.onSurfaceVariant,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
 
           // Edit Button
-          AppButton(
+          AppButton.tonal(
             text: 'Edit Profile',
             onPressed: () {
               setState(() => _isEditing = true);
@@ -228,9 +216,9 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
     );
   }
 
-  Widget _buildEditForm() {
+  Widget _buildEditForm(ColorScheme colorScheme) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Form(
         key: _formKey,
         child: Column(
@@ -239,12 +227,12 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
               controller: _firstNameController,
               label: 'First Name',
               hint: 'Enter your first name',
-              prefixIcon: Icons.person,
+              prefixIcon: Icons.person_outline,
               validator: Validators.required,
               enabled: !_isSubmitting,
               textCapitalization: TextCapitalization.words,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             AppTextField(
               controller: _lastNameController,
               label: 'Last Name',
@@ -254,31 +242,30 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
               enabled: !_isSubmitting,
               textCapitalization: TextCapitalization.words,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             AppTextField(
               controller: _phoneController,
               label: 'Phone',
               hint: 'Enter your phone number',
-              prefixIcon: Icons.phone,
+              prefixIcon: Icons.phone_outlined,
               keyboardType: TextInputType.phone,
               enabled: !_isSubmitting,
               textCapitalization: TextCapitalization.none,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
 
             // Buttons
             Row(
               children: [
                 Expanded(
-                  child: AppButton(
+                  child: AppButton.outlined(
                     text: 'Cancel',
                     onPressed: _isSubmitting ? null : _handleCancel,
-                    isOutlined: true,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.smd),
                 Expanded(
-                  child: AppButton(
+                  child: AppButton.filled(
                     text: 'Save',
                     onPressed: _isSubmitting ? null : _handleSave,
                     isLoading: _isSubmitting,
@@ -292,35 +279,37 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
     );
   }
 
-  Widget _buildInfoCard({
+  Widget _buildInfoCard(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required String value,
     required Color color,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: color.withAlpha((0.1 * 255).round()),
+            color: color.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: color, size: 24),
         ),
         title: Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
+          style: textTheme.labelMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
         subtitle: Text(
           value,
-          style: const TextStyle(
-            fontSize: 16,
+          style: textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: colorScheme.onSurface,
           ),
         ),
       ),
@@ -349,9 +338,8 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
           : _phoneController.text.trim(),
     );
 
-    final success = await ref
-        .read(updateProfileProvider.notifier)
-        .updateProfile(request);
+    final success =
+        await ref.read(updateProfileProvider.notifier).updateProfile(request);
 
     if (mounted) {
       setState(() => _isSubmitting = false);

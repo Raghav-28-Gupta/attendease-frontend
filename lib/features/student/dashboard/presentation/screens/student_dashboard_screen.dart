@@ -2,11 +2,12 @@ import 'package:attendease_frontend/core/providers/firebase_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../../../core/widgets/loading_widget.dart';
 import '../../../../../core/widgets/error_widget.dart';
 import '../../../../../core/widgets/section_header.dart';
 import '../../../../../core/widgets/info_card.dart';
+import '../../../../../core/widgets/student_navigation_bar.dart';
 import '../../../../../core/utils/logger.dart';
 import '../../../../../core/providers/socket_provider.dart';
 import '../../../../auth/presentation/providers/auth_provider.dart';
@@ -29,7 +30,6 @@ class _StudentDashboardScreenState
   @override
   void initState() {
     super.initState();
-    // Load dashboard data on init
     Future.microtask(() {
       ref.read(studentDashboardProvider.notifier).loadDashboard();
     });
@@ -38,14 +38,15 @@ class _StudentDashboardScreenState
   @override
   Widget build(BuildContext context) {
     final dashboardState = ref.watch(studentDashboardProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
-    // Initialize socket connection and listen for real-time updates
+    // Initialize socket connection
     ref.listen(initializeSocketProvider, (previous, next) {
       next.when(
         data: (_) {
           dashboardState.maybeWhen(
             loaded: (data) {
-              // Join student room for real-time attendance updates
               final socketNotifier = ref.read(studentSocketProvider);
               socketNotifier.joinStudentRoom(data.student.id);
               AppLogger.info('📡 Joined student room: ${data.student.id}');
@@ -65,13 +66,10 @@ class _StudentDashboardScreenState
     // Initialize Firebase
     ref.listen(initializeFirebaseProvider, (previous, next) {
       next.when(
-        data: (_) {
-          AppLogger.info('✅ Firebase ready for notifications');
-        },
+        data: (_) => AppLogger.info('✅ Firebase ready for notifications'),
         loading: () {},
-        error: (error, stack) {
-          AppLogger.error('Firebase initialization failed', error);
-        },
+        error: (error, stack) =>
+            AppLogger.error('Firebase initialization failed', error),
       );
     });
 
@@ -92,7 +90,7 @@ class _StudentDashboardScreenState
               } else if (value == 'timetable') {
                 context.push('/student/timetable');
               } else if (value == 'logout') {
-                _showLogoutDialog(context);
+                _showLogoutDialog(context, colorScheme);
               }
             },
             itemBuilder: (context) => [
@@ -100,8 +98,8 @@ class _StudentDashboardScreenState
                 value: 'profile',
                 child: Row(
                   children: [
-                    Icon(Icons.person, size: 20),
-                    SizedBox(width: 12),
+                    Icon(Icons.person_outline, size: 20),
+                    SizedBox(width: AppSpacing.smd),
                     Text('Profile'),
                   ],
                 ),
@@ -110,19 +108,19 @@ class _StudentDashboardScreenState
                 value: 'timetable',
                 child: Row(
                   children: [
-                    Icon(Icons.calendar_month, size: 20),
-                    SizedBox(width: 12),
+                    Icon(Icons.calendar_month_outlined, size: 20),
+                    SizedBox(width: AppSpacing.smd),
                     Text('Timetable'),
                   ],
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'logout',
                 child: Row(
                   children: [
-                    Icon(Icons.logout, size: 20),
-                    SizedBox(width: 12),
-                    Text('Logout'),
+                    Icon(Icons.logout, size: 20, color: colorScheme.error),
+                    const SizedBox(width: AppSpacing.smd),
+                    Text('Logout', style: TextStyle(color: colorScheme.error)),
                   ],
                 ),
               ),
@@ -146,34 +144,13 @@ class _StudentDashboardScreenState
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        onTap: (index) {
-          if (index == 1) {
-            context.push('/student/timetable');
-          } else if (index == 2) {
-            context.push('/student/profile');
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Timetable',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
+      bottomNavigationBar: const StudentNavigationBar(currentIndex: 0),
     );
   }
 
   Widget _buildDashboard(BuildContext context, dynamic data) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final overview = data.overview;
     final lowAttendanceCount = data.subjects
         .where(
@@ -182,18 +159,17 @@ class _StudentDashboardScreenState
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      // Added padding at the bottom to ensure content isn't obscured
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Welcome Header
+          // Welcome Header - M3 styled
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              borderRadius: BorderRadius.only(
+            padding: const EdgeInsets.all(AppSpacing.mlg),
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer,
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(24),
                 bottomRight: Radius.circular(24),
               ),
@@ -205,26 +181,25 @@ class _StudentDashboardScreenState
                 children: [
                   Text(
                     'Hello, ${data.student.firstName}! 👋',
-                    style: const TextStyle(
-                      fontSize: 28,
+                    style: textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: colorScheme.onPrimaryContainer,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Student ID: ${data.student.studentId}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white.withOpacity(0.9),
+                    style: textTheme.bodyMedium?.copyWith(
+                      color:
+                          colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Batch: ${data.student.batch.code}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white.withOpacity(0.9),
+                    style: textTheme.bodyMedium?.copyWith(
+                      color:
+                          colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                     ),
                   ),
                 ],
@@ -232,63 +207,63 @@ class _StudentDashboardScreenState
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
 
           // Quick Stats
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             child: GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              // CHANGED: Reduced from 1.5 to 1.1 to give cards more vertical space
+              mainAxisSpacing: AppSpacing.smd,
+              crossAxisSpacing: AppSpacing.smd,
               childAspectRatio: 1.1,
               children: [
                 InfoCard(
                   title: 'Overall Attendance',
                   value: '${overview.overallAttendance.toStringAsFixed(1)}%',
                   icon: Icons.trending_up,
-                  color: _getAttendanceColor(overview.overallAttendance),
+                  color: _getAttendanceColor(
+                      colorScheme, overview.overallAttendance),
                 ),
                 InfoCard(
                   title: 'Total Subjects',
                   value: overview.totalSubjects.toString(),
-                  icon: Icons.book,
-                  color: AppColors.primary,
+                  icon: Icons.book_outlined,
+                  color: colorScheme.primary,
                 ),
                 InfoCard(
                   title: 'Classes Attended',
                   value:
                       '${overview.classesAttended}/${overview.totalSessions}',
-                  icon: Icons.check_circle,
-                  color: AppColors.success,
+                  icon: Icons.check_circle_outline,
+                  color: colorScheme.tertiary,
                 ),
                 InfoCard(
                   title: 'Alerts',
                   value: lowAttendanceCount.toString(),
-                  icon: Icons.warning,
+                  icon: Icons.warning_amber_outlined,
                   color: lowAttendanceCount > 0
-                      ? AppColors.error
-                      : AppColors.success,
+                      ? colorScheme.error
+                      : colorScheme.tertiary,
                 ),
               ],
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
 
           // Today's Classes
           SectionHeader(
-            title: 'Today\'s Classes',
+            title: "Today's Classes",
             subtitle: data.todayClasses.isEmpty
                 ? 'No classes today'
                 : '${data.todayClasses.length} class${data.todayClasses.length > 1 ? 'es' : ''}',
           ),
           TodayClassesWidget(classes: data.todayClasses),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
 
           // My Subjects
           SectionHeader(
@@ -297,22 +272,27 @@ class _StudentDashboardScreenState
           ),
 
           if (data.subjects.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(24),
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
               child: Center(
-                child: Text('No subjects enrolled'),
+                child: Text(
+                  'No subjects enrolled',
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ),
             )
           else
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
               itemCount: data.subjects.length,
               itemBuilder: (context, index) {
                 final subject = data.subjects[index];
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                   child: SubjectAttendanceCard(
                     subject: subject,
                     onTap: () {
@@ -326,22 +306,23 @@ class _StudentDashboardScreenState
               },
             ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
         ],
       ),
     );
   }
 
-  Color _getAttendanceColor(double percentage) {
-    if (percentage >= 75) return AppColors.success;
-    if (percentage >= 65) return AppColors.warning;
-    return AppColors.error;
+  Color _getAttendanceColor(ColorScheme colorScheme, double percentage) {
+    if (percentage >= 75) return colorScheme.tertiary;
+    if (percentage >= 65) return colorScheme.secondary;
+    return colorScheme.error;
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showLogoutDialog(BuildContext context, ColorScheme colorScheme) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        icon: Icon(Icons.logout, color: colorScheme.error),
         title: const Text('Logout'),
         content: const Text('Are you sure you want to logout?'),
         actions: [
@@ -349,15 +330,16 @@ class _StudentDashboardScreenState
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'),
           ),
-          TextButton(
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: colorScheme.error,
+              foregroundColor: colorScheme.onError,
+            ),
             onPressed: () {
               Navigator.pop(context);
               ref.read(authProvider.notifier).logout();
             },
-            child: const Text(
-              'Logout',
-              style: TextStyle(color: AppColors.error),
-            ),
+            child: const Text('Logout'),
           ),
         ],
       ),

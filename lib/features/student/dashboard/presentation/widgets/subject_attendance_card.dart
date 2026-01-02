@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../data/models/student_dashboard_model.dart';
 
+/// M3-styled subject attendance card widget.
 class SubjectAttendanceCard extends StatelessWidget {
   final SubjectAttendanceInfo subject;
   final VoidCallback onTap;
@@ -14,19 +15,18 @@ class SubjectAttendanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final stats = subject.stats;
-    // Determine color based on attendance status if available, otherwise calculate it
-    final statusColor = _getStatusColor(stats.status);
+    final statusColor = _getStatusColor(colorScheme, stats.status);
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -39,19 +39,17 @@ class SubjectAttendanceCard extends StatelessWidget {
                       children: [
                         Text(
                           subject.subjectCode,
-                          style: const TextStyle(
-                            fontSize: 12,
+                          style: textTheme.labelMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
+                            color: colorScheme.primary,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           subject.subjectName,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
+                            color: colorScheme.onSurface,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -59,20 +57,19 @@ class SubjectAttendanceCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.sm),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+                      horizontal: AppSpacing.smd,
+                      vertical: AppSpacing.xs,
                     ),
                     decoration: BoxDecoration(
-                      color: statusColor.withOpacity(0.1),
+                      color: statusColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       '${subject.stats.percentage.toStringAsFixed(1)}%',
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: textTheme.labelLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: statusColor,
                       ),
@@ -80,10 +77,13 @@ class SubjectAttendanceCard extends StatelessWidget {
                   ),
                 ],
               ),
-              
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: Divider(height: 1),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.smd),
+                child: Divider(
+                  height: 1,
+                  color: colorScheme.outlineVariant,
+                ),
               ),
 
               // Stats Row
@@ -92,26 +92,29 @@ class SubjectAttendanceCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _buildStatItem(
+                      context,
                       'Sessions',
                       stats.totalSessions.toString(),
-                      Icons.event_note,
-                      AppColors.textSecondary,
+                      Icons.event_note_outlined,
+                      colorScheme.onSurfaceVariant,
                     ),
                   ),
                   Expanded(
                     child: _buildStatItem(
+                      context,
                       'Present',
                       stats.present.toString(),
                       Icons.check_circle_outline,
-                      AppColors.success,
+                      colorScheme.tertiary,
                     ),
                   ),
                   Expanded(
                     child: _buildStatItem(
+                      context,
                       'Absent',
                       stats.absent.toString(),
                       Icons.cancel_outlined,
-                      AppColors.error,
+                      colorScheme.error,
                     ),
                   ),
                 ],
@@ -123,7 +126,16 @@ class SubjectAttendanceCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String label, String value, IconData icon, Color color) {
+  Widget _buildStatItem(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       children: [
         Icon(icon, size: 20, color: color),
@@ -132,8 +144,7 @@ class SubjectAttendanceCard extends StatelessWidget {
           fit: BoxFit.scaleDown,
           child: Text(
             value,
-            style: TextStyle(
-              fontSize: 16,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: color,
             ),
@@ -141,9 +152,8 @@ class SubjectAttendanceCard extends StatelessWidget {
         ),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 11,
-            color: AppColors.textSecondary,
+          style: textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -152,17 +162,12 @@ class SubjectAttendanceCard extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'good':
-        return AppColors.success;
-      case 'warning':
-        return AppColors.warning;
-      case 'critical':
-      case 'danger':
-        return AppColors.error;
-      default:
-        return AppColors.primary;
-    }
+  Color _getStatusColor(ColorScheme colorScheme, String status) {
+    return switch (status.toLowerCase()) {
+      'good' => colorScheme.tertiary,
+      'warning' => colorScheme.secondary,
+      'critical' || 'danger' => colorScheme.error,
+      _ => colorScheme.primary,
+    };
   }
 }

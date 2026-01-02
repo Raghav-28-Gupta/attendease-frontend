@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../../core/config/theme/app_colors.dart';
-import '../../../../../core/widgets/loading_widget.dart';
-import '../../../../../core/widgets/error_widget.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
+import '../../../../../core/config/theme/app_semantic_colors.dart';
 import '../../../dashboard/data/models/student_dashboard_model.dart';
 
+/// M3-styled subject details screen.
 class SubjectDetailsScreen extends ConsumerWidget {
   final SubjectAttendanceInfo subject;
 
@@ -15,8 +15,8 @@ class SubjectDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Note: For now, we'll use the subject data passed.
-    // In production, you'd fetch detailed data from API using subject code
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -26,13 +26,13 @@ class SubjectDetailsScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Subject Header
+            // Subject Header - M3 styled
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                borderRadius: BorderRadius.only(
+              padding: const EdgeInsets.all(AppSpacing.mlg),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(24),
                   bottomRight: Radius.circular(24),
                 ),
@@ -42,63 +42,64 @@ class SubjectDetailsScreen extends ConsumerWidget {
                 children: [
                   Text(
                     subject.subjectName,
-                    style: const TextStyle(
-                      fontSize: 24,
+                    style: textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: colorScheme.onPrimaryContainer,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Code: ${subject.subjectCode}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white.withAlpha((0.9 * 255).round()),
+                    style: textTheme.bodyLarge?.copyWith(
+                      color:
+                          colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Semester: ${subject.semester}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white.withAlpha((0.8 * 255).round()),
+                    style: textTheme.bodyMedium?.copyWith(
+                      color:
+                          colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
 
             // Attendance Stats
-            _buildStatsSection(),
+            _buildStatsSection(context),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
 
             // Progress Section
-            _buildProgressSection(),
+            _buildProgressSection(context),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
 
             // Attendance Breakdown
-            _buildBreakdownSection(),
+            _buildBreakdownSection(context),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStatsSection() {
+  Widget _buildStatsSection(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final stats = subject.stats;
-    final statusColor = _getStatusColor(stats.status);
+    final statusColor = _getStatusColor(colorScheme, stats.status);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(AppSpacing.mlg),
           child: Column(
             children: [
               // Circular Progress
@@ -114,7 +115,7 @@ class SubjectDetailsScreen extends ConsumerWidget {
                       child: CircularProgressIndicator(
                         value: stats.percentage / 100,
                         strokeWidth: 12,
-                        backgroundColor: Colors.grey[300],
+                        backgroundColor: colorScheme.surfaceContainerHighest,
                         valueColor: AlwaysStoppedAnimation<Color>(statusColor),
                       ),
                     ),
@@ -123,16 +124,14 @@ class SubjectDetailsScreen extends ConsumerWidget {
                       children: [
                         Text(
                           '${stats.percentage.toStringAsFixed(1)}%',
-                          style: TextStyle(
-                            fontSize: 28,
+                          style: textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: statusColor,
                           ),
                         ),
                         Text(
                           stats.status,
-                          style: TextStyle(
-                            fontSize: 12,
+                          style: textTheme.labelMedium?.copyWith(
                             color: statusColor,
                             fontWeight: FontWeight.w600,
                           ),
@@ -143,28 +142,31 @@ class SubjectDetailsScreen extends ConsumerWidget {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
 
               // Stats Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _buildStatColumn(
+                    context,
                     'Total',
                     stats.totalSessions.toString(),
-                    Icons.event,
+                    Icons.event_outlined,
                   ),
                   _buildStatColumn(
+                    context,
                     'Attended',
                     stats.attended.toString(),
-                    Icons.check_circle,
-                    AppColors.success,
+                    Icons.check_circle_outline,
+                    colorScheme.tertiary,
                   ),
                   _buildStatColumn(
+                    context,
                     'Missed',
                     stats.absent.toString(),
-                    Icons.cancel,
-                    AppColors.error,
+                    Icons.cancel_outlined,
+                    colorScheme.error,
                   ),
                 ],
               ),
@@ -175,49 +177,49 @@ class SubjectDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProgressSection() {
+  Widget _buildProgressSection(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final stats = subject.stats;
 
     if (stats.percentage >= 75) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         child: Card(
-          color: AppColors.success.withAlpha((0.1 * 255).round()),
+          color: colorScheme.tertiaryContainer,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.success,
+                    color: colorScheme.tertiary,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.check_circle,
-                    color: Colors.white,
+                    color: colorScheme.onTertiary,
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: 16),
-                const Expanded(
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Great Job! 🎉',
-                        style: TextStyle(
-                          fontSize: 16,
+                        style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: AppColors.success,
+                          color: colorScheme.onTertiaryContainer,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         'You have excellent attendance',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onTertiaryContainer,
                         ),
                       ),
                     ],
@@ -230,57 +232,65 @@ class SubjectDetailsScreen extends ConsumerWidget {
       );
     }
 
-    final statusColor = _getStatusColor(stats.status);
-    final sessionsNeeded = ((75 * stats.totalSessions) / 100).ceil() - stats.attended;
+    final statusColor = _getStatusColor(colorScheme, stats.status);
+    final sessionsNeeded =
+        ((75 * stats.totalSessions) / 100).ceil() - stats.attended;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Card(
-        color: statusColor.withAlpha((0.1 * 255).round()),
+        color: stats.status == 'CRITICAL'
+            ? colorScheme.errorContainer
+            : colorScheme.secondaryContainer,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Icon(
-                    stats.status == 'CRITICAL' ? Icons.error : Icons.warning,
-                    color: statusColor,
+                    stats.status == 'CRITICAL'
+                        ? Icons.error_outline
+                        : Icons.warning_amber_outlined,
+                    color: stats.status == 'CRITICAL'
+                        ? colorScheme.onErrorContainer
+                        : colorScheme.onSecondaryContainer,
                     size: 24,
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.smd),
                   Text(
                     stats.status == 'CRITICAL'
                         ? 'Critical Alert!'
                         : 'Attention Needed',
-                    style: TextStyle(
-                      fontSize: 16,
+                    style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: statusColor,
+                      color: stats.status == 'CRITICAL'
+                          ? colorScheme.onErrorContainer
+                          : colorScheme.onSecondaryContainer,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.smd),
               Text(
                 'You need to attend at least $sessionsNeeded more ${sessionsNeeded > 1 ? 'classes' : 'class'} to reach 75% attendance.',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: stats.status == 'CRITICAL'
+                      ? colorScheme.onErrorContainer
+                      : colorScheme.onSecondaryContainer,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.smd),
               LinearProgressIndicator(
                 value: stats.percentage / 75,
-                backgroundColor: Colors.grey[300],
+                backgroundColor: colorScheme.surfaceContainerHighest,
                 valueColor: AlwaysStoppedAnimation<Color>(statusColor),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               Text(
                 '${(stats.percentage / 75 * 100).toStringAsFixed(0)}% to target',
-                style: TextStyle(
-                  fontSize: 12,
+                style: textTheme.labelMedium?.copyWith(
                   color: statusColor,
                   fontWeight: FontWeight.w600,
                 ),
@@ -292,55 +302,65 @@ class SubjectDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBreakdownSection() {
+  Widget _buildBreakdownSection(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final semanticColors = Theme.of(context).extension<SemanticColors>()!;
     final stats = subject.stats;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Attendance Breakdown',
-            style: TextStyle(
-              fontSize: 18,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Card(
             child: Column(
               children: [
                 _buildBreakdownTile(
+                  context,
                   'Present',
                   stats.present,
                   stats.totalSessions,
-                  Icons.check_circle,
-                  AppColors.present,
+                  Icons.check_circle_outlined,
+                  semanticColors.present,
+                  semanticColors.onPresent,
                 ),
-                const Divider(height: 1),
+                Divider(height: 1, color: colorScheme.outlineVariant),
                 _buildBreakdownTile(
+                  context,
                   'Absent',
                   stats.absent,
                   stats.totalSessions,
-                  Icons.cancel,
-                  AppColors.absent,
+                  Icons.cancel_outlined,
+                  semanticColors.absent,
+                  semanticColors.onAbsent,
                 ),
-                const Divider(height: 1),
+                Divider(height: 1, color: colorScheme.outlineVariant),
                 _buildBreakdownTile(
+                  context,
                   'Late',
                   stats.late,
                   stats.totalSessions,
                   Icons.access_time,
-                  AppColors.late,
+                  semanticColors.late,
+                  semanticColors.onLate,
                 ),
-                const Divider(height: 1),
+                Divider(height: 1, color: colorScheme.outlineVariant),
                 _buildBreakdownTile(
+                  context,
                   'Excused',
                   stats.excused,
                   stats.totalSessions,
-                  Icons.description,
-                  AppColors.excused,
+                  Icons.description_outlined,
+                  semanticColors.excused,
+                  semanticColors.onExcused,
                 ),
               ],
             ),
@@ -351,28 +371,31 @@ class SubjectDetailsScreen extends ConsumerWidget {
   }
 
   Widget _buildStatColumn(
+    BuildContext context,
     String label,
     String value,
     IconData icon, [
     Color? color,
   ]) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final effectiveColor = color ?? colorScheme.onSurfaceVariant;
+
     return Column(
       children: [
-        Icon(icon, size: 20, color: color ?? AppColors.textSecondary),
+        Icon(icon, size: 20, color: effectiveColor),
         const SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 20,
+          style: textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: color ?? AppColors.textPrimary,
+            color: effectiveColor,
           ),
         ),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
+          style: textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
       ],
@@ -380,22 +403,26 @@ class SubjectDetailsScreen extends ConsumerWidget {
   }
 
   Widget _buildBreakdownTile(
+    BuildContext context,
     String label,
     int count,
     int total,
     IconData icon,
-    Color color,
+    Color bgColor,
+    Color fgColor,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final percentage = total > 0 ? (count / total * 100) : 0.0;
 
     return ListTile(
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: color.withAlpha((0.1 * 255).round()),
+          color: bgColor,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: color, size: 20),
+        child: Icon(icon, color: fgColor, size: 20),
       ),
       title: Text(label),
       trailing: Row(
@@ -403,18 +430,16 @@ class SubjectDetailsScreen extends ConsumerWidget {
         children: [
           Text(
             count.toString(),
-            style: TextStyle(
-              fontSize: 18,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: color,
+              color: fgColor,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           Text(
             '(${percentage.toStringAsFixed(1)}%)',
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -422,16 +447,12 @@ class SubjectDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toUpperCase()) {
-      case 'GOOD':
-        return AppColors.success;
-      case 'WARNING':
-        return AppColors.warning;
-      case 'CRITICAL':
-        return AppColors.error;
-      default:
-        return AppColors.textSecondary;
-    }
+  Color _getStatusColor(ColorScheme colorScheme, String status) {
+    return switch (status.toUpperCase()) {
+      'GOOD' => colorScheme.tertiary,
+      'WARNING' => colorScheme.secondary,
+      'CRITICAL' => colorScheme.error,
+      _ => colorScheme.onSurfaceVariant,
+    };
   }
 }

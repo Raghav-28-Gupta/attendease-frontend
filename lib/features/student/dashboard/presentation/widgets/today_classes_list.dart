@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../../../core/utils/date_utils.dart';
 import '../../data/models/student_dashboard_model.dart';
 
+/// M3-styled today's classes list widget.
 class TodayClassesWidget extends StatelessWidget {
   final List<TodayClassInfo> classes;
 
@@ -13,32 +14,34 @@ class TodayClassesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     if (classes.isEmpty) {
-      return const Card(
-        margin: EdgeInsets.all(16),
+      return Card(
+        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(
             children: [
               Icon(
                 Icons.event_available,
                 size: 48,
-                color: AppColors.success,
+                color: colorScheme.tertiary,
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.smd),
               Text(
                 'No classes today! 🎉',
-                style: TextStyle(
-                  fontSize: 16,
+                style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 'Enjoy your day off!',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -50,22 +53,27 @@ class TodayClassesWidget extends StatelessWidget {
     return Column(
       children: classes.map((classInfo) {
         return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          margin: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.xs,
+          ),
           child: ListTile(
             leading: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.primary.withAlpha((0.1 * 255).round()),
+                color: colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.schedule,
-                color: AppColors.primary,
+                color: colorScheme.onPrimaryContainer,
               ),
             ),
             title: Text(
               classInfo.subjectName,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,13 +82,15 @@ class TodayClassesWidget extends StatelessWidget {
                 Text(
                   '${AppDateUtils.formatTime(classInfo.startTime)} - '
                   '${AppDateUtils.formatTime(classInfo.endTime)}',
-                  style: const TextStyle(fontSize: 13),
+                  style: textTheme.bodySmall,
                 ),
                 if (classInfo.room != null) ...[
                   const SizedBox(height: 2),
                   Text(
                     'Room: ${classInfo.room}',
-                    style: const TextStyle(fontSize: 12),
+                    style: textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ],
@@ -91,18 +101,16 @@ class TodayClassesWidget extends StatelessWidget {
               children: [
                 Text(
                   classInfo.subjectCode,
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
+                    color: colorScheme.primary,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   classInfo.teacherName,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
