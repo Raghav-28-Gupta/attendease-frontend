@@ -2,14 +2,13 @@ import 'package:attendease_frontend/core/providers/socket_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../../../core/widgets/loading_widget.dart';
 import '../../../../../core/widgets/error_widget.dart';
 import '../../../../../core/widgets/empty_state_widget.dart';
 import '../../../../../core/widgets/section_header.dart';
 import '../../../../../core/widgets/connection_status_widget.dart';
 import '../../../../../core/utils/logger.dart';
-import '../../../../../core/services/socket_service.dart';
 import '../../../../../core/services/class_reminder_service.dart';
 import '../../../../../core/services/firebase_service.dart';
 import '../../../../auth/presentation/providers/auth_provider.dart';
@@ -42,25 +41,21 @@ class _TeacherDashboardScreenState
     });
   }
 
-  /// Initialize class reminders for today
   Future<void> _initializeClassReminders() async {
     if (_remindersInitialized) return;
     _remindersInitialized = true;
 
     try {
-      // Register teacher FCM token
       final firebaseService = ref.read(firebaseServiceProvider);
       await firebaseService.registerTeacherFCMToken();
       AppLogger.info('✅ Teacher FCM token registered');
 
-      // Initialize and schedule class reminders
       final reminderService = ref.read(classReminderServiceProvider);
       await reminderService.initialize();
       final count = await reminderService.scheduleRemindersForToday();
 
       if (count > 0) {
         AppLogger.info('✅ Scheduled $count class reminders for today');
-        // Optionally show a snackbar
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -72,7 +67,6 @@ class _TeacherDashboardScreenState
         }
       }
 
-      // Check for pending navigation from notification tap
       final pendingNav = await reminderService.checkPendingNavigation();
       if (pendingNav != null && pendingNav['action'] == 'CREATE_SESSION') {
         if (mounted) {
@@ -93,6 +87,7 @@ class _TeacherDashboardScreenState
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final dashboardState = ref.watch(teacherDashboardProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     final user = authState.maybeWhen(
       authenticated: (u) => u,
@@ -108,24 +103,18 @@ class _TeacherDashboardScreenState
             socketNotifier.joinTeacherRoom(user.id);
           }
         },
-        loading: () {
-          AppLogger.info('🔄 Initializing socket connection...');
-        },
-        error: (error, stack) {
-          AppLogger.error('❌ Socket initialization failed', error);
-        },
+        loading: () => AppLogger.info('🔄 Initializing socket connection...'),
+        error: (error, stack) =>
+            AppLogger.error('❌ Socket initialization failed', error),
       );
     });
 
     ref.listen(initializeFirebaseProvider, (previous, next) {
       next.when(
-        data: (_) {
-          AppLogger.info('✅ Firebase ready for notifications');
-        },
+        data: (_) => AppLogger.info('✅ Firebase ready for notifications'),
         loading: () {},
-        error: (error, stack) {
-          AppLogger.error('Firebase initialization failed', error);
-        },
+        error: (error, stack) =>
+            AppLogger.error('Firebase initialization failed', error),
       );
     });
 
@@ -142,17 +131,17 @@ class _TeacherDashboardScreenState
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'logout') {
-                _showLogoutDialog(context);
+                _showLogoutDialog(context, colorScheme);
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'logout',
                 child: Row(
                   children: [
-                    Icon(Icons.logout, size: 20),
-                    SizedBox(width: 12),
-                    Text('Logout'),
+                    Icon(Icons.logout, size: 20, color: colorScheme.error),
+                    const SizedBox(width: AppSpacing.smd),
+                    Text('Logout', style: TextStyle(color: colorScheme.error)),
                   ],
                 ),
               ),
@@ -204,19 +193,22 @@ class _TeacherDashboardScreenState
     dynamic data,
     String? userName,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 80), // Add padding for FAB
+      padding: const EdgeInsets.only(bottom: 80),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Welcome Section
+          // Welcome Section - M3 styled
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              borderRadius: BorderRadius.only(
+            padding: const EdgeInsets.all(AppSpacing.mlg),
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer,
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(24),
                 bottomRight: Radius.circular(24),
               ),
@@ -228,26 +220,25 @@ class _TeacherDashboardScreenState
                 children: [
                   Text(
                     'Welcome back,',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white.withOpacity(0.9),
+                    style: textTheme.bodyLarge?.copyWith(
+                      color:
+                          colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     userName ?? 'Teacher',
-                    style: const TextStyle(
-                      fontSize: 28,
+                    style: textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: colorScheme.onPrimaryContainer,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.md),
                   Text(
-                    'Let\'s take attendance today! 📝',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white.withOpacity(0.9),
+                    "Let's take attendance today! 📝",
+                    style: textTheme.bodyMedium?.copyWith(
+                      color:
+                          colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                     ),
                   ),
                 ],
@@ -255,49 +246,48 @@ class _TeacherDashboardScreenState
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
 
           // Quick Stats
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             child: GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              // CHANGED: Reduced from 1.3 to 1.1 to give cards more height
+              mainAxisSpacing: AppSpacing.smd,
+              crossAxisSpacing: AppSpacing.smd,
               childAspectRatio: 1.1,
               children: [
                 StatsCard(
                   title: 'Enrollments',
                   value: data.stats.totalEnrollments.toString(),
-                  icon: Icons.book,
-                  color: AppColors.primary,
+                  icon: Icons.book_outlined,
+                  color: colorScheme.primary,
                 ),
                 StatsCard(
                   title: 'Total Students',
                   value: data.stats.totalStudents.toString(),
-                  icon: Icons.groups,
-                  color: AppColors.secondary,
+                  icon: Icons.groups_outlined,
+                  color: colorScheme.secondary,
                 ),
                 StatsCard(
                   title: 'Sessions Held',
                   value: data.stats.totalSessions.toString(),
-                  icon: Icons.event,
-                  color: AppColors.info,
+                  icon: Icons.event_outlined,
+                  color: colorScheme.tertiary,
                 ),
                 StatsCard(
                   title: 'Avg. Attendance',
                   value: '${data.stats.averageAttendance.toStringAsFixed(1)}%',
                   icon: Icons.trending_up,
-                  color: AppColors.success,
+                  color: colorScheme.primary,
                 ),
               ],
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
 
           // Management Section
           const SectionHeader(
@@ -306,48 +296,47 @@ class _TeacherDashboardScreenState
           ),
 
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             child: GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              // CHANGED: Reduced from 1.3 to 1.1 to match StatsCard
+              mainAxisSpacing: AppSpacing.smd,
+              crossAxisSpacing: AppSpacing.smd,
               childAspectRatio: 1.1,
               children: [
                 _ManagementCard(
                   title: 'Batches',
-                  icon: Icons.school,
-                  color: Colors.blue,
+                  icon: Icons.school_outlined,
+                  color: colorScheme.primary,
                   count: '${data.stats.totalBatchesTeaching}',
                   onTap: () => context.push('/teacher/batches'),
                 ),
                 _ManagementCard(
                   title: 'Subjects',
-                  icon: Icons.book,
-                  color: Colors.orange,
+                  icon: Icons.book_outlined,
+                  color: colorScheme.secondary,
                   count: '${data.stats.totalSubjects}',
                   onTap: () => context.push('/teacher/subjects'),
                 ),
                 _ManagementCard(
                   title: 'Enrollments',
                   icon: Icons.link,
-                  color: Colors.purple,
+                  color: colorScheme.tertiary,
                   count: '${data.stats.totalEnrollments}',
                   onTap: () => context.push('/teacher/enrollments'),
                 ),
                 _ManagementCard(
                   title: 'Timetable',
-                  icon: Icons.calendar_month,
-                  color: Colors.teal,
+                  icon: Icons.calendar_month_outlined,
+                  color: colorScheme.primary,
                   count: '${data.stats.totalTimetableEntries ?? 0}',
                   onTap: () => context.push('/teacher/timetable'),
                 ),
                 _ManagementCard(
                   title: 'Import Students',
-                  icon: Icons.upload_file,
-                  color: Colors.green,
+                  icon: Icons.upload_file_outlined,
+                  color: colorScheme.tertiary,
                   count: 'CSV',
                   onTap: () => context.push('/teacher/students/import'),
                 ),
@@ -355,23 +344,21 @@ class _TeacherDashboardScreenState
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
 
           // My Enrollments
           SectionHeader(
             title: 'My Enrollments',
             subtitle: '${data.enrollments.length} active subjects',
             action: TextButton(
-              onPressed: () {
-                // TODO: Navigate to all enrollments
-              },
+              onPressed: () {},
               child: const Text('View All'),
             ),
           ),
 
           if (data.enrollments.isEmpty)
             const Padding(
-              padding: EdgeInsets.all(24),
+              padding: EdgeInsets.all(AppSpacing.lg),
               child: EmptyStateWidget(
                 message: 'No enrollments found',
                 icon: Icons.book_outlined,
@@ -381,15 +368,13 @@ class _TeacherDashboardScreenState
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16), // Added horizontal padding
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
               itemCount:
                   data.enrollments.length > 3 ? 3 : data.enrollments.length,
               itemBuilder: (context, index) {
                 final enrollment = data.enrollments[index];
                 return Padding(
-                  padding: const EdgeInsets.only(
-                      bottom: 12.0), // Spacing between items
+                  padding: const EdgeInsets.only(bottom: AppSpacing.smd),
                   child: EnrollmentCard(
                     enrollment: enrollment,
                     onTap: () {
@@ -403,7 +388,7 @@ class _TeacherDashboardScreenState
               },
             ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
 
           // Low Attendance Alerts
           if (data.lowAttendanceStudents.isNotEmpty) ...[
@@ -415,16 +400,17 @@ class _TeacherDashboardScreenState
             LowAttendanceList(students: data.lowAttendanceStudents),
           ],
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
         ],
       ),
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showLogoutDialog(BuildContext context, ColorScheme colorScheme) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        icon: Icon(Icons.logout, color: colorScheme.error),
         title: const Text('Logout'),
         content: const Text('Are you sure you want to logout?'),
         actions: [
@@ -432,15 +418,16 @@ class _TeacherDashboardScreenState
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'),
           ),
-          TextButton(
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: colorScheme.error,
+              foregroundColor: colorScheme.onError,
+            ),
             onPressed: () {
               Navigator.pop(context);
               ref.read(authProvider.notifier).logout();
             },
-            child: const Text(
-              'Logout',
-              style: TextStyle(color: AppColors.error),
-            ),
+            child: const Text('Logout'),
           ),
         ],
       ),
@@ -465,14 +452,15 @@ class _ManagementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(AppSpacing.smd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -480,7 +468,7 @@ class _ManagementCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, color: color, size: 20),
@@ -488,10 +476,9 @@ class _ManagementCard extends StatelessWidget {
               const Spacer(),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 12,
+                style: textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: colorScheme.onSurface,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -502,8 +489,7 @@ class _ManagementCard extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   count,
-                  style: TextStyle(
-                    fontSize: 20,
+                  style: textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: color,
                   ),

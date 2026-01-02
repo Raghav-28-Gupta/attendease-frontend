@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../../../core/extensions/datetime_extensions.dart';
 import '../../data/models/teacher_dashboard_model.dart';
 
+/// M3-styled enrollment card widget.
 class EnrollmentCard extends StatelessWidget {
   final EnrollmentInfo enrollment;
   final VoidCallback onTap;
@@ -16,13 +17,16 @@ class EnrollmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -33,16 +37,16 @@ class EnrollmentCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withAlpha((0.1 * 255).round()),
+                      color: colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(
-                      Icons.book,
-                      color: AppColors.primary,
+                    child: Icon(
+                      Icons.book_outlined,
+                      color: colorScheme.onPrimaryContainer,
                       size: 24,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.smd),
 
                   // Subject Info
                   Expanded(
@@ -51,19 +55,17 @@ class EnrollmentCard extends StatelessWidget {
                       children: [
                         Text(
                           enrollment.subject.code,
-                          style: const TextStyle(
-                            fontSize: 14,
+                          style: textTheme.labelMedium?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: AppColors.primary,
+                            color: colorScheme.primary,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           enrollment.subject.name,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -71,59 +73,59 @@ class EnrollmentCard extends StatelessWidget {
                   ),
 
                   // Arrow
-                  const Icon(
+                  Icon(
                     Icons.arrow_forward_ios,
                     size: 16,
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // Batch Info
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.smd,
+                  vertical: AppSpacing.sm,
+                ),
                 decoration: BoxDecoration(
-                  color: AppColors.secondary.withAlpha((0.1 * 255).round()),
+                  color: colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.groups,
+                    Icon(
+                      Icons.groups_outlined,
                       size: 16,
-                      color: AppColors.secondary,
+                      color: colorScheme.onSecondaryContainer,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.sm),
                     Text(
                       '${enrollment.batch.code} • ${enrollment.batch.studentCount} students',
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
+                      style: textTheme.labelMedium?.copyWith(
+                        color: colorScheme.onSecondaryContainer,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // Stats Row
               Row(
                 children: [
-                  // Sessions
                   _StatItem(
-                    icon: Icons.event,
+                    icon: Icons.event_outlined,
                     label: 'Sessions',
                     value: enrollment.stats.sessionsHeld.toString(),
                   ),
-                  const SizedBox(width: 24),
-
-                  // Attendance
+                  const SizedBox(width: AppSpacing.lg),
                   _StatItem(
                     icon: Icons.trending_up,
                     label: 'Avg. Attendance',
-                    value: '${enrollment.stats.averageAttendance.toStringAsFixed(1)}%',
+                    value:
+                        '${enrollment.stats.averageAttendance.toStringAsFixed(1)}%',
                   ),
                 ],
               ),
@@ -134,10 +136,12 @@ class EnrollmentCard extends StatelessWidget {
                 children: [
                   TextButton.icon(
                     onPressed: () {
-                      context.push('/teacher/attendance-history/${enrollment.id}',
+                      context.push(
+                        '/teacher/attendance-history/${enrollment.id}',
                         extra: {
                           'id': enrollment.id,
-                          'name': '${enrollment.subject.code} - ${enrollment.batch.code}',
+                          'name':
+                              '${enrollment.subject.code} - ${enrollment.batch.code}',
                         },
                       );
                     },
@@ -149,20 +153,19 @@ class EnrollmentCard extends StatelessWidget {
 
               // Last Session
               if (enrollment.stats.lastSession != null) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.smd),
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.access_time,
                       size: 14,
-                      color: AppColors.textSecondary,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Last session: ${enrollment.stats.lastSession!.relativeTime}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -189,26 +192,27 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Row(
       children: [
-        Icon(icon, size: 16, color: AppColors.textSecondary),
+        Icon(icon, size: 16, color: colorScheme.onSurfaceVariant),
         const SizedBox(width: 6),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 11,
-                color: AppColors.textSecondary,
+              style: textTheme.labelSmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             Text(
               value,
-              style: const TextStyle(
-                fontSize: 14,
+              style: textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: colorScheme.onSurface,
               ),
             ),
           ],
