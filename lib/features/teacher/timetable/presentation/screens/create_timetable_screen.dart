@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../../../core/widgets/app_button.dart';
 import '../../../../../core/widgets/app_text_field.dart';
-import '../../../../../core/widgets/loading_widget.dart';
 import '../../../../../core/utils/snackbar_utils.dart';
 import '../../../enrollment/presentation/providers/enrollment_provider.dart';
 import '../../data/models/timetable_model.dart';
 import '../providers/timetable_provider.dart';
 
 class CreateTimetableScreen extends ConsumerStatefulWidget {
-  final TimetableEntryModel? entry; // null for create, non-null for edit
+  final TimetableEntryModel? entry;
 
   const CreateTimetableScreen({
     super.key,
@@ -26,7 +25,7 @@ class CreateTimetableScreen extends ConsumerStatefulWidget {
 class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _roomController;
-  
+
   String? _selectedEnrollmentId;
   String _selectedDay = 'MONDAY';
   TimeOfDay _startTime = const TimeOfDay(hour: 9, minute: 0);
@@ -49,7 +48,7 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
   void initState() {
     super.initState();
     _roomController = TextEditingController(text: widget.entry?.room ?? '');
-    
+
     if (widget.entry != null) {
       _selectedEnrollmentId = widget.entry!.enrollmentId;
       _selectedDay = widget.entry!.dayOfWeek;
@@ -78,29 +77,34 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final enrollmentsAsync = ref.watch(myEnrollmentsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Edit Timetable Entry' : 'Create Timetable Entry'),
+        title:
+            Text(isEditing ? 'Edit Timetable Entry' : 'Create Timetable Entry'),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           children: [
-            // Enrollment Selection
             if (!isEditing)
               enrollmentsAsync.when(
                 data: (enrollments) {
                   if (enrollments.isEmpty) {
                     return Card(
-                      color: AppColors.warning.withOpacity(0.1),
-                      child: const Padding(
-                        padding: EdgeInsets.all(16),
+                      color: colorScheme.secondaryContainer,
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
                         child: Text(
                           'No enrollments available. Create enrollments first.',
                           textAlign: TextAlign.center,
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSecondaryContainer,
+                          ),
                         ),
                       ),
                     );
@@ -122,16 +126,14 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
                           children: [
                             Text(
                               enrollment.subject.name,
-                              style: const TextStyle(
+                              style: textTheme.labelLarge?.copyWith(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 14,
                               ),
                             ),
                             Text(
                               '${enrollment.subject.code} • ${enrollment.batch.code}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textSecondary,
+                              style: textTheme.labelSmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -160,15 +162,12 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
                   ),
                 ),
               ),
-
-            const SizedBox(height: 16),
-
-            // Day Selection
+            const SizedBox(height: AppSpacing.md),
             DropdownButtonFormField<String>(
               value: _selectedDay,
               decoration: const InputDecoration(
                 labelText: 'Day of Week',
-                prefixIcon: Icon(Icons.calendar_today),
+                prefixIcon: Icon(Icons.calendar_today_outlined),
                 border: OutlineInputBorder(),
               ),
               items: _days.map((day) {
@@ -183,70 +182,56 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
                 }
               },
             ),
-
-            const SizedBox(height: 16),
-
-            // Start Time
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.access_time),
-              title: const Text('Start Time'),
-              subtitle: Text(_formatTimeOfDay(_startTime)),
-              trailing: const Icon(Icons.edit),
-              onTap: () async {
-                final time = await showTimePicker(
-                  context: context,
-                  initialTime: _startTime,
-                );
-                if (time != null) {
-                  setState(() => _startTime = time);
-                }
-              },
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: const BorderSide(color: AppColors.border),
+            const SizedBox(height: AppSpacing.md),
+            Card(
+              child: ListTile(
+                leading: Icon(Icons.access_time,
+                    color: colorScheme.onSurfaceVariant),
+                title: Text('Start Time', style: textTheme.labelLarge),
+                subtitle: Text(_formatTimeOfDay(_startTime)),
+                trailing: Icon(Icons.edit_outlined,
+                    color: colorScheme.onSurfaceVariant),
+                onTap: () async {
+                  final time = await showTimePicker(
+                    context: context,
+                    initialTime: _startTime,
+                  );
+                  if (time != null) {
+                    setState(() => _startTime = time);
+                  }
+                },
               ),
             ),
-
-            const SizedBox(height: 16),
-
-            // End Time
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.access_time),
-              title: const Text('End Time'),
-              subtitle: Text(_formatTimeOfDay(_endTime)),
-              trailing: const Icon(Icons.edit),
-              onTap: () async {
-                final time = await showTimePicker(
-                  context: context,
-                  initialTime: _endTime,
-                );
-                if (time != null) {
-                  setState(() => _endTime = time);
-                }
-              },
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: const BorderSide(color: AppColors.border),
+            const SizedBox(height: AppSpacing.md),
+            Card(
+              child: ListTile(
+                leading: Icon(Icons.access_time,
+                    color: colorScheme.onSurfaceVariant),
+                title: Text('End Time', style: textTheme.labelLarge),
+                subtitle: Text(_formatTimeOfDay(_endTime)),
+                trailing: Icon(Icons.edit_outlined,
+                    color: colorScheme.onSurfaceVariant),
+                onTap: () async {
+                  final time = await showTimePicker(
+                    context: context,
+                    initialTime: _endTime,
+                  );
+                  if (time != null) {
+                    setState(() => _endTime = time);
+                  }
+                },
               ),
             ),
-
-            const SizedBox(height: 16),
-
-            // Room (Optional)
+            const SizedBox(height: AppSpacing.md),
             AppTextField(
               controller: _roomController,
               label: 'Room (Optional)',
               hint: 'e.g., A-101',
-              prefixIcon: Icons.room,
+              prefixIcon: Icons.room_outlined,
               textCapitalization: TextCapitalization.words,
             ),
-
-            const SizedBox(height: 32),
-
-            // Submit Button
-            AppButton(
+            const SizedBox(height: AppSpacing.xl),
+            AppButton.filled(
               text: isEditing ? 'Update Entry' : 'Create Entry',
               onPressed: _isSubmitting ? null : _handleSubmit,
               isLoading: _isSubmitting,
@@ -264,7 +249,6 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Validate times
     if (_endTime.hour < _startTime.hour ||
         (_endTime.hour == _startTime.hour &&
             _endTime.minute <= _startTime.minute)) {
@@ -280,7 +264,6 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
     bool success;
 
     if (isEditing) {
-      // Update existing entry
       final request = UpdateTimetableEntryRequest(
         dayOfWeek: _selectedDay,
         startTime: _formatTimeOfDay(_startTime),
@@ -294,7 +277,6 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
           .read(timetableOperationsProvider.notifier)
           .updateEntry(widget.entry!.id, request);
     } else {
-      // Create new entry
       if (_selectedEnrollmentId == null) {
         SnackbarUtils.showError(context, 'Please select an enrollment');
         setState(() => _isSubmitting = false);
@@ -314,7 +296,7 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
 
       final request = CreateTimetableEntryRequest(
         enrollmentId: _selectedEnrollmentId!,
-        batchId: selectedEnrollment.batch.id, // ✅ ADD THIS
+        batchId: selectedEnrollment.batch.id,
         dayOfWeek: _selectedDay,
         startTime: _formatTimeOfDay(_startTime),
         endTime: _formatTimeOfDay(_endTime),
@@ -334,9 +316,7 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
       if (success) {
         SnackbarUtils.showSuccess(
           context,
-          isEditing
-              ? 'Timetable entry updated!'
-              : 'Timetable entry created!',
+          isEditing ? 'Timetable entry updated!' : 'Timetable entry created!',
         );
         context.pop();
       } else {

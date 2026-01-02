@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../../../core/widgets/app_button.dart';
 import '../../../../../core/utils/snackbar_utils.dart';
-import '../../../../../core/config/theme/app_colors.dart';
 import '../../../batch/presentation/providers/batch_provider.dart';
 import '../../../subject/presentation/providers/subject_provider.dart';
 import '../../data/models/enrollment_model.dart';
@@ -18,12 +18,14 @@ class EnrollmentFormScreen extends ConsumerStatefulWidget {
 }
 
 class _EnrollmentFormScreenState extends ConsumerState<EnrollmentFormScreen> {
-  final Set<String> _selectedBatchIds = {};  // ✅ Multiple batches
+  final Set<String> _selectedBatchIds = {};
   String? _selectedSubjectId;
   bool _isSubmitting = false;
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final batchesAsync = ref.watch(batchesProvider);
     final subjectsAsync = ref.watch(subjectsProvider);
 
@@ -32,15 +34,14 @@ class _EnrollmentFormScreenState extends ConsumerState<EnrollmentFormScreen> {
         title: const Text('Enroll Batches to Subject'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         children: [
-          // Subject Dropdown
           subjectsAsync.when(
             data: (subjects) => DropdownButtonFormField<String>(
               value: _selectedSubjectId,
               decoration: const InputDecoration(
                 labelText: 'Subject',
-                prefixIcon: Icon(Icons.book),
+                prefixIcon: Icon(Icons.book_outlined),
                 border: OutlineInputBorder(),
               ),
               items: subjects
@@ -55,17 +56,14 @@ class _EnrollmentFormScreenState extends ConsumerState<EnrollmentFormScreen> {
             error: (e, _) =>
                 _ErrorField(label: 'Subject', message: e.toString()),
           ),
-          const SizedBox(height: 24),
-          
-          // Multiple Batch Selection
-          const Text(
+          const SizedBox(height: AppSpacing.lg),
+          Text(
             'Select Batches',
-            style: TextStyle(
-              fontSize: 16,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           batchesAsync.when(
             data: (batches) => Column(
               children: batches.map((batch) {
@@ -86,12 +84,12 @@ class _EnrollmentFormScreenState extends ConsumerState<EnrollmentFormScreen> {
                   secondary: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(
-                      Icons.school,
-                      color: AppColors.primary,
+                    child: Icon(
+                      Icons.school_outlined,
+                      color: colorScheme.onPrimaryContainer,
                     ),
                   ),
                 );
@@ -103,33 +101,31 @@ class _EnrollmentFormScreenState extends ConsumerState<EnrollmentFormScreen> {
               message: e.toString(),
             ),
           ),
-          const SizedBox(height: 24),
-          
-          // Summary
+          const SizedBox(height: AppSpacing.lg),
           if (_selectedBatchIds.isNotEmpty)
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(AppSpacing.smd),
               decoration: BoxDecoration(
-                color: AppColors.info.withOpacity(0.1),
+                color: colorScheme.tertiaryContainer,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.info, color: AppColors.info, size: 20),
-                  const SizedBox(width: 8),
+                  Icon(Icons.info_outline,
+                      color: colorScheme.onTertiaryContainer, size: 20),
+                  const SizedBox(width: AppSpacing.sm),
                   Text(
                     '${_selectedBatchIds.length} batch(es) selected',
-                    style: const TextStyle(
-                      color: AppColors.info,
+                    style: textTheme.labelLarge?.copyWith(
+                      color: colorScheme.onTertiaryContainer,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
             ),
-          const SizedBox(height: 24),
-          
-          AppButton(
+          const SizedBox(height: AppSpacing.lg),
+          AppButton.filled(
             text: 'Enroll Batches',
             isLoading: _isSubmitting,
             onPressed: _isSubmitting ? null : _handleSubmit,
@@ -152,13 +148,13 @@ class _EnrollmentFormScreenState extends ConsumerState<EnrollmentFormScreen> {
 
     setState(() => _isSubmitting = true);
 
-    // ✅ Send array of batch IDs (no teacherId - extracted from JWT)
     final req = EnrollBatchesRequest(
       subjectId: _selectedSubjectId!,
       batchIds: _selectedBatchIds.toList(),
     );
 
-    final ok = await ref.read(enrollmentOpsProvider.notifier).enrollBatches(req);
+    final ok =
+        await ref.read(enrollmentOpsProvider.notifier).enrollBatches(req);
 
     if (!mounted) return;
     setState(() => _isSubmitting = false);
@@ -183,20 +179,22 @@ class _LoadingField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return InputDecorator(
       decoration: InputDecoration(
         labelText: label,
         border: const OutlineInputBorder(),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          SizedBox(
+          const SizedBox(
             width: 16,
             height: 16,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          SizedBox(width: 8),
-          Text('Loading...'),
+          const SizedBox(width: AppSpacing.sm),
+          Text('Loading...', style: textTheme.bodyMedium),
         ],
       ),
     );
@@ -210,6 +208,9 @@ class _ErrorField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return InputDecorator(
       decoration: InputDecoration(
         labelText: label,
@@ -217,12 +218,12 @@ class _ErrorField extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.error, size: 16, color: AppColors.error),
-          const SizedBox(width: 8),
+          Icon(Icons.error_outline, size: 16, color: colorScheme.error),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(color: AppColors.error, fontSize: 12),
+              style: textTheme.labelSmall?.copyWith(color: colorScheme.error),
             ),
           ),
         ],

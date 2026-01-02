@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../../../core/widgets/loading_widget.dart';
 import '../../../../../core/widgets/error_widget.dart';
 import '../../../../../core/widgets/empty_state_widget.dart';
@@ -22,6 +22,7 @@ class AttendanceHistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sessionsAsync = ref.watch(enrollmentSessionsProvider(enrollmentId));
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -30,9 +31,9 @@ class AttendanceHistoryScreen extends ConsumerWidget {
           children: [
             Text(enrollmentName),
             const SizedBox(height: 2),
-            const Text(
+            Text(
               'Attendance History',
-              style: TextStyle(fontSize: 12),
+              style: textTheme.labelSmall,
             ),
           ],
         ),
@@ -49,7 +50,7 @@ class AttendanceHistoryScreen extends ConsumerWidget {
           if (sessions.isEmpty) {
             return const EmptyStateWidget(
               message: 'No attendance sessions yet',
-              icon: Icons.event_busy,
+              icon: Icons.event_busy_outlined,
             );
           }
 
@@ -58,7 +59,7 @@ class AttendanceHistoryScreen extends ConsumerWidget {
               ref.invalidate(enrollmentSessionsProvider(enrollmentId));
             },
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.md),
               itemCount: sessions.length,
               itemBuilder: (context, index) {
                 final session = sessions[index];
@@ -85,37 +86,37 @@ class _SessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ FIX: Safely handle nullable type
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final sessionType = session.sessionType;
+    final typeColor = _getTypeColor(colorScheme, sessionType);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.smd),
       child: InkWell(
         onTap: () {
           context.push('/teacher/session-details/${session.id}');
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Date and Type Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      const Icon(
-                        Icons.calendar_today,
+                      Icon(
+                        Icons.calendar_today_outlined,
                         size: 16,
-                        color: AppColors.primary,
+                        color: colorScheme.primary,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.sm),
                       Text(
                         session.date.format('dd MMM yyyy'),
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style: textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -123,72 +124,59 @@ class _SessionCard extends StatelessWidget {
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
+                      horizontal: AppSpacing.smd,
+                      vertical: AppSpacing.xs,
                     ),
                     decoration: BoxDecoration(
-                      color: _getTypeColor(sessionType)
-                          .withAlpha((0.1 * 255).round()),
+                      color: typeColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: _getTypeColor(sessionType)
-                            .withAlpha((0.3 * 255).round()),
-                      ),
                     ),
                     child: Text(
                       sessionType,
-                      style: TextStyle(
-                        fontSize: 12,
+                      style: textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: _getTypeColor(sessionType),
+                        color: typeColor,
                       ),
                     ),
                   ),
                 ],
               ),
-
-              const SizedBox(height: 12),
-
-              // Time Row
+              const SizedBox(height: AppSpacing.smd),
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.access_time,
                     size: 14,
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     '${session.startTime} - ${session.endTime}',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
-
-              const SizedBox(height: 12),
-
-              // Attendance Stats
+              const SizedBox(height: AppSpacing.smd),
               Row(
                 children: [
                   _StatChip(
                     label: 'Present',
                     value: session.count.records.toString(),
-                    color: AppColors.success,
+                    color: colorScheme.tertiary,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.sm),
                   _StatChip(
                     label: 'Absent',
                     value: '0',
-                    color: AppColors.error,
+                    color: colorScheme.error,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.sm),
                   _StatChip(
                     label: 'Late',
                     value: '0',
-                    color: AppColors.warning,
+                    color: colorScheme.secondary,
                   ),
                 ],
               ),
@@ -199,23 +187,14 @@ class _SessionCard extends StatelessWidget {
     );
   }
 
-  Color _getTypeColor(String type) {
-    switch (type.toUpperCase()) {
-      case 'REGULAR':
-        return AppColors.primary;
-      case 'MAKEUP':
-        return AppColors.warning;
-      case 'EXTRA':
-        return AppColors.info;
-      case 'LAB':
-        return AppColors.info;
-      case 'TUTORIAL':
-        return AppColors.warning;
-      case 'EXAM':
-        return AppColors.error;
-      default:
-        return AppColors.textSecondary;
-    }
+  Color _getTypeColor(ColorScheme colorScheme, String type) {
+    return switch (type.toUpperCase()) {
+      'REGULAR' => colorScheme.primary,
+      'MAKEUP' => colorScheme.secondary,
+      'EXTRA' || 'LAB' => colorScheme.tertiary,
+      'EXAM' => colorScheme.error,
+      _ => colorScheme.onSurfaceVariant,
+    };
   }
 }
 
@@ -232,10 +211,15 @@ class _StatChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
-        color: color.withAlpha((0.1 * 255).round()),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -243,8 +227,7 @@ class _StatChip extends StatelessWidget {
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontSize: 14,
+            style: textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: color,
             ),
@@ -252,8 +235,7 @@ class _StatChip extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 11,
+            style: textTheme.labelSmall?.copyWith(
               color: color,
             ),
           ),

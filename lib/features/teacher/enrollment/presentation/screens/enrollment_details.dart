@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../dashboard/data/models/teacher_dashboard_model.dart';
 
 class EnrollmentDetailsScreen extends ConsumerWidget {
@@ -35,18 +35,13 @@ class EnrollmentDetailsScreen extends ConsumerWidget {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         children: [
-          // Header Card
-          _buildHeaderCard(),
-          const SizedBox(height: 24),
-
-          // Quick Actions
+          _buildHeaderCard(context),
+          const SizedBox(height: AppSpacing.lg),
           _buildQuickActions(context),
-          const SizedBox(height: 24),
-
-          // Stats Overview
-          _buildStatsOverview(),
+          const SizedBox(height: AppSpacing.lg),
+          _buildStatsOverview(context),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -59,10 +54,13 @@ class EnrollmentDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeaderCard() {
+  Widget _buildHeaderCard(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.mlg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -71,33 +69,31 @@ class EnrollmentDetailsScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
-                    Icons.book,
-                    color: AppColors.primary,
+                  child: Icon(
+                    Icons.book_outlined,
+                    color: colorScheme.onPrimaryContainer,
                     size: 28,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         enrollment.subject.code,
-                        style: const TextStyle(
-                          fontSize: 14,
+                        style: textTheme.labelLarge?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
+                          color: colorScheme.primary,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         enrollment.subject.name,
-                        style: const TextStyle(
-                          fontSize: 20,
+                        style: textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -106,23 +102,26 @@ class EnrollmentDetailsScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            const Divider(),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
+            Divider(color: colorScheme.outlineVariant),
+            const SizedBox(height: AppSpacing.md),
             _buildInfoRow(
-              Icons.school,
+              context,
+              Icons.school_outlined,
               'Batch',
               '${enrollment.batch.code} - ${enrollment.batch.name}',
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.smd),
             _buildInfoRow(
-              Icons.calendar_today,
+              context,
+              Icons.calendar_today_outlined,
               'Semester',
               enrollment.subject.semester ?? 'N/A',
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.smd),
             _buildInfoRow(
-              Icons.groups,
+              context,
+              Icons.groups_outlined,
               'Students',
               '${enrollment.batch.studentCount} enrolled',
             ),
@@ -132,24 +131,26 @@ class EnrollmentDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(
+      BuildContext context, IconData icon, String label, String value) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Row(
       children: [
-        Icon(icon, size: 20, color: AppColors.textSecondary),
-        const SizedBox(width: 12),
+        Icon(icon, size: 20, color: colorScheme.onSurfaceVariant),
+        const SizedBox(width: AppSpacing.smd),
         Text(
           '$label: ',
-          style: const TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 14,
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(
+            style: textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              fontSize: 14,
             ),
           ),
         ),
@@ -158,22 +159,24 @@ class EnrollmentDetailsScreen extends ConsumerWidget {
   }
 
   Widget _buildQuickActions(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       children: [
         Expanded(
           child: _ActionCard(
-            icon: Icons.add_circle,
+            icon: Icons.add_circle_outline,
             label: 'Take Attendance',
-            color: AppColors.success,
+            color: colorScheme.tertiary,
             onTap: () => context.push('/teacher/create-session'),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.smd),
         Expanded(
           child: _ActionCard(
             icon: Icons.history,
             label: 'View History',
-            color: AppColors.info,
+            color: colorScheme.primary,
             onTap: () {
               context.push(
                 '/teacher/attendance-history/${enrollment.id}',
@@ -190,29 +193,31 @@ class EnrollmentDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatsOverview() {
+  Widget _buildStatsOverview(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Statistics',
-              style: TextStyle(
-                fontSize: 16,
+              style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Row(
               children: [
                 Expanded(
                   child: _StatItem(
-                    icon: Icons.event,
+                    icon: Icons.event_outlined,
                     label: 'Sessions',
                     value: enrollment.stats.sessionsHeld.toString(),
-                    color: AppColors.primary,
+                    color: colorScheme.primary,
                   ),
                 ),
                 Expanded(
@@ -221,28 +226,27 @@ class EnrollmentDetailsScreen extends ConsumerWidget {
                     label: 'Avg. Attendance',
                     value:
                         '${enrollment.stats.averageAttendance.toStringAsFixed(1)}%',
-                    color: AppColors.success,
+                    color: colorScheme.tertiary,
                   ),
                 ),
               ],
             ),
             if (enrollment.stats.lastSession != null) ...[
-              const SizedBox(height: 16),
-              const Divider(),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
+              Divider(color: colorScheme.outlineVariant),
+              const SizedBox(height: AppSpacing.md),
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.access_time,
                     size: 16,
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.sm),
                   Text(
                     'Last session: ${_formatDate(enrollment.stats.lastSession!)}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -274,28 +278,29 @@ class _ActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             children: [
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 28),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.smd),
               Text(
                 label,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 13,
+                style: textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -322,14 +327,16 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       children: [
         Icon(icon, color: color, size: 24),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 24,
+          style: textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: color,
           ),
@@ -337,9 +344,8 @@ class _StatItem extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
+          style: textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
       ],
