@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../config/theme/app_colors.dart';
+import '../config/theme/app_spacing.dart';
 import 'app_button.dart';
 
+/// M3-styled error widget with retry action.
 class AppErrorWidget extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
@@ -16,29 +17,31 @@ class AppErrorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon ?? Icons.error_outline,
               size: 64,
-              color: AppColors.error,
+              color: colorScheme.error,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
+              style: textTheme.bodyLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             if (onRetry != null) ...[
-              const SizedBox(height: 24),
-              AppButton(
+              const SizedBox(height: AppSpacing.lg),
+              AppButton.tonal(
                 text: 'Retry',
                 onPressed: onRetry,
                 icon: Icons.refresh,

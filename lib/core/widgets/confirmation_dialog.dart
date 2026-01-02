@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../config/theme/app_colors.dart';
 import 'app_button.dart';
 
+/// M3-styled confirmation dialog.
 class ConfirmationDialog extends StatelessWidget {
   final String title;
   final String message;
@@ -24,42 +24,47 @@ class ConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
       title: Text(
         title,
-        style: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
+        style: textTheme.headlineSmall,
       ),
       content: Text(
         message,
-        style: const TextStyle(
-          fontSize: 14,
-          color: AppColors.textSecondary,
+        style: textTheme.bodyMedium?.copyWith(
+          color: colorScheme.onSurfaceVariant,
         ),
       ),
       actions: [
-        AppButton(
+        AppButton.text(
           text: cancelText,
-          isOutlined: true,
           onPressed: () {
             Navigator.of(context).pop();
             onCancel?.call();
           },
         ),
-        const SizedBox(width: 8),
-        AppButton(
-          text: confirmText,
-          backgroundColor: isDangerous ? AppColors.error : AppColors.primary,
-          onPressed: () {
-            Navigator.of(context).pop();
-            onConfirm();
-          },
-        ),
+        isDangerous
+            ? FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: colorScheme.error,
+                  foregroundColor: colorScheme.onError,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  onConfirm();
+                },
+                child: Text(confirmText),
+              )
+            : AppButton.filled(
+                text: confirmText,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  onConfirm();
+                },
+              ),
       ],
       actionsPadding: const EdgeInsets.all(16),
     );

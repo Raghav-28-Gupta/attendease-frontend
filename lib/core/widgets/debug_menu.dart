@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_config.dart';
 import '../utils/logger.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../config/theme/app_spacing.dart';
 
+/// Debug menu widget (only shown in development).
 class DebugMenu extends ConsumerWidget {
   const DebugMenu({super.key});
 
@@ -14,27 +16,43 @@ class DebugMenu extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    return FloatingActionButton(
-      mini: true,
+    return FloatingActionButton.small(
+      heroTag: 'debug_fab',
       onPressed: () => _showDebugDialog(context, ref),
-      child: const Icon(Icons.bug_report),
+      child: const Icon(Icons.bug_report_outlined),
     );
   }
 
   void _showDebugDialog(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('🐛 Debug Menu'),
-        content: const Column(
+        icon: Icon(
+          Icons.bug_report,
+          color: colorScheme.tertiary,
+        ),
+        title: const Text('Debug Menu'),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('API: ${AppConfig.baseUrl}'),
-            SizedBox(height: 8),
-            Text('Version: ${AppConfig.appVersion}'),
-            SizedBox(height: 16),
-            Text('Quick Actions:'),
+            Text(
+              'API: ${AppConfig.baseUrl}',
+              style: textTheme.bodyMedium,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              'Version: ${AppConfig.appVersion}',
+              style: textTheme.bodyMedium,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              'Quick Actions:',
+              style: textTheme.titleSmall,
+            ),
           ],
         ),
         actions: [
@@ -44,9 +62,12 @@ class DebugMenu extends ConsumerWidget {
               ref.read(authProvider.notifier).logout();
               Navigator.of(context).pop();
             },
-            child: const Text('Force Logout'),
+            child: Text(
+              'Force Logout',
+              style: TextStyle(color: colorScheme.error),
+            ),
           ),
-          TextButton(
+          FilledButton.tonal(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Close'),
           ),

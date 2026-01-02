@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../config/theme/app_colors.dart';
+import '../config/theme/app_spacing.dart';
 
+/// M3-styled empty state widget.
 class EmptyStateWidget extends StatelessWidget {
   final String message;
   final IconData? icon;
@@ -12,39 +13,41 @@ class EmptyStateWidget extends StatelessWidget {
     super.key,
     required this.message,
     this.icon,
-    this.action, 
+    this.action,
     this.actionText,
     this.onAction,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon ?? Icons.inbox_outlined,
               size: 64,
-              color: AppColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
+              style: textTheme.bodyLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             if (action != null) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
               action!,
             ] else if (actionText != null && onAction != null) ...[
-              const SizedBox(height: 24),
-              ElevatedButton(
+              const SizedBox(height: AppSpacing.lg),
+              FilledButton.tonal(
                 onPressed: onAction,
                 child: Text(actionText!),
               ),
