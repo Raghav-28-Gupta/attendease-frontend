@@ -1,7 +1,7 @@
 class AppConfig {
   // API Configuration
-  static const String baseUrl = 'http://192.168.1.4:5000/api';
-  static const String socketUrl = 'http://192.168.1.4:5000';
+  static const String baseUrl = 'https://attendease-backend-e27g.onrender.com/api';
+  static const String socketUrl = 'https://attendease-backend-e27g.onrender.com';
   
   // Timeouts
   static const int connectTimeout = 45000; // 30 seconds
