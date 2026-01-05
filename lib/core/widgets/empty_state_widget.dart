@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../config/theme/app_spacing.dart';
 
-/// M3-styled empty state widget.
+/// M3-styled empty state widget with large icon and subtle styling.
 class EmptyStateWidget extends StatelessWidget {
   final String message;
+  final String? subtitle;
   final IconData? icon;
   final Widget? action;
   final String? actionText;
@@ -12,6 +13,7 @@ class EmptyStateWidget extends StatelessWidget {
   const EmptyStateWidget({
     super.key,
     required this.message,
+    this.subtitle,
     this.icon,
     this.action,
     this.actionText,
@@ -25,23 +27,41 @@ class EmptyStateWidget extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: const EdgeInsets.all(AppSpacing.xxl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Large icon with outline color per Phase 4 spec
             Icon(
               icon ?? Icons.inbox_outlined,
-              size: 64,
-              color: colorScheme.onSurfaceVariant,
+              size: 80,
+              color: colorScheme.outline,
             ),
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: AppSpacing.lg),
+
+            // Main message
             Text(
               message,
               textAlign: TextAlign.center,
-              style: textTheme.bodyLarge?.copyWith(
+              style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
               ),
             ),
+
+            // Optional subtitle
+            if (subtitle != null) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                subtitle!,
+                textAlign: TextAlign.center,
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.outline,
+                ),
+              ),
+            ],
+
+            // Action button
             if (action != null) ...[
               const SizedBox(height: AppSpacing.lg),
               action!,
