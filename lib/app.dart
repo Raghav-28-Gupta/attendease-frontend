@@ -1,3 +1,4 @@
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/config/theme/app_theme.dart';
@@ -11,17 +12,24 @@ class AttendEaseApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
 
-    return MaterialApp.router(
-      title: 'AttendEase',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      routerConfig: router,
-      builder: (context, child) {
-        return Stack(
-          children: [
-            child ?? const SizedBox(),
-            const NotificationBanner(),
-          ],
+    return DynamicColorBuilder(
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        return MaterialApp.router(
+          title: 'AttendEase',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme(lightDynamic),
+          // Dark theme will be added in later phase
+          // darkTheme: AppTheme.darkTheme(darkDynamic),
+          // themeMode: ThemeMode.system,
+          routerConfig: router,
+          builder: (context, child) {
+            return Stack(
+              children: [
+                child ?? const SizedBox(),
+                const NotificationBanner(),
+              ],
+            );
+          },
         );
       },
     );

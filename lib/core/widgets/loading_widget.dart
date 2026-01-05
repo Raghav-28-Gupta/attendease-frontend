@@ -1,34 +1,33 @@
 import 'package:flutter/material.dart';
-import '../config/theme/app_colors.dart';
+import '../config/theme/app_spacing.dart';
 
+/// M3-styled loading widget.
 class LoadingWidget extends StatelessWidget {
   final String? message;
-  final Color? color;
 
   const LoadingWidget({
     super.key,
     this.message,
-    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(
-              color ?? AppColors.primary,
-            ),
+          CircularProgressIndicator.adaptive(
+            valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
           ),
           if (message != null) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Text(
               message!,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -38,7 +37,7 @@ class LoadingWidget extends StatelessWidget {
   }
 }
 
-// Full screen loading overlay
+/// Full screen loading overlay
 class LoadingOverlay extends StatelessWidget {
   final String? message;
 
@@ -53,7 +52,7 @@ class LoadingOverlay extends StatelessWidget {
   }
 }
 
-// Shimmer loading effect (for lists)
+/// Shimmer loading effect (for lists)
 class ShimmerLoading extends StatelessWidget {
   final double height;
   final double width;
@@ -68,11 +67,13 @@ class ShimmerLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       height: height,
       width: width,
       decoration: BoxDecoration(
-        color: Colors.grey[300],
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: borderRadius ?? BorderRadius.circular(8),
       ),
     );

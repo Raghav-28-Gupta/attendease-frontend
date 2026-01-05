@@ -2,11 +2,11 @@ import 'package:attendease_frontend/features/teacher/dashboard/presentation/prov
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
+import '../../../../../core/config/theme/app_semantic_colors.dart';
 import '../../../../../core/widgets/app_button.dart';
 import '../../../../../core/widgets/loading_widget.dart';
 import '../../../../../core/widgets/error_widget.dart';
-import '../../../../../core/widgets/status_chip.dart';
 import '../../../../../core/utils/snackbar_utils.dart';
 import '../../data/models/attendance_session_model.dart';
 import '../providers/attendance_provider.dart';
@@ -33,6 +33,7 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
   @override
   Widget build(BuildContext context) {
     final studentsAsync = ref.watch(sessionStudentsProvider(widget.sessionId));
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -47,15 +48,13 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
       ),
       body: studentsAsync.when(
         data: (students) {
-          // Initialize attendance map
           if (_attendanceMap.isEmpty) {
             for (var student in students) {
-              _attendanceMap[student.student.id] = 
+              _attendanceMap[student.student.id] =
                   student.status.isEmpty ? 'PRESENT' : student.status;
             }
           }
 
-          // Filter students
           final filteredStudents = students.where((student) {
             final matchesSearch = _searchQuery.isEmpty ||
                 student.student.fullName
@@ -73,17 +72,18 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
 
           return Column(
             children: [
-              // Search & Filter Bar
-              _buildSearchAndFilter(),
-
-              // Summary Bar
+              _buildSearchAndFilter(colorScheme),
               _buildSummaryBar(students),
-
-              // Student List
               Expanded(
                 child: filteredStudents.isEmpty
-                    ? const Center(
-                        child: Text('No students found'),
+                    ? Center(
+                        child: Text(
+                          'No students found',
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                        ),
                       )
                     : ListView.builder(
                         itemCount: filteredStudents.length,
@@ -93,8 +93,6 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
                         },
                       ),
               ),
-
-              // Submit Button
               _buildSubmitButton(students),
             ],
           );
@@ -110,22 +108,17 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
     );
   }
 
-  Widget _buildSearchAndFilter() {
+  Widget _buildSearchAndFilter(ColorScheme colorScheme) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha((0.05 * 255).round()),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: colorScheme.surface,
+        border: Border(
+          bottom: BorderSide(color: colorScheme.outlineVariant),
+        ),
       ),
       child: Column(
         children: [
-          // Search Bar
           TextField(
             decoration: InputDecoration(
               hintText: 'Search by name or student ID...',
@@ -133,28 +126,26 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             ),
             onChanged: (value) {
               setState(() => _searchQuery = value);
             },
           ),
-
-          const SizedBox(height: 12),
-
-          // Filter Chips
+          const SizedBox(height: AppSpacing.smd),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
                 _buildFilterChip('ALL', 'All'),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 _buildFilterChip('PRESENT', 'Present'),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 _buildFilterChip('ABSENT', 'Absent'),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 _buildFilterChip('LATE', 'Late'),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 _buildFilterChip('EXCUSED', 'Excused'),
               ],
             ),
@@ -173,48 +164,55 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
       onSelected: (selected) {
         setState(() => _filterStatus = value);
       },
-      selectedColor: AppColors.primary.withAlpha((0.2 * 255).round()),
-      checkmarkColor: AppColors.primary,
     );
   }
 
   Widget _buildSummaryBar(List<StudentAttendanceModel> students) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final semanticColors = Theme.of(context).extension<SemanticColors>()!;
+
     final present = _attendanceMap.values.where((s) => s == 'PRESENT').length;
     final absent = _attendanceMap.values.where((s) => s == 'ABSENT').length;
     final late = _attendanceMap.values.where((s) => s == 'LATE').length;
     final excused = _attendanceMap.values.where((s) => s == 'EXCUSED').length;
 
     return Container(
-      padding: const EdgeInsets.all(16),
-      color: AppColors.background,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      color: colorScheme.surfaceContainerLow,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildSummaryStat('Present', present, AppColors.present),
-          _buildSummaryStat('Absent', absent, AppColors.absent),
-          _buildSummaryStat('Late', late, AppColors.late),
-          _buildSummaryStat('Excused', excused, AppColors.excused),
+          _buildSummaryStat('Present', present, semanticColors.present,
+              semanticColors.onPresent),
+          _buildSummaryStat(
+              'Absent', absent, semanticColors.absent, semanticColors.onAbsent),
+          _buildSummaryStat(
+              'Late', late, semanticColors.late, semanticColors.onLate),
+          _buildSummaryStat('Excused', excused, semanticColors.excused,
+              semanticColors.onExcused),
         ],
       ),
     );
   }
 
-  Widget _buildSummaryStat(String label, int count, Color color) {
+  Widget _buildSummaryStat(
+      String label, int count, Color bgColor, Color fgColor) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       children: [
         Text(
           count.toString(),
-          style: TextStyle(
-            fontSize: 24,
+          style: textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: color,
+            color: fgColor,
           ),
         ),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
+          style: textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
       ],
@@ -222,29 +220,38 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
   }
 
   Widget _buildStudentTile(StudentAttendanceModel studentData) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final semanticColors = Theme.of(context).extension<SemanticColors>()!;
     final student = studentData.student;
     final currentStatus = _attendanceMap[student.id] ?? 'PRESENT';
+    final (bgColor, fgColor) = _getStatusColors(semanticColors, currentStatus);
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: _getStatusColor(currentStatus),
+          backgroundColor: bgColor,
           child: Text(
             student.firstName[0].toUpperCase(),
-            style: const TextStyle(
-              color: Colors.white,
+            style: textTheme.titleSmall?.copyWith(
+              color: fgColor,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
         title: Text(
           student.fullName,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
           'ID: ${student.studentId}',
-          style: const TextStyle(fontSize: 12),
+          style: textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
         trailing: PopupMenuButton<String>(
           initialValue: currentStatus,
@@ -254,13 +261,13 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
             });
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.smd,
+              vertical: AppSpacing.xs,
+            ),
             decoration: BoxDecoration(
-              color: _getStatusColor(currentStatus).withAlpha((0.1 * 255).round()),
+              color: bgColor,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: _getStatusColor(currentStatus).withAlpha((0.3 * 255).round()),
-              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -268,31 +275,30 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
                 Icon(
                   _getStatusIcon(currentStatus),
                   size: 16,
-                  color: _getStatusColor(currentStatus),
+                  color: fgColor,
                 ),
                 const SizedBox(width: 6),
                 Text(
                   currentStatus,
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: _getStatusColor(currentStatus),
+                    color: fgColor,
                   ),
                 ),
                 const SizedBox(width: 4),
-                Icon(
-                  Icons.arrow_drop_down,
-                  size: 16,
-                  color: _getStatusColor(currentStatus),
-                ),
+                Icon(Icons.arrow_drop_down, size: 16, color: fgColor),
               ],
             ),
           ),
           itemBuilder: (context) => [
-            _buildStatusMenuItem('PRESENT', 'Present', Icons.check_circle),
-            _buildStatusMenuItem('ABSENT', 'Absent', Icons.cancel),
-            _buildStatusMenuItem('LATE', 'Late', Icons.access_time),
-            _buildStatusMenuItem('EXCUSED', 'Excused', Icons.description),
+            _buildStatusMenuItem(
+                semanticColors, 'PRESENT', 'Present', Icons.check_circle),
+            _buildStatusMenuItem(
+                semanticColors, 'ABSENT', 'Absent', Icons.cancel),
+            _buildStatusMenuItem(
+                semanticColors, 'LATE', 'Late', Icons.access_time),
+            _buildStatusMenuItem(
+                semanticColors, 'EXCUSED', 'Excused', Icons.description),
           ],
         ),
       ),
@@ -300,16 +306,18 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
   }
 
   PopupMenuItem<String> _buildStatusMenuItem(
+    SemanticColors semanticColors,
     String value,
     String label,
     IconData icon,
   ) {
+    final (_, fgColor) = _getStatusColors(semanticColors, value);
     return PopupMenuItem(
       value: value,
       child: Row(
         children: [
-          Icon(icon, size: 18, color: _getStatusColor(value)),
-          const SizedBox(width: 12),
+          Icon(icon, size: 18, color: fgColor),
+          const SizedBox(width: AppSpacing.smd),
           Text(label),
         ],
       ),
@@ -317,20 +325,18 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
   }
 
   Widget _buildSubmitButton(List<StudentAttendanceModel> students) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha((0.05 * 255).round()),
-            blurRadius: 4,
-            offset: const Offset(0, -2),
-          ),
-        ],
+        color: colorScheme.surface,
+        border: Border(
+          top: BorderSide(color: colorScheme.outlineVariant),
+        ),
       ),
       child: SafeArea(
-        child: AppButton(
+        child: AppButton.filled(
           text: 'Submit Attendance (${students.length} students)',
           onPressed: _isSubmitting ? null : () => _handleSubmit(students),
           isLoading: _isSubmitting,
@@ -349,10 +355,12 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
   }
 
   Future<void> _handleSubmit(List<StudentAttendanceModel> students) async {
-    // Confirm submission
+    final colorScheme = Theme.of(context).colorScheme;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        icon: Icon(Icons.check_circle_outline, color: colorScheme.primary),
         title: const Text('Submit Attendance'),
         content: Text(
           'Are you sure you want to submit attendance for ${students.length} students?',
@@ -362,7 +370,7 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
-          TextButton(
+          FilledButton(
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Submit'),
           ),
@@ -386,9 +394,8 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
       records: records,
     );
 
-    final success = await ref
-        .read(markAttendanceProvider.notifier)
-        .markAttendance(request);
+    final success =
+        await ref.read(markAttendanceProvider.notifier).markAttendance(request);
 
     if (mounted) {
       setState(() => _isSubmitting = false);
@@ -398,11 +405,7 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
           context,
           'Attendance submitted successfully! 🎉',
         );
-
-        // Refresh dashboard
         ref.invalidate(teacherDashboardProvider);
-
-        // Navigate back
         context.go('/teacher');
       } else {
         final error = ref.read(markAttendanceProvider).error;
@@ -414,33 +417,24 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
     }
   }
 
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'PRESENT':
-        return AppColors.present;
-      case 'ABSENT':
-        return AppColors.absent;
-      case 'LATE':
-        return AppColors.late;
-      case 'EXCUSED':
-        return AppColors.excused;
-      default:
-        return AppColors.textSecondary;
-    }
+  (Color, Color) _getStatusColors(
+      SemanticColors semanticColors, String status) {
+    return switch (status) {
+      'PRESENT' => (semanticColors.present, semanticColors.onPresent),
+      'ABSENT' => (semanticColors.absent, semanticColors.onAbsent),
+      'LATE' => (semanticColors.late, semanticColors.onLate),
+      'EXCUSED' => (semanticColors.excused, semanticColors.onExcused),
+      _ => (semanticColors.present, semanticColors.onPresent),
+    };
   }
 
   IconData _getStatusIcon(String status) {
-    switch (status) {
-      case 'PRESENT':
-        return Icons.check_circle;
-      case 'ABSENT':
-        return Icons.cancel;
-      case 'LATE':
-        return Icons.access_time;
-      case 'EXCUSED':
-        return Icons.description;
-      default:
-        return Icons.help;
-    }
+    return switch (status) {
+      'PRESENT' => Icons.check_circle,
+      'ABSENT' => Icons.cancel,
+      'LATE' => Icons.access_time,
+      'EXCUSED' => Icons.description,
+      _ => Icons.help,
+    };
   }
 }

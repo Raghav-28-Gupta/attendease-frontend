@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../config/theme/app_colors.dart';
 import '../providers/socket_provider.dart';
+import '../config/theme/app_motion.dart';
+import '../config/theme/app_spacing.dart';
 
+/// M3-styled connection status indicator.
 class ConnectionStatusWidget extends ConsumerWidget {
   const ConnectionStatusWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final socketState = ref.watch(socketStateProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     // Don't show anything if connected
     if (socketState == SocketConnectionState.connected) {
       return const SizedBox.shrink();
     }
-    
+
+    final (bgColor, fgColor) = _getColors(colorScheme, socketState);
+
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
+      duration: AppMotion.medium2,
+      curve: AppMotion.standard,
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      color: _getStatusColor(socketState),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.sm,
+        horizontal: AppSpacing.md,
+      ),
+      color: bgColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -27,22 +37,21 @@ class ConnectionStatusWidget extends ConsumerWidget {
             width: 16,
             height: 16,
             child: socketState == SocketConnectionState.connecting
-                ? const CircularProgressIndicator(
+                ? CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor: AlwaysStoppedAnimation<Color>(fgColor),
                   )
                 : Icon(
                     _getStatusIcon(socketState),
-                    color: Colors.white,
+                    color: fgColor,
                     size: 16,
                   ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           Text(
             _getStatusMessage(socketState),
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
+            style: textTheme.labelMedium?.copyWith(
+              color: fgColor,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -51,42 +60,43 @@ class ConnectionStatusWidget extends ConsumerWidget {
     );
   }
 
-  Color _getStatusColor(SocketConnectionState state) {
-    switch (state) {
-      case SocketConnectionState.connecting:
-        return AppColors.warning;
-      case SocketConnectionState.disconnected:
-        return AppColors.textSecondary;
-      case SocketConnectionState.error:
-        return AppColors.error;
-      case SocketConnectionState.connected:
-        return AppColors.success;
-    }
+  (Color, Color) _getColors(
+      ColorScheme colorScheme, SocketConnectionState state) {
+    return switch (state) {
+      SocketConnectionState.connecting => (
+          colorScheme.tertiaryContainer,
+          colorScheme.onTertiaryContainer
+        ),
+      SocketConnectionState.disconnected => (
+          colorScheme.surfaceContainerHighest,
+          colorScheme.onSurfaceVariant
+        ),
+      SocketConnectionState.error => (
+          colorScheme.errorContainer,
+          colorScheme.onErrorContainer
+        ),
+      SocketConnectionState.connected => (
+          colorScheme.primaryContainer,
+          colorScheme.onPrimaryContainer
+        ),
+    };
   }
 
   IconData _getStatusIcon(SocketConnectionState state) {
-    switch (state) {
-      case SocketConnectionState.connecting:
-        return Icons.sync;
-      case SocketConnectionState.disconnected:
-        return Icons.cloud_off;
-      case SocketConnectionState.error:
-        return Icons.error;
-      case SocketConnectionState.connected:
-        return Icons.cloud_done;
-    }
+    return switch (state) {
+      SocketConnectionState.connecting => Icons.sync,
+      SocketConnectionState.disconnected => Icons.cloud_off_outlined,
+      SocketConnectionState.error => Icons.error_outline,
+      SocketConnectionState.connected => Icons.cloud_done_outlined,
+    };
   }
 
   String _getStatusMessage(SocketConnectionState state) {
-    switch (state) {
-      case SocketConnectionState.connecting:
-        return 'Connecting to server...';
-      case SocketConnectionState.disconnected:
-        return 'No connection';
-      case SocketConnectionState.error:
-        return 'Connection error';
-      case SocketConnectionState.connected:
-        return 'Connected';
-    }
+    return switch (state) {
+      SocketConnectionState.connecting => 'Connecting to server...',
+      SocketConnectionState.disconnected => 'No connection',
+      SocketConnectionState.error => 'Connection error',
+      SocketConnectionState.connected => 'Connected',
+    };
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../config/theme/app_colors.dart';
+import '../config/theme/app_motion.dart';
+import '../config/theme/app_spacing.dart';
 
+/// M3-styled expandable FAB menu.
 class FloatingActionMenu extends StatefulWidget {
   final List<FloatingActionMenuItem> items;
 
@@ -22,7 +24,7 @@ class _FloatingActionMenuState extends State<FloatingActionMenu>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 200),
+      duration: AppMotion.medium2,
       vsync: this,
     );
   }
@@ -44,6 +46,9 @@ class _FloatingActionMenuState extends State<FloatingActionMenu>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -59,48 +64,43 @@ class _FloatingActionMenuState extends State<FloatingActionMenu>
               curve: Interval(
                 0.0,
                 1.0 - (index * 0.1),
-                curve: Curves.easeOut,
+                curve: AppMotion.emphasizedDecelerate,
               ),
             ),
             child: FadeTransition(
               opacity: _controller,
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.only(bottom: AppSpacing.smd),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Label
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                        horizontal: AppSpacing.smd,
+                        vertical: AppSpacing.sm,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: colorScheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
                       ),
                       child: Text(
                         item.label,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                        style: textTheme.labelLarge?.copyWith(
+                          color: colorScheme.onSurface,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    
+                    const SizedBox(width: AppSpacing.smd),
+
                     // Button
-                    FloatingActionButton(
+                    FloatingActionButton.small(
                       heroTag: 'fab_$index',
-                      mini: true,
-                      backgroundColor: item.color,
+                      backgroundColor:
+                          item.color ?? colorScheme.primaryContainer,
+                      foregroundColor: item.color != null
+                          ? colorScheme.onPrimary
+                          : colorScheme.onPrimaryContainer,
                       onPressed: () {
                         _toggle();
                         item.onPressed();
@@ -112,7 +112,7 @@ class _FloatingActionMenuState extends State<FloatingActionMenu>
               ),
             ),
           );
-        }).toList(),
+        }),
 
         // Main Button
         FloatingActionButton(
@@ -130,13 +130,13 @@ class _FloatingActionMenuState extends State<FloatingActionMenu>
 class FloatingActionMenuItem {
   final String label;
   final IconData icon;
-  final Color color;
+  final Color? color;
   final VoidCallback onPressed;
 
   FloatingActionMenuItem({
     required this.label,
     required this.icon,
-    required this.color,
+    this.color,
     required this.onPressed,
   });
 }

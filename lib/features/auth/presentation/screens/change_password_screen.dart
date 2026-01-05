@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/config/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/utils/validators.dart';
@@ -60,46 +61,45 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Change Password'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 24),
-
-                // Info
+                const SizedBox(height: AppSpacing.lg),
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withAlpha((0.1 * 255).round()),
+                    color: colorScheme.tertiaryContainer,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.blue.withAlpha((0.3 * 255).round()),
-                    ),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(Icons.info_outline, color: Colors.blue, size: 20),
-                      SizedBox(width: 12),
+                      Icon(Icons.info_outline,
+                          color: colorScheme.onTertiaryContainer, size: 20),
+                      const SizedBox(width: AppSpacing.smd),
                       Expanded(
                         child: Text(
                           'Choose a strong password with at least 8 characters',
-                          style: TextStyle(fontSize: 12),
+                          style: textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onTertiaryContainer,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
-
-                // Old Password
+                const SizedBox(height: AppSpacing.xl),
                 AppTextField(
                   label: 'Current Password',
                   hint: 'Enter your current password',
@@ -109,9 +109,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   validator: Validators.password,
                   textCapitalization: TextCapitalization.none,
                 ),
-                const SizedBox(height: 20),
-
-                // New Password
+                const SizedBox(height: AppSpacing.mlg),
                 AppTextField(
                   label: 'New Password',
                   hint: 'Enter your new password',
@@ -121,9 +119,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   validator: Validators.password,
                   textCapitalization: TextCapitalization.none,
                 ),
-                const SizedBox(height: 20),
-
-                // Confirm Password
+                const SizedBox(height: AppSpacing.mlg),
                 AppTextField(
                   label: 'Confirm New Password',
                   hint: 'Re-enter your new password',
@@ -136,10 +132,8 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   ),
                   textCapitalization: TextCapitalization.none,
                 ),
-                const SizedBox(height: 32),
-
-                // Change Password Button
-                AppButton(
+                const SizedBox(height: AppSpacing.xl),
+                AppButton.filled(
                   text: 'Change Password',
                   onPressed: _isLoading ? null : _handleChangePassword,
                   isLoading: _isLoading,

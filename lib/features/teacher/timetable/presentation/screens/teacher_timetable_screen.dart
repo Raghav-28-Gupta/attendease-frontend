@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../../../core/widgets/loading_widget.dart';
 import '../../../../../core/widgets/error_widget.dart';
 import '../../../../../core/widgets/empty_state_widget.dart';
@@ -15,6 +15,7 @@ class TeacherTimetableScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final timetableAsync = ref.watch(teacherTimetableProvider);
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -24,7 +25,7 @@ class TeacherTimetableScreen extends ConsumerWidget {
             const Text('My Timetable'),
             Text(
               'All your scheduled classes',
-              style: Theme.of(context).textTheme.bodySmall,
+              style: textTheme.labelSmall,
             ),
           ],
         ),
@@ -42,7 +43,7 @@ class TeacherTimetableScreen extends ConsumerWidget {
           if (entries.isEmpty) {
             return EmptyStateWidget(
               message: 'No timetable entries yet',
-              icon: Icons.calendar_month,
+              icon: Icons.calendar_month_outlined,
               actionText: 'Create Entry',
               onAction: () {
                 context.push('/teacher/timetable/create');
@@ -50,7 +51,6 @@ class TeacherTimetableScreen extends ConsumerWidget {
             );
           }
 
-          // Group by day of week
           final groupedByDay = <String, List<TimetableEntryModel>>{};
           for (var entry in entries) {
             if (!groupedByDay.containsKey(entry.dayOfWeek)) {
@@ -59,7 +59,6 @@ class TeacherTimetableScreen extends ConsumerWidget {
             groupedByDay[entry.dayOfWeek]!.add(entry);
           }
 
-          // Sort days
           final daysOrder = [
             'MONDAY',
             'TUESDAY',
@@ -77,13 +76,12 @@ class TeacherTimetableScreen extends ConsumerWidget {
               ref.invalidate(teacherTimetableProvider);
             },
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.md),
               itemCount: sortedDays.length,
               itemBuilder: (context, index) {
                 final day = sortedDays[index];
                 final dayEntries = groupedByDay[day]!;
-                
-                // Sort by start time
+
                 dayEntries.sort((a, b) => a.startTime.compareTo(b.startTime));
 
                 return _DayCard(
@@ -124,17 +122,19 @@ class _DayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Day Header
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: colorScheme.primaryContainer,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
@@ -142,34 +142,30 @@ class _DayCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.calendar_today,
-                  color: AppColors.primary,
+                Icon(
+                  Icons.calendar_today_outlined,
+                  color: colorScheme.onPrimaryContainer,
                   size: 20,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.smd),
                 Text(
                   _formatDayName(day),
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
+                    color: colorScheme.onPrimaryContainer,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${entries.length} class${entries.length > 1 ? 'es' : ''}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
+                  style: textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onPrimaryContainer,
                   ),
                 ),
               ],
             ),
           ),
-
-          // Classes List
-          ...entries.map((entry) => _ClassTile(entry: entry)).toList(),
+          ...entries.map((entry) => _ClassTile(entry: entry)),
         ],
       ),
     );
@@ -187,70 +183,63 @@ class _ClassTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return InkWell(
       onTap: () {
         context.push('/teacher/timetable/${entry.id}', extra: entry);
       },
       child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: AppColors.border,
+              color: colorScheme.outlineVariant,
               width: 1,
             ),
           ),
         ),
         child: Row(
           children: [
-            // Time Column
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   AppDateUtils.formatTime(entry.startTime),
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   AppDateUtils.formatTime(entry.endTime),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
-
-            const SizedBox(width: 16),
-
-            // Divider Line
+            const SizedBox(width: AppSpacing.md),
             Container(
               width: 3,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.primary,
+                color: colorScheme.primary,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-
-            const SizedBox(width: 16),
-
-            // Class Info
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     entry.enrollment.subject.name,
-                    style: const TextStyle(
-                      fontSize: 15,
+                    style: textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -262,30 +251,28 @@ class _ClassTile extends ConsumerWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: colorScheme.primary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           entry.enrollment.subject.code,
-                          style: const TextStyle(
-                            fontSize: 11,
+                          style: textTheme.labelSmall?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: AppColors.primary,
+                            color: colorScheme.primary,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      const Icon(
-                        Icons.school,
+                      const SizedBox(width: AppSpacing.sm),
+                      Icon(
+                        Icons.school_outlined,
                         size: 12,
-                        color: AppColors.textSecondary,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         entry.enrollment.batch.code,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -294,17 +281,16 @@ class _ClassTile extends ConsumerWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(
-                          Icons.room,
+                        Icon(
+                          Icons.room_outlined,
                           size: 12,
-                          color: AppColors.textSecondary,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           'Room ${entry.room}',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
+                          style: textTheme.labelSmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -313,11 +299,10 @@ class _ClassTile extends ConsumerWidget {
                 ],
               ),
             ),
-
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios,
               size: 14,
-              color: AppColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
             ),
           ],
         ),

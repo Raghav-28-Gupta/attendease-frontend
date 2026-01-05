@@ -1,10 +1,12 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../../../core/widgets/loading_widget.dart';
 import '../../../../../core/widgets/error_widget.dart';
 import '../../../../../core/widgets/empty_state_widget.dart';
+import '../../../../../core/widgets/student_navigation_bar.dart';
 import '../../../../../core/utils/date_utils.dart';
 import '../../data/models/timetable_model.dart';
 import '../providers/timetable_provider.dart';
@@ -15,17 +17,24 @@ class TimetableScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final timetableAsync = ref.watch(timetableProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Timetable'),
-      ),
       body: timetableAsync.when(
         data: (timetable) {
           if (timetable.timetable.isEmpty) {
-            return const EmptyStateWidget(
-              message: 'No timetable available',
-              icon: Icons.calendar_today_outlined,
+            return CustomScrollView(
+              slivers: [
+                _buildAppBar(colorScheme, textTheme, 0),
+                const SliverFillRemaining(
+                  child: EmptyStateWidget(
+                    message: 'No timetable available',
+                    subtitle: 'Your class schedule will appear here',
+                    icon: Icons.calendar_today_outlined,
+                  ),
+                ),
+              ],
             );
           }
 
@@ -48,29 +57,45 @@ class TimetableScreen extends ConsumerWidget {
             'SATURDAY',
             'SUNDAY'
           ];
-          final sortedDays = daysOrder
-              .where((day) => groupedByDay.containsKey(day))
-              .toList();
+          final sortedDays =
+              daysOrder.where((day) => groupedByDay.containsKey(day)).toList();
 
           return RefreshIndicator(
             onRefresh: () async {
               ref.invalidate(timetableProvider);
             },
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: sortedDays.length,
-              itemBuilder: (context, index) {
-                final day = sortedDays[index];
-                final entries = groupedByDay[day]!;
-                
-                // Sort entries by start time
-                entries.sort((a, b) => a.startTime.compareTo(b.startTime));
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                _buildAppBar(
+                    colorScheme, textTheme, timetable.timetable.length),
 
-                return _DayCard(
-                  day: day,
-                  entries: entries,
-                );
-              },
+                // Day Cards
+                SliverPadding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final day = sortedDays[index];
+                        final entries = groupedByDay[day]!;
+                        entries
+                            .sort((a, b) => a.startTime.compareTo(b.startTime));
+
+                        return _DayCard(
+                          day: day,
+                          entries: entries,
+                        )
+                            .animate(delay: (index * 100).ms)
+                            .fadeIn(duration: 400.ms)
+                            .slideY(begin: 0.1, end: 0);
+                      },
+                      childCount: sortedDays.length,
+                    ),
+                  ),
+                ),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 80)),
+              ],
             ),
           );
         },
@@ -82,29 +107,95 @@ class TimetableScreen extends ConsumerWidget {
           },
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        onTap: (index) {
-          if (index == 0) {
-            context.go('/student');
-          } else if (index == 2) {
-            context.push('/student/profile');
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+      bottomNavigationBar: const StudentNavigationBar(currentIndex: 1),
+    );
+  }
+
+  SliverAppBar _buildAppBar(
+      ColorScheme colorScheme, TextTheme textTheme, int classCount) {
+    return SliverAppBar.large(
+      expandedHeight: 180,
+      pinned: true,
+      stretch: true,
+      backgroundColor: colorScheme.surface,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                colorScheme.primaryContainer,
+                colorScheme.secondaryContainer,
+              ],
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Timetable',
+          child: SafeArea(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: ClipRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        color: colorScheme.surface.withValues(alpha: 0.1),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: AppSpacing.lg,
+                  bottom: 60,
+                  right: AppSpacing.lg,
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(
+                          Icons.calendar_month,
+                          color: colorScheme.onPrimary,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Weekly Schedule',
+                            style: textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onPrimaryContainer,
+                            ),
+                          ),
+                          Text(
+                            '$classCount classes this week',
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onPrimaryContainer
+                                  .withValues(alpha: 0.8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
+        ),
+        collapseMode: CollapseMode.parallax,
+      ),
+      title: Text(
+        'Timetable',
+        style: textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -121,17 +212,23 @@ class _DayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final isToday = _isCurrentDay(day);
+
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Day Header
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              color: AppColors.primary.withAlpha((0.1 * 255).round()),
+              color: isToday
+                  ? colorScheme.tertiaryContainer
+                  : colorScheme.primaryContainer,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
@@ -139,26 +236,48 @@ class _DayCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.calendar_today,
-                  color: AppColors.primary,
+                Icon(
+                  isToday ? Icons.today : Icons.calendar_today_outlined,
+                  color: isToday
+                      ? colorScheme.onTertiaryContainer
+                      : colorScheme.onPrimaryContainer,
                   size: 20,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.smd),
                 Text(
                   _formatDayName(day),
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
+                    color: isToday
+                        ? colorScheme.onTertiaryContainer
+                        : colorScheme.onPrimaryContainer,
                   ),
                 ),
+                if (isToday) ...[
+                  const SizedBox(width: AppSpacing.sm),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: colorScheme.tertiary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'TODAY',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onTertiary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
                 const Spacer(),
                 Text(
                   '${entries.length} class${entries.length > 1 ? 'es' : ''}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
+                  style: textTheme.labelMedium?.copyWith(
+                    color: isToday
+                        ? colorScheme.onTertiaryContainer.withValues(alpha: 0.8)
+                        : colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                   ),
                 ),
               ],
@@ -166,11 +285,24 @@ class _DayCard extends StatelessWidget {
           ),
 
           // Classes List
-          // ignore: unnecessary_to_list_in_spreads
-          ...entries.map((entry) => _ClassTile(entry: entry)).toList(),
+          ...entries.map((entry) => _ClassTile(entry: entry)),
         ],
       ),
     );
+  }
+
+  bool _isCurrentDay(String day) {
+    final now = DateTime.now();
+    final weekdays = [
+      'MONDAY',
+      'TUESDAY',
+      'WEDNESDAY',
+      'THURSDAY',
+      'FRIDAY',
+      'SATURDAY',
+      'SUNDAY'
+    ];
+    return weekdays[now.weekday - 1] == day;
   }
 
   String _formatDayName(String day) {
@@ -185,12 +317,15 @@ class _ClassTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: AppColors.border,
+            color: colorScheme.outlineVariant,
             width: 1,
           ),
         ),
@@ -198,41 +333,58 @@ class _ClassTile extends StatelessWidget {
       child: Row(
         children: [
           // Time Column
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                AppDateUtils.formatTime(entry.startTime),
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+          Container(
+            width: 56,
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  AppDateUtils.formatTime(entry.startTime),
+                  style: textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                AppDateUtils.formatTime(entry.endTime),
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 2),
+                  height: 12,
+                  width: 1,
+                  color: colorScheme.outline,
                 ),
-              ),
-            ],
+                Text(
+                  AppDateUtils.formatTime(entry.endTime),
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
           ),
 
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.md),
 
           // Divider Line
           Container(
-            width: 3,
-            height: 40,
+            width: 4,
+            height: 50,
             decoration: BoxDecoration(
-              color: AppColors.primary,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  colorScheme.primary,
+                  colorScheme.tertiary,
+                ],
+              ),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
 
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.md),
 
           // Subject Info
           Expanded(
@@ -241,34 +393,43 @@ class _ClassTile extends StatelessWidget {
               children: [
                 Text(
                   entry.subjectEnrollment.subject.name,
-                  style: const TextStyle(
-                    fontSize: 15,
+                  style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  entry.subjectEnrollment.subject.code,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: AppColors.primary,
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    entry.subjectEnrollment.subject.code,
+                    style: textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(
-                      Icons.person,
+                    Icon(
+                      Icons.person_outline,
                       size: 14,
-                      color: AppColors.textSecondary,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      entry.subjectEnrollment.teacher.fullName,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
+                    Expanded(
+                      child: Text(
+                        entry.subjectEnrollment.teacher.fullName,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -277,17 +438,16 @@ class _ClassTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(
-                        Icons.room,
+                      Icon(
+                        Icons.room_outlined,
                         size: 14,
-                        color: AppColors.textSecondary,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         'Room ${entry.room}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],

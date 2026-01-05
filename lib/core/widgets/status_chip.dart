@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../config/theme/app_colors.dart';
+import '../config/theme/app_semantic_colors.dart';
 
 enum AttendanceStatusType {
   present,
@@ -8,6 +8,8 @@ enum AttendanceStatusType {
   excused,
 }
 
+/// M3-styled status chip for attendance status display.
+/// Uses SemanticColors ThemeExtension for proper M3 dynamic color support.
 class StatusChip extends StatelessWidget {
   final AttendanceStatusType status;
   final bool showIcon;
@@ -20,75 +22,106 @@ class StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final config = _getStatusConfig(status);
+    final semanticColors = Theme.of(context).extension<SemanticColors>()!;
+    final config = _getStatusConfig(status, semanticColors);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: config.color.withAlpha((0.1 * 255).round()),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: config.color.withAlpha((0.3 * 255).round()),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (showIcon) ...[
-            Icon(config.icon, size: 14, color: config.color),
-            const SizedBox(width: 6),
-          ],
-          Text(
-            config.label,
-            style: TextStyle(
-              fontSize: 12,
+    return Chip(
+      avatar: showIcon
+          ? Icon(
+              config.icon,
+              size: 16,
+              color: config.foregroundColor,
+            )
+          : null,
+      label: Text(
+        config.label,
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: config.foregroundColor,
               fontWeight: FontWeight.w600,
-              color: config.color,
             ),
-          ),
-        ],
       ),
+      backgroundColor: config.backgroundColor,
+      side: BorderSide.none,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
 
-  _StatusConfig _getStatusConfig(AttendanceStatusType status) {
-    switch (status) {
-      case AttendanceStatusType.present:
-        return _StatusConfig(
+  _StatusConfig _getStatusConfig(
+    AttendanceStatusType status,
+    SemanticColors colors,
+  ) {
+    return switch (status) {
+      AttendanceStatusType.present => _StatusConfig(
           label: 'Present',
-          color: AppColors.present,
-          icon: Icons.check_circle,
-        );
-      case AttendanceStatusType.absent:
-        return _StatusConfig(
+          backgroundColor: colors.present,
+          foregroundColor: colors.onPresent,
+          icon: Icons.check_circle_outlined,
+        ),
+      AttendanceStatusType.absent => _StatusConfig(
           label: 'Absent',
-          color: AppColors.absent,
-          icon: Icons.cancel,
-        );
-      case AttendanceStatusType.late:
-        return _StatusConfig(
+          backgroundColor: colors.absent,
+          foregroundColor: colors.onAbsent,
+          icon: Icons.cancel_outlined,
+        ),
+      AttendanceStatusType.late => _StatusConfig(
           label: 'Late',
-          color: AppColors.late,
+          backgroundColor: colors.late,
+          foregroundColor: colors.onLate,
           icon: Icons.access_time,
-        );
-      case AttendanceStatusType.excused:
-        return _StatusConfig(
+        ),
+      AttendanceStatusType.excused => _StatusConfig(
           label: 'Excused',
-          color: AppColors.excused,
-          icon: Icons.description,
-        );
-    }
+          backgroundColor: colors.excused,
+          foregroundColor: colors.onExcused,
+          icon: Icons.description_outlined,
+        ),
+    };
+  }
+}
+
+/// Filter chip variant for when users can filter by status
+class FilterStatusChip extends StatelessWidget {
+  final AttendanceStatusType status;
+  final bool selected;
+  final ValueChanged<bool>? onSelected;
+
+  const FilterStatusChip({
+    super.key,
+    required this.status,
+    this.selected = false,
+    this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final label = switch (status) {
+      AttendanceStatusType.present => 'Present',
+      AttendanceStatusType.absent => 'Absent',
+      AttendanceStatusType.late => 'Late',
+      AttendanceStatusType.excused => 'Excused',
+    };
+
+    return FilterChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: onSelected,
+      selectedColor: colorScheme.secondaryContainer,
+    );
   }
 }
 
 class _StatusConfig {
   final String label;
-  final Color color;
+  final Color backgroundColor;
+  final Color foregroundColor;
   final IconData icon;
 
   _StatusConfig({
     required this.label,
-    required this.color,
+    required this.backgroundColor,
+    required this.foregroundColor,
     required this.icon,
   });
 }

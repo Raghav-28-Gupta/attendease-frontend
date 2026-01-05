@@ -1,11 +1,14 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../../../core/widgets/loading_widget.dart';
 import '../../../../../core/widgets/error_widget.dart';
 import '../../../../../core/widgets/app_button.dart';
 import '../../../../../core/widgets/app_text_field.dart';
+import '../../../../../core/widgets/student_navigation_bar.dart';
 import '../../../../../core/utils/snackbar_utils.dart';
 import '../../../../../core/utils/validators.dart';
 import '../../../../../core/extensions/datetime_extensions.dart';
@@ -21,18 +24,6 @@ class ProfileScreen extends ConsumerWidget {
     final profileAsync = ref.watch(profileProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.lock),
-            onPressed: () {
-              context.push('/change-password');
-            },
-            tooltip: 'Change Password',
-          ),
-        ],
-      ),
       body: profileAsync.when(
         data: (profile) => _ProfileView(profile: profile),
         loading: () => const LoadingWidget(message: 'Loading profile...'),
@@ -43,30 +34,7 @@ class ProfileScreen extends ConsumerWidget {
           },
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2,
-        onTap: (index) {
-          if (index == 0) {
-            context.go('/student');
-          } else if (index == 1) {
-            context.push('/student/timetable');
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Timetable',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
+      bottomNavigationBar: const StudentNavigationBar(currentIndex: 2),
     );
   }
 }
@@ -91,7 +59,8 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
   @override
   void initState() {
     super.initState();
-    _firstNameController = TextEditingController(text: widget.profile.firstName);
+    _firstNameController =
+        TextEditingController(text: widget.profile.firstName);
     _lastNameController = TextEditingController(text: widget.profile.lastName);
     _phoneController = TextEditingController(text: widget.profile.phone ?? '');
   }
@@ -106,185 +75,153 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Profile Header
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-                bottomRight: Radius.circular(24),
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return CustomScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      slivers: [
+        // ─────────────────────────────────────────────────────────────────────
+        // HERO SECTION
+        // ─────────────────────────────────────────────────────────────────────
+        SliverAppBar.large(
+          expandedHeight: 280,
+          pinned: true,
+          stretch: true,
+          backgroundColor: colorScheme.surface,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.lock_outline),
+              onPressed: () {
+                context.push('/change-password');
+              },
+              tooltip: 'Change Password',
+            ),
+          ],
+          flexibleSpace: FlexibleSpaceBar(
+            background: _buildHeroBackground(context, colorScheme, textTheme),
+            collapseMode: CollapseMode.parallax,
+          ),
+          title: Text(
+            'Profile',
+            style: textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+
+        // ─────────────────────────────────────────────────────────────────────
+        // CONTENT
+        // ─────────────────────────────────────────────────────────────────────
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: _isEditing
+                ? _buildEditForm(colorScheme).animate().fadeIn(duration: 300.ms)
+                : _buildProfileInfo(context)
+                    .animate()
+                    .fadeIn(duration: 400.ms)
+                    .slideY(begin: 0.1, end: 0),
+          ),
+        ),
+
+        const SliverToBoxAdapter(child: SizedBox(height: 80)),
+      ],
+    );
+  }
+
+  Widget _buildHeroBackground(
+    BuildContext context,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            colorScheme.primaryContainer,
+            colorScheme.tertiaryContainer,
+          ],
+        ),
+      ),
+      child: SafeArea(
+        child: Stack(
+          children: [
+            // Glassmorphism overlay
+            Positioned.fill(
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    color: colorScheme.surface.withValues(alpha: 0.1),
+                  ),
+                ),
               ),
             ),
-            child: Column(
-              children: [
-                // Avatar
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.white,
-                  child: Text(
-                    widget.profile.firstName[0].toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
+
+            // Content
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 60,
+              child: Column(
+                children: [
+                  // Avatar
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: colorScheme.surface,
+                        width: 4,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 48,
+                      backgroundColor: colorScheme.primary,
+                      child: Text(
+                        widget.profile.firstName[0].toUpperCase(),
+                        style: textTheme.displaySmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onPrimary,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.md),
 
-                // Name
-                Text(
-                  widget.profile.fullName,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  // Name
+                  Text(
+                    widget.profile.fullName,
+                    style: textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onPrimaryContainer,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
+                  const SizedBox(height: 4),
 
-                // Student ID
-                Text(
-                  'ID: ${widget.profile.studentId}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withAlpha((0.9 * 255).round()),
+                  // Student ID Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface.withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      widget.profile.studentId,
+                      style: textTheme.labelLarge?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Profile Information
-          if (_isEditing)
-            _buildEditForm()
-          else
-            _buildProfileInfo(),
-
-          const SizedBox(height: 24),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProfileInfo() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          _buildInfoCard(
-            icon: Icons.email,
-            label: 'Email',
-            value: widget.profile.email,
-            color: AppColors.primary,
-          ),
-          const SizedBox(height: 12),
-          _buildInfoCard(
-            icon: Icons.phone,
-            label: 'Phone',
-            value: widget.profile.phone ?? 'Not provided',
-            color: AppColors.success,
-          ),
-          const SizedBox(height: 12),
-          _buildInfoCard(
-            icon: Icons.group,
-            label: 'Batch',
-            value: '${widget.profile.batch.code} - ${widget.profile.batch.name}',
-            color: AppColors.warning,
-          ),
-          const SizedBox(height: 12),
-          _buildInfoCard(
-            icon: Icons.school,
-            label: 'Academic Year',
-            value: widget.profile.batch.academicYear,
-            color: AppColors.secondary,
-          ),
-          const SizedBox(height: 12),
-          _buildInfoCard(
-            icon: Icons.calendar_today,
-            label: 'Member Since',
-            value: widget.profile.createdAt.formattedDate,
-            color: AppColors.textSecondary,
-          ),
-          const SizedBox(height: 24),
-
-          // Edit Button
-          AppButton(
-            text: 'Edit Profile',
-            onPressed: () {
-              setState(() => _isEditing = true);
-            },
-            icon: Icons.edit,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEditForm() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            AppTextField(
-              controller: _firstNameController,
-              label: 'First Name',
-              hint: 'Enter your first name',
-              prefixIcon: Icons.person,
-              validator: Validators.required,
-              enabled: !_isSubmitting,
-              textCapitalization: TextCapitalization.words,
-            ),
-            const SizedBox(height: 16),
-            AppTextField(
-              controller: _lastNameController,
-              label: 'Last Name',
-              hint: 'Enter your last name',
-              prefixIcon: Icons.person_outline,
-              validator: Validators.required,
-              enabled: !_isSubmitting,
-              textCapitalization: TextCapitalization.words,
-            ),
-            const SizedBox(height: 16),
-            AppTextField(
-              controller: _phoneController,
-              label: 'Phone',
-              hint: 'Enter your phone number',
-              prefixIcon: Icons.phone,
-              keyboardType: TextInputType.phone,
-              enabled: !_isSubmitting,
-              textCapitalization: TextCapitalization.none,
-            ),
-            const SizedBox(height: 24),
-
-            // Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: AppButton(
-                    text: 'Cancel',
-                    onPressed: _isSubmitting ? null : _handleCancel,
-                    isOutlined: true,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: AppButton(
-                    text: 'Save',
-                    onPressed: _isSubmitting ? null : _handleSave,
-                    isLoading: _isSubmitting,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -292,35 +229,173 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
     );
   }
 
-  Widget _buildInfoCard({
+  Widget _buildProfileInfo(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      children: [
+        _buildInfoCard(
+          context,
+          icon: Icons.email_outlined,
+          label: 'Email',
+          value: widget.profile.email,
+          color: colorScheme.primary,
+        )
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 0.ms)
+            .slideX(begin: 0.1, end: 0),
+        const SizedBox(height: AppSpacing.smd),
+        _buildInfoCard(
+          context,
+          icon: Icons.phone_outlined,
+          label: 'Phone',
+          value: widget.profile.phone ?? 'Not provided',
+          color: colorScheme.tertiary,
+        )
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 50.ms)
+            .slideX(begin: 0.1, end: 0),
+        const SizedBox(height: AppSpacing.smd),
+        _buildInfoCard(
+          context,
+          icon: Icons.group_outlined,
+          label: 'Batch',
+          value: '${widget.profile.batch.code} - ${widget.profile.batch.name}',
+          color: colorScheme.secondary,
+        )
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 100.ms)
+            .slideX(begin: 0.1, end: 0),
+        const SizedBox(height: AppSpacing.smd),
+        _buildInfoCard(
+          context,
+          icon: Icons.school_outlined,
+          label: 'Academic Year',
+          value: widget.profile.batch.academicYear,
+          color: colorScheme.primary,
+        )
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 150.ms)
+            .slideX(begin: 0.1, end: 0),
+        const SizedBox(height: AppSpacing.smd),
+        _buildInfoCard(
+          context,
+          icon: Icons.calendar_today_outlined,
+          label: 'Member Since',
+          value: widget.profile.createdAt.formattedDate,
+          color: colorScheme.onSurfaceVariant,
+        )
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 200.ms)
+            .slideX(begin: 0.1, end: 0),
+        const SizedBox(height: AppSpacing.lg),
+
+        // Edit Button
+        AppButton.tonal(
+          text: 'Edit Profile',
+          onPressed: () {
+            setState(() => _isEditing = true);
+          },
+          icon: Icons.edit_outlined,
+        )
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 250.ms)
+            .slideY(begin: 0.2, end: 0),
+      ],
+    );
+  }
+
+  Widget _buildEditForm(ColorScheme colorScheme) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          AppTextField(
+            controller: _firstNameController,
+            label: 'First Name',
+            hint: 'Enter your first name',
+            prefixIcon: Icons.person_outline,
+            validator: Validators.required,
+            enabled: !_isSubmitting,
+            textCapitalization: TextCapitalization.words,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          AppTextField(
+            controller: _lastNameController,
+            label: 'Last Name',
+            hint: 'Enter your last name',
+            prefixIcon: Icons.person_outline,
+            validator: Validators.required,
+            enabled: !_isSubmitting,
+            textCapitalization: TextCapitalization.words,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          AppTextField(
+            controller: _phoneController,
+            label: 'Phone',
+            hint: 'Enter your phone number',
+            prefixIcon: Icons.phone_outlined,
+            keyboardType: TextInputType.phone,
+            enabled: !_isSubmitting,
+            textCapitalization: TextCapitalization.none,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+
+          // Buttons
+          Row(
+            children: [
+              Expanded(
+                child: AppButton.outlined(
+                  text: 'Cancel',
+                  onPressed: _isSubmitting ? null : _handleCancel,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.smd),
+              Expanded(
+                child: AppButton.filled(
+                  text: 'Save',
+                  onPressed: _isSubmitting ? null : _handleSave,
+                  isLoading: _isSubmitting,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoCard(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required String value,
     required Color color,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: color.withAlpha((0.1 * 255).round()),
-            borderRadius: BorderRadius.circular(8),
+            color: color.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: color, size: 24),
         ),
         title: Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
+          style: textTheme.labelMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
         subtitle: Text(
           value,
-          style: const TextStyle(
-            fontSize: 16,
+          style: textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: colorScheme.onSurface,
           ),
         ),
       ),
@@ -349,9 +424,8 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
           : _phoneController.text.trim(),
     );
 
-    final success = await ref
-        .read(updateProfileProvider.notifier)
-        .updateProfile(request);
+    final success =
+        await ref.read(updateProfileProvider.notifier).updateProfile(request);
 
     if (mounted) {
       setState(() => _isSubmitting = false);

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../../core/config/theme/app_colors.dart';
+import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../../../core/utils/snackbar_utils.dart';
 import '../../../../../core/widgets/app_button.dart';
 import '../../../../../core/widgets/loading_widget.dart';
@@ -23,6 +23,8 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final batchesAsync = ref.watch(batchesProvider);
     final importState = ref.watch(importStudentsProvider);
 
@@ -35,109 +37,97 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
             const SizedBox(height: 2),
             Text(
               'Upload CSV to add students to batch',
-              style: Theme.of(context).textTheme.bodySmall,
+              style: textTheme.labelSmall,
             ),
           ],
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         children: [
-          // Instructions Card
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      Icon(Icons.info_outline, color: AppColors.primary),
-                      SizedBox(width: 8),
+                      Icon(Icons.info_outline, color: colorScheme.primary),
+                      const SizedBox(width: AppSpacing.sm),
                       Text(
                         'CSV Format Instructions',
-                        style: TextStyle(
-                          fontSize: 16,
+                        style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
                     'Required CSV headers:',
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(AppSpacing.smd),
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.border),
                     ),
-                    child: const Text(
+                    child: Text(
                       'student_id,first_name,last_name,email,phone',
-                      style: TextStyle(
-                        fontSize: 13,
+                      style: textTheme.bodySmall?.copyWith(
                         fontFamily: 'monospace',
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
                     'Example CSV content:',
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(AppSpacing.smd),
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.border),
                     ),
-                    child: const Text(
+                    child: Text(
                       'student_id,first_name,last_name,email,phone\n'
                       '2024001,John,Doe,john@college.edu,9876543210\n'
                       '2024002,Jane,Smith,jane@college.edu,9876543211',
-                      style: TextStyle(
-                        fontSize: 12,
+                      style: textTheme.bodySmall?.copyWith(
                         fontFamily: 'monospace',
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.smd),
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(AppSpacing.smd),
                     decoration: BoxDecoration(
-                      color: AppColors.info.withAlpha((0.1 * 255).round()),
+                      color: colorScheme.tertiaryContainer,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: AppColors.info.withAlpha((0.3 * 255).round()),
-                      ),
                     ),
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.info,
-                          color: AppColors.info,
+                        Icon(
+                          Icons.info_outline,
+                          color: colorScheme.onTertiaryContainer,
                           size: 20,
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: Text(
                             'Phone is optional. Header row is required.',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.blue[900],
+                            style: textTheme.labelMedium?.copyWith(
+                              color: colorScheme.onTertiaryContainer,
                             ),
                           ),
                         ),
@@ -148,48 +138,43 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
               ),
             ),
           ),
-
-          const SizedBox(height: 24),
-
-          // Step 1: Select Batch
-          const Text(
+          const SizedBox(height: AppSpacing.lg),
+          Text(
             'Step 1: Select Batch',
-            style: TextStyle(
-              fontSize: 16,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 12),
-
+          const SizedBox(height: AppSpacing.smd),
           batchesAsync.when(
             data: (batches) {
               if (batches.isEmpty) {
                 return Card(
-                  color: AppColors.error.withAlpha((0.1 * 255).round()),
+                  color: colorScheme.errorContainer,
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     child: Column(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.error_outline,
-                          color: AppColors.error,
+                          color: colorScheme.onErrorContainer,
                           size: 40,
                         ),
-                        const SizedBox(height: 12),
-                        const Text(
+                        const SizedBox(height: AppSpacing.smd),
+                        Text(
                           'No Batches Available',
-                          style: TextStyle(
-                            fontSize: 16,
+                          style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        const Text(
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
                           'Please create a batch first before importing students.',
                           textAlign: TextAlign.center,
+                          style: textTheme.bodyMedium,
                         ),
-                        const SizedBox(height: 16),
-                        AppButton(
+                        const SizedBox(height: AppSpacing.md),
+                        AppButton.tonal(
                           text: 'Create Batch',
                           onPressed: () {
                             Navigator.pop(context);
@@ -202,61 +187,78 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
                 );
               }
 
-              return DropdownButtonFormField<String>(
-                initialValue: _selectedBatchId,
-                decoration: const InputDecoration(
-                  labelText: 'Select Batch',
-                  prefixIcon: Icon(Icons.school),
-                  border: OutlineInputBorder(),
-                  helperText: 'Choose which batch to add students to',
+              return InkWell(
+                onTap: () => _showBatchSelectionSheet(context, batches),
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: colorScheme.outline),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.school_outlined,
+                        color: colorScheme.primary,
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: _selectedBatchId == null
+                            ? Text(
+                                'Select Batch',
+                                style: textTheme.bodyLarge?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              )
+                            : Builder(builder: (context) {
+                                final batch = batches.firstWhere(
+                                  (b) => b.id == _selectedBatchId,
+                                );
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      batch.name,
+                                      style: textTheme.bodyLarge?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      '${batch.code} • ${batch.academicYear}',
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                );
+                              }),
+                      ),
+                      Icon(
+                        Icons.arrow_drop_down,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ],
+                  ),
                 ),
-                items: batches.map((batch) {
-                  return DropdownMenuItem(
-                    value: batch.id,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          batch.name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
-                        Text(
-                          '${batch.code} • ${batch.academicYear} • ${batch.studentCount} students',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedBatchId = value;
-                    _file = null;
-                  });
-                  ref.read(importStudentsProvider.notifier).reset();
-                },
               );
             },
             loading: () => const LoadingWidget(message: 'Loading batches...'),
             error: (error, stack) => Card(
-              color: AppColors.error.withAlpha((0.1 * 255).round()),
+              color: colorScheme.errorContainer,
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.smd),
                 child: Row(
                   children: [
-                    const Icon(Icons.error, color: AppColors.error),
-                    const SizedBox(width: 12),
+                    Icon(Icons.error_outline,
+                        color: colorScheme.onErrorContainer),
+                    const SizedBox(width: AppSpacing.smd),
                     Expanded(
                       child: Text(
                         'Failed to load batches: ${error.toString()}',
-                        style: const TextStyle(fontSize: 12),
+                        style: textTheme.labelMedium,
                       ),
                     ),
                   ],
@@ -264,38 +266,33 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
               ),
             ),
           ),
-
-          const SizedBox(height: 24),
-
-          // Step 2: Select File
-          const Text(
+          const SizedBox(height: AppSpacing.lg),
+          Text(
             'Step 2: Select CSV File',
-            style: TextStyle(
-              fontSize: 16,
+            style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 12),
-
+          const SizedBox(height: AppSpacing.smd),
           Card(
             child: ListTile(
               enabled: _selectedBatchId != null,
               leading: Icon(
-                Icons.description,
+                Icons.description_outlined,
                 size: 32,
                 color: _selectedBatchId == null
-                    ? AppColors.textSecondary
-                    : AppColors.primary,
+                    ? colorScheme.onSurfaceVariant
+                    : colorScheme.primary,
               ),
               title: Text(
                 _file == null
                     ? 'No file selected'
                     : _file!.path.split('/').last,
-                style: TextStyle(
+                style: textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: _selectedBatchId == null
-                      ? AppColors.textSecondary
-                      : AppColors.textPrimary,
+                      ? colorScheme.onSurfaceVariant
+                      : colorScheme.onSurface,
                 ),
               ),
               subtitle: _file == null
@@ -303,10 +300,8 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
                       _selectedBatchId == null
                           ? 'Select a batch first'
                           : 'Tap to select CSV file',
-                      style: TextStyle(
-                        color: _selectedBatchId == null
-                            ? AppColors.textSecondary
-                            : AppColors.textSecondary,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     )
                   : Text(
@@ -318,10 +313,7 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
               ),
             ),
           ),
-
-          const SizedBox(height: 16),
-
-          // Import Results
+          const SizedBox(height: AppSpacing.md),
           importState.when(
             data: (result) {
               if (result == null) return const SizedBox();
@@ -331,11 +323,11 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
               final errors = result['errors'] as List<dynamic>? ?? [];
 
               return Card(
-                color: imported > 0 
-                    ? AppColors.success.withAlpha((0.1 * 255).round())
-                    : AppColors.warning.withAlpha((0.1 * 255).round()),
+                color: imported > 0
+                    ? colorScheme.tertiaryContainer
+                    : colorScheme.secondaryContainer,
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -343,52 +335,58 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
                         children: [
                           Icon(
                             imported > 0 ? Icons.check_circle : Icons.warning,
-                            color: imported > 0 ? AppColors.success : AppColors.warning,
+                            color: imported > 0
+                                ? colorScheme.onTertiaryContainer
+                                : colorScheme.onSecondaryContainer,
                             size: 28,
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: AppSpacing.smd),
                           Text(
-                            imported > 0 ? 'Import Complete!' : 'Import Completed with Issues',
-                            style: TextStyle(
-                              fontSize: 18,
+                            imported > 0
+                                ? 'Import Complete!'
+                                : 'Import Completed with Issues',
+                            style: textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: imported > 0 ? AppColors.success : AppColors.warning,
+                              color: imported > 0
+                                  ? colorScheme.onTertiaryContainer
+                                  : colorScheme.onSecondaryContainer,
                             ),
                           ),
                         ],
                       ),
-                      const Divider(height: 24),
+                      const Divider(height: AppSpacing.lg),
                       _buildResultRow(
+                        context,
                         icon: Icons.person_add,
                         label: 'Students Imported',
                         value: imported.toString(),
-                        color: AppColors.success,
+                        color: colorScheme.tertiary,
                       ),
                       if (skipped > 0) ...[
-                        const SizedBox(height: 8),
+                        const SizedBox(height: AppSpacing.sm),
                         _buildResultRow(
+                          context,
                           icon: Icons.error_outline,
                           label: 'Rows Failed',
                           value: skipped.toString(),
-                          color: AppColors.error,
+                          color: colorScheme.error,
                         ),
                       ],
                       if (errors.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        const Text(
+                        const SizedBox(height: AppSpacing.md),
+                        Text(
                           'Errors:',
-                          style: TextStyle(
+                          style: textTheme.labelLarge?.copyWith(
                             fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                            color: AppColors.error,
+                            color: colorScheme.error,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: AppSpacing.sm),
                         ...errors.take(5).map((e) {
-                          // ✅ Backend error format: { row: number, studentId: string, error: string }
                           final error = e as Map<String, dynamic>;
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: 6),
+                            padding:
+                                const EdgeInsets.only(bottom: AppSpacing.xs),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -398,23 +396,22 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.error.withAlpha((0.1 * 255).round()),
+                                    color: colorScheme.errorContainer,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
                                     'Row ${error['row']}',
-                                    style: const TextStyle(
-                                      fontSize: 11,
+                                    style: textTheme.labelSmall?.copyWith(
                                       fontWeight: FontWeight.bold,
-                                      color: AppColors.error,
+                                      color: colorScheme.onErrorContainer,
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: AppSpacing.sm),
                                 Expanded(
                                   child: Text(
                                     '${error['studentId']}: ${error['error']}',
-                                    style: const TextStyle(fontSize: 12),
+                                    style: textTheme.bodySmall,
                                   ),
                                 ),
                               ],
@@ -424,10 +421,9 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
                         if (errors.length > 5)
                           Text(
                             '... and ${errors.length - 5} more errors',
-                            style: const TextStyle(
-                              fontSize: 12,
+                            style: textTheme.labelSmall?.copyWith(
                               fontStyle: FontStyle.italic,
-                              color: AppColors.textSecondary,
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                       ],
@@ -436,45 +432,45 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
                 ),
               );
             },
-            loading: () => const Card(
+            loading: () => Card(
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 child: Row(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 24,
                       height: 24,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
-                    SizedBox(width: 16),
-                    Text('Importing students...'),
+                    const SizedBox(width: AppSpacing.md),
+                    Text('Importing students...', style: textTheme.bodyMedium),
                   ],
                 ),
               ),
             ),
             error: (error, stack) => Card(
-              color: AppColors.error.withAlpha((0.1 * 255).round()),
+              color: colorScheme.errorContainer,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 child: Row(
                   children: [
-                    const Icon(Icons.error, color: AppColors.error, size: 28),
-                    const SizedBox(width: 12),
+                    Icon(Icons.error_outline,
+                        color: colorScheme.onErrorContainer, size: 28),
+                    const SizedBox(width: AppSpacing.smd),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Import Failed',
-                            style: TextStyle(
+                            style: textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             error.toString(),
-                            style: const TextStyle(fontSize: 13),
+                            style: textTheme.bodySmall,
                           ),
                         ],
                       ),
@@ -484,15 +480,214 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
               ),
             ),
           ),
-
-          const SizedBox(height: 24),
-
-          // Import Button
-          AppButton(
+          const SizedBox(height: AppSpacing.lg),
+          AppButton.filled(
             text: 'Import Students',
             onPressed: _canImport && !importState.isLoading ? _upload : null,
             isLoading: importState.isLoading,
-            icon: Icons.cloud_upload,
+            icon: Icons.cloud_upload_outlined,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showBatchSelectionSheet(BuildContext context, List<dynamic> batches) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.4,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) => Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.sm,
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.school, color: colorScheme.primary),
+                  const SizedBox(width: AppSpacing.smd),
+                  Text(
+                    'Select Batch',
+                    style: textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(color: colorScheme.outlineVariant),
+
+            // Batch List
+            Expanded(
+              child: ListView.builder(
+                controller: scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                itemCount: batches.length,
+                itemBuilder: (context, index) {
+                  final batch = batches[index];
+                  final isSelected = batch.id == _selectedBatchId;
+
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.smd),
+                    color: isSelected
+                        ? colorScheme.primaryContainer
+                        : colorScheme.surfaceContainerLow,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _selectedBatchId = batch.id;
+                          _file = null;
+                        });
+                        ref.read(importStudentsProvider.notifier).reset();
+                        Navigator.pop(context);
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Row(
+                          children: [
+                            // Batch Icon
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? colorScheme.primary
+                                    : colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.groups_outlined,
+                                color: isSelected
+                                    ? colorScheme.onPrimary
+                                    : colorScheme.onPrimaryContainer,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+
+                            // Batch Info
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    batch.name,
+                                    style: textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: isSelected
+                                          ? colorScheme.onPrimaryContainer
+                                          : colorScheme.onSurface,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      _buildInfoChip(
+                                        context,
+                                        batch.code,
+                                        Icons.tag,
+                                        isSelected,
+                                      ),
+                                      const SizedBox(width: AppSpacing.sm),
+                                      _buildInfoChip(
+                                        context,
+                                        batch.academicYear,
+                                        Icons.calendar_today,
+                                        isSelected,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Student count & check
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                if (isSelected)
+                                  Icon(
+                                    Icons.check_circle,
+                                    color: colorScheme.primary,
+                                  )
+                                else
+                                  Icon(
+                                    Icons.circle_outlined,
+                                    color: colorScheme.outline,
+                                  ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${batch.studentCount} students',
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: isSelected
+                                        ? colorScheme.onPrimaryContainer
+                                        : colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoChip(
+    BuildContext context,
+    String text,
+    IconData icon,
+    bool isSelected,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: isSelected
+            ? colorScheme.primary.withValues(alpha: 0.15)
+            : colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 12,
+            color:
+                isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: textTheme.labelSmall?.copyWith(
+              color: isSelected
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -501,25 +696,24 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
 
   bool get _canImport => _selectedBatchId != null && _file != null;
 
-  Widget _buildResultRow({
+  Widget _buildResultRow(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required String value,
     required Color color,
   }) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Row(
       children: [
         Icon(icon, size: 20, color: color),
-        const SizedBox(width: 8),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 14),
-        ),
+        const SizedBox(width: AppSpacing.sm),
+        Text(label, style: textTheme.bodyMedium),
         const Spacer(),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 16,
+          style: textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: color,
           ),
@@ -556,7 +750,6 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
         'Students imported successfully to batch!',
       );
 
-      // Refresh batches to update student count
       ref.invalidate(batchesProvider);
     }
   }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../config/theme/app_colors.dart';
 
+/// M3-styled text field widget.
+/// Uses M3 filled text field style with proper label behavior.
 class AppTextField extends StatefulWidget {
   final String label;
   final String? hint;
@@ -10,7 +11,7 @@ class AppTextField extends StatefulWidget {
   final TextInputType? keyboardType;
   final bool obscureText;
   final IconData? prefixIcon;
-  final IconData? suffixIcon;
+  final Widget? suffixIcon;
   final VoidCallback? onSuffixTap;
   final bool enabled;
   final int? maxLines;
@@ -18,6 +19,11 @@ class AppTextField extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final void Function(String)? onChanged;
   final String? initialValue;
+  final String? errorText;
+  final String? helperText;
+  final TextCapitalization textCapitalization;
+  final FocusNode? focusNode;
+  final bool autofocus;
 
   const AppTextField({
     super.key,
@@ -35,7 +41,12 @@ class AppTextField extends StatefulWidget {
     this.maxLength,
     this.inputFormatters,
     this.onChanged,
-    this.initialValue, required TextCapitalization textCapitalization,
+    this.initialValue,
+    this.errorText,
+    this.helperText,
+    this.textCapitalization = TextCapitalization.none,
+    this.focusNode,
+    this.autofocus = false,
   });
 
   @override
@@ -53,56 +64,66 @@ class _AppTextFieldState extends State<AppTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
-          ),
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return TextFormField(
+      controller: widget.controller,
+      initialValue: widget.initialValue,
+      validator: widget.validator,
+      keyboardType: widget.keyboardType,
+      obscureText: widget.obscureText && _obscureText,
+      enabled: widget.enabled,
+      maxLines: widget.maxLines,
+      maxLength: widget.maxLength,
+      inputFormatters: widget.inputFormatters,
+      onChanged: widget.onChanged,
+      textCapitalization: widget.textCapitalization,
+      focusNode: widget.focusNode,
+      autofocus: widget.autofocus,
+      style: textTheme.bodyLarge?.copyWith(
+        color: colorScheme.onSurface,
+      ),
+      decoration: InputDecoration(
+        labelText: widget.label,
+        hintText: widget.hint,
+        errorText: widget.errorText,
+        helperText: widget.helperText,
+
+        // M3 label styling
+        labelStyle: textTheme.bodyLarge?.copyWith(
+          color: colorScheme.onSurfaceVariant,
         ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: widget.controller,
-          initialValue: widget.initialValue,
-          validator: widget.validator,
-          keyboardType: widget.keyboardType,
-          obscureText: widget.obscureText && _obscureText,
-          enabled: widget.enabled,
-          maxLines: widget.maxLines,
-          maxLength: widget.maxLength,
-          inputFormatters: widget.inputFormatters,
-          onChanged: widget.onChanged,
-          decoration: InputDecoration(
-            hintText: widget.hint,
-            prefixIcon: widget.prefixIcon != null
-                ? Icon(widget.prefixIcon, color: AppColors.textSecondary)
-                : null,
-            suffixIcon: widget.obscureText
-                ? IconButton(
-                    icon: Icon(
-                      _obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: AppColors.textSecondary,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
-                  )
-                : (widget.suffixIcon != null
-                    ? IconButton(
-                        icon: Icon(widget.suffixIcon),
-                        onPressed: widget.onSuffixTap,
-                      )
-                    : null),
-            counterText: '',
-          ),
+        floatingLabelStyle: textTheme.bodySmall?.copyWith(
+          color: colorScheme.primary,
+          fontWeight: FontWeight.w500,
         ),
-      ],
+
+        // M3 prefix/suffix icons
+        prefixIcon: widget.prefixIcon != null
+            ? Icon(
+                widget.prefixIcon,
+                color: colorScheme.onSurfaceVariant,
+              )
+            : null,
+        suffixIcon: widget.obscureText
+            ? IconButton(
+                icon: Icon(
+                  _obscureText
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              )
+            : widget.suffixIcon,
+
+        counterText: '',
+      ),
     );
   }
 }

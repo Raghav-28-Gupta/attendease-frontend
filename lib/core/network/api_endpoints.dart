@@ -1,6 +1,6 @@
 class ApiEndpoints {
   // Base
-  static const String baseUrl = 'http://192.168.1.4:5000/api';
+  static const String baseUrl = 'https://attendease-backend-e27g.onrender.com/api';
   // static const String baseUrl = 'http://10.0.2.2:5000/api'; // Android emulator
   // For iOS simulator use: http://localhost:5000/api
   // For physical device use: http://YOUR_IP:5000/api

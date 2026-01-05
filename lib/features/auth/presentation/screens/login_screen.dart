@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/config/theme/app_colors.dart';
+import '../../../../core/config/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/utils/snackbar_utils.dart';
 import '../providers/auth_provider.dart';
-import '../providers/auth_state.dart'; 
+import '../providers/auth_state.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -30,7 +30,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
-    // Dismiss keyboard
     FocusScope.of(context).unfocus();
 
     if (!_formKey.currentState!.validate()) return;
@@ -59,7 +58,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Listen to auth state for additional error handling
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     ref.listen<AuthState>(authProvider, (previous, next) {
       next.maybeWhen(
         error: (message) {
@@ -72,15 +73,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 48),
-
-                // Logo with Hero animation
+                const SizedBox(height: AppSpacing.xxl),
                 Center(
                   child: Hero(
                     tag: 'app_logo',
@@ -88,50 +87,49 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient,
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            colorScheme.primary,
+                            colorScheme.tertiary,
+                          ],
+                        ),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withAlpha((0.3 * 255).round()),
+                            color: colorScheme.primary.withValues(alpha: 0.3),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
                         ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.check_circle,
                         size: 56,
-                        color: Colors.white,
+                        color: colorScheme.onPrimary,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
-
-                // Title
-                const Text(
+                const SizedBox(height: AppSpacing.xl),
+                Text(
                   'Welcome Back!',
-                  style: TextStyle(
-                    fontSize: 28,
+                  style: textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: colorScheme.onSurface,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 8),
-
-                // Subtitle
-                const Text(
+                const SizedBox(height: AppSpacing.sm),
+                Text(
                   'Login to manage your attendance',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 48),
-
-                // Email Field
+                const SizedBox(height: AppSpacing.xxl),
                 AppTextField(
                   label: 'Email Address',
                   hint: 'your.email@college.edu',
@@ -142,9 +140,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   enabled: !_isLoading,
                   textCapitalization: TextCapitalization.none,
                 ),
-                const SizedBox(height: 20),
-
-                // Password Field
+                const SizedBox(height: AppSpacing.mlg),
                 AppTextField(
                   label: 'Password',
                   hint: '••••••••',
@@ -155,13 +151,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   enabled: !_isLoading,
                   textCapitalization: TextCapitalization.none,
                 ),
-                const SizedBox(height: 12),
-
-                // Remember Me & Forgot Password Row
+                const SizedBox(height: AppSpacing.smd),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Remember Me Checkbox
                     Row(
                       children: [
                         Checkbox(
@@ -172,17 +165,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   setState(() => _rememberMe = value ?? false);
                                 },
                         ),
-                        const Text(
+                        Text(
                           'Remember me',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
+                          style: textTheme.labelLarge?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
                     ),
-
-                    // Forgot Password (future feature)
                     TextButton(
                       onPressed: _isLoading
                           ? null
@@ -192,84 +182,72 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 'Contact admin to reset password',
                               );
                             },
-                      child: const Text(
+                      child: Text(
                         'Forgot password?',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.primary,
+                        style: textTheme.labelLarge?.copyWith(
+                          color: colorScheme.primary,
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
-
-                // Login Button
-                AppButton(
+                const SizedBox(height: AppSpacing.lg),
+                AppButton.filled(
                   text: 'Login',
                   onPressed: _isLoading ? null : _handleLogin,
                   isLoading: _isLoading,
                 ),
-                const SizedBox(height: 24),
-
-                // Divider
+                const SizedBox(height: AppSpacing.lg),
                 Row(
                   children: [
-                    const Expanded(child: Divider()),
+                    Expanded(child: Divider(color: colorScheme.outlineVariant)),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                       child: Text(
                         'OR',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ),
-                    const Expanded(child: Divider()),
+                    Expanded(child: Divider(color: colorScheme.outlineVariant)),
                   ],
                 ),
-                const SizedBox(height: 24),
-
-                // Help Text
+                const SizedBox(height: AppSpacing.lg),
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: AppColors.info.withAlpha((0.1 * 255).round()),
+                    color: colorScheme.tertiaryContainer,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.info.withAlpha((0.3 * 255).round()),
-                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.info_outline,
-                            color: AppColors.info,
+                            color: colorScheme.onTertiaryContainer,
                             size: 20,
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: AppSpacing.smd),
                           Text(
                             'Login Help',
-                            style: TextStyle(
-                              fontSize: 14,
+                            style: textTheme.labelLarge?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: AppColors.info.withAlpha((0.9 * 255).round()),
+                              color: colorScheme.onTertiaryContainer,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.sm),
                       Text(
                         '• Students: Use credentials sent via email\n'
                         '• Teachers: Use your registered account\n'
                         '• Contact admin for login issues',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.info.withAlpha((0.8 * 255).round()),
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onTertiaryContainer,
                           height: 1.5,
                         ),
                       ),
