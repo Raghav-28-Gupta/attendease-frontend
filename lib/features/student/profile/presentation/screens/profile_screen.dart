@@ -1,4 +1,6 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../core/config/theme/app_spacing.dart';
@@ -22,18 +24,6 @@ class ProfileScreen extends ConsumerWidget {
     final profileAsync = ref.watch(profileProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.lock_outline),
-            onPressed: () {
-              context.push('/change-password');
-            },
-            tooltip: 'Change Password',
-          ),
-        ],
-      ),
       body: profileAsync.when(
         data: (profile) => _ProfileView(profile: profile),
         loading: () => const LoadingWidget(message: 'Loading profile...'),
@@ -88,68 +78,153 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Profile Header - M3 styled
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            decoration: BoxDecoration(
-              color: colorScheme.primaryContainer,
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-                bottomRight: Radius.circular(24),
-              ),
+    return CustomScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      slivers: [
+        // ─────────────────────────────────────────────────────────────────────
+        // HERO SECTION
+        // ─────────────────────────────────────────────────────────────────────
+        SliverAppBar.large(
+          expandedHeight: 280,
+          pinned: true,
+          stretch: true,
+          backgroundColor: colorScheme.surface,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.lock_outline),
+              onPressed: () {
+                context.push('/change-password');
+              },
+              tooltip: 'Change Password',
             ),
-            child: Column(
-              children: [
-                // Avatar
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: colorScheme.surface,
-                  child: Text(
-                    widget.profile.firstName[0].toUpperCase(),
-                    style: textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-
-                // Name
-                Text(
-                  widget.profile.fullName,
-                  style: textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onPrimaryContainer,
-                  ),
-                ),
-                const SizedBox(height: 4),
-
-                // Student ID
-                Text(
-                  'ID: ${widget.profile.studentId}',
-                  style: textTheme.bodyLarge?.copyWith(
-                    color:
-                        colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
-                  ),
-                ),
-              ],
+          ],
+          flexibleSpace: FlexibleSpaceBar(
+            background: _buildHeroBackground(context, colorScheme, textTheme),
+            collapseMode: CollapseMode.parallax,
+          ),
+          title: Text(
+            'Profile',
+            style: textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w600,
             ),
           ),
+        ),
 
-          const SizedBox(height: AppSpacing.lg),
+        // ─────────────────────────────────────────────────────────────────────
+        // CONTENT
+        // ─────────────────────────────────────────────────────────────────────
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: _isEditing
+                ? _buildEditForm(colorScheme).animate().fadeIn(duration: 300.ms)
+                : _buildProfileInfo(context)
+                    .animate()
+                    .fadeIn(duration: 400.ms)
+                    .slideY(begin: 0.1, end: 0),
+          ),
+        ),
 
-          // Profile Information
-          if (_isEditing)
-            _buildEditForm(colorScheme)
-          else
-            _buildProfileInfo(context),
+        const SliverToBoxAdapter(child: SizedBox(height: 80)),
+      ],
+    );
+  }
 
-          const SizedBox(height: AppSpacing.lg),
-        ],
+  Widget _buildHeroBackground(
+    BuildContext context,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            colorScheme.primaryContainer,
+            colorScheme.tertiaryContainer,
+          ],
+        ),
+      ),
+      child: SafeArea(
+        child: Stack(
+          children: [
+            // Glassmorphism overlay
+            Positioned.fill(
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    color: colorScheme.surface.withValues(alpha: 0.1),
+                  ),
+                ),
+              ),
+            ),
+
+            // Content
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 60,
+              child: Column(
+                children: [
+                  // Avatar
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: colorScheme.surface,
+                        width: 4,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 48,
+                      backgroundColor: colorScheme.primary,
+                      child: Text(
+                        widget.profile.firstName[0].toUpperCase(),
+                        style: textTheme.displaySmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onPrimary,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  // Name
+                  Text(
+                    widget.profile.fullName,
+                    style: textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+
+                  // Student ID Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface.withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      widget.profile.studentId,
+                      style: textTheme.labelLarge?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -157,124 +232,135 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
   Widget _buildProfileInfo(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-      child: Column(
-        children: [
-          _buildInfoCard(
-            context,
-            icon: Icons.email_outlined,
-            label: 'Email',
-            value: widget.profile.email,
-            color: colorScheme.primary,
-          ),
-          const SizedBox(height: AppSpacing.smd),
-          _buildInfoCard(
-            context,
-            icon: Icons.phone_outlined,
-            label: 'Phone',
-            value: widget.profile.phone ?? 'Not provided',
-            color: colorScheme.tertiary,
-          ),
-          const SizedBox(height: AppSpacing.smd),
-          _buildInfoCard(
-            context,
-            icon: Icons.group_outlined,
-            label: 'Batch',
-            value:
-                '${widget.profile.batch.code} - ${widget.profile.batch.name}',
-            color: colorScheme.secondary,
-          ),
-          const SizedBox(height: AppSpacing.smd),
-          _buildInfoCard(
-            context,
-            icon: Icons.school_outlined,
-            label: 'Academic Year',
-            value: widget.profile.batch.academicYear,
-            color: colorScheme.primary,
-          ),
-          const SizedBox(height: AppSpacing.smd),
-          _buildInfoCard(
-            context,
-            icon: Icons.calendar_today_outlined,
-            label: 'Member Since',
-            value: widget.profile.createdAt.formattedDate,
-            color: colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(height: AppSpacing.lg),
+    return Column(
+      children: [
+        _buildInfoCard(
+          context,
+          icon: Icons.email_outlined,
+          label: 'Email',
+          value: widget.profile.email,
+          color: colorScheme.primary,
+        )
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 0.ms)
+            .slideX(begin: 0.1, end: 0),
+        const SizedBox(height: AppSpacing.smd),
+        _buildInfoCard(
+          context,
+          icon: Icons.phone_outlined,
+          label: 'Phone',
+          value: widget.profile.phone ?? 'Not provided',
+          color: colorScheme.tertiary,
+        )
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 50.ms)
+            .slideX(begin: 0.1, end: 0),
+        const SizedBox(height: AppSpacing.smd),
+        _buildInfoCard(
+          context,
+          icon: Icons.group_outlined,
+          label: 'Batch',
+          value: '${widget.profile.batch.code} - ${widget.profile.batch.name}',
+          color: colorScheme.secondary,
+        )
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 100.ms)
+            .slideX(begin: 0.1, end: 0),
+        const SizedBox(height: AppSpacing.smd),
+        _buildInfoCard(
+          context,
+          icon: Icons.school_outlined,
+          label: 'Academic Year',
+          value: widget.profile.batch.academicYear,
+          color: colorScheme.primary,
+        )
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 150.ms)
+            .slideX(begin: 0.1, end: 0),
+        const SizedBox(height: AppSpacing.smd),
+        _buildInfoCard(
+          context,
+          icon: Icons.calendar_today_outlined,
+          label: 'Member Since',
+          value: widget.profile.createdAt.formattedDate,
+          color: colorScheme.onSurfaceVariant,
+        )
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 200.ms)
+            .slideX(begin: 0.1, end: 0),
+        const SizedBox(height: AppSpacing.lg),
 
-          // Edit Button
-          AppButton.tonal(
-            text: 'Edit Profile',
-            onPressed: () {
-              setState(() => _isEditing = true);
-            },
-            icon: Icons.edit,
-          ),
-        ],
-      ),
+        // Edit Button
+        AppButton.tonal(
+          text: 'Edit Profile',
+          onPressed: () {
+            setState(() => _isEditing = true);
+          },
+          icon: Icons.edit_outlined,
+        )
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 250.ms)
+            .slideY(begin: 0.2, end: 0),
+      ],
     );
   }
 
   Widget _buildEditForm(ColorScheme colorScheme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            AppTextField(
-              controller: _firstNameController,
-              label: 'First Name',
-              hint: 'Enter your first name',
-              prefixIcon: Icons.person_outline,
-              validator: Validators.required,
-              enabled: !_isSubmitting,
-              textCapitalization: TextCapitalization.words,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            AppTextField(
-              controller: _lastNameController,
-              label: 'Last Name',
-              hint: 'Enter your last name',
-              prefixIcon: Icons.person_outline,
-              validator: Validators.required,
-              enabled: !_isSubmitting,
-              textCapitalization: TextCapitalization.words,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            AppTextField(
-              controller: _phoneController,
-              label: 'Phone',
-              hint: 'Enter your phone number',
-              prefixIcon: Icons.phone_outlined,
-              keyboardType: TextInputType.phone,
-              enabled: !_isSubmitting,
-              textCapitalization: TextCapitalization.none,
-            ),
-            const SizedBox(height: AppSpacing.lg),
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          AppTextField(
+            controller: _firstNameController,
+            label: 'First Name',
+            hint: 'Enter your first name',
+            prefixIcon: Icons.person_outline,
+            validator: Validators.required,
+            enabled: !_isSubmitting,
+            textCapitalization: TextCapitalization.words,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          AppTextField(
+            controller: _lastNameController,
+            label: 'Last Name',
+            hint: 'Enter your last name',
+            prefixIcon: Icons.person_outline,
+            validator: Validators.required,
+            enabled: !_isSubmitting,
+            textCapitalization: TextCapitalization.words,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          AppTextField(
+            controller: _phoneController,
+            label: 'Phone',
+            hint: 'Enter your phone number',
+            prefixIcon: Icons.phone_outlined,
+            keyboardType: TextInputType.phone,
+            enabled: !_isSubmitting,
+            textCapitalization: TextCapitalization.none,
+          ),
+          const SizedBox(height: AppSpacing.lg),
 
-            // Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: AppButton.outlined(
-                    text: 'Cancel',
-                    onPressed: _isSubmitting ? null : _handleCancel,
-                  ),
+          // Buttons
+          Row(
+            children: [
+              Expanded(
+                child: AppButton.outlined(
+                  text: 'Cancel',
+                  onPressed: _isSubmitting ? null : _handleCancel,
                 ),
-                const SizedBox(width: AppSpacing.smd),
-                Expanded(
-                  child: AppButton.filled(
-                    text: 'Save',
-                    onPressed: _isSubmitting ? null : _handleSave,
-                    isLoading: _isSubmitting,
-                  ),
+              ),
+              const SizedBox(width: AppSpacing.smd),
+              Expanded(
+                child: AppButton.filled(
+                  text: 'Save',
+                  onPressed: _isSubmitting ? null : _handleSave,
+                  isLoading: _isSubmitting,
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -295,7 +381,7 @@ class _ProfileViewState extends ConsumerState<_ProfileView> {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: color, size: 24),
         ),

@@ -1,10 +1,12 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/config/theme/app_spacing.dart';
 import '../../../../../core/config/theme/app_semantic_colors.dart';
 import '../../../dashboard/data/models/student_dashboard_model.dart';
 
-/// M3-styled subject details screen.
+/// M3-styled subject details screen with Warm Earth theme.
 class SubjectDetailsScreen extends ConsumerWidget {
   final SubjectAttendanceInfo subject;
 
@@ -19,70 +21,180 @@ class SubjectDetailsScreen extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(subject.subjectCode),
+      body: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          // ─────────────────────────────────────────────────────────────────────
+          // HERO SECTION
+          // ─────────────────────────────────────────────────────────────────────
+          SliverAppBar.large(
+            expandedHeight: 200,
+            pinned: true,
+            stretch: true,
+            backgroundColor: colorScheme.surface,
+            flexibleSpace: FlexibleSpaceBar(
+              background: _buildHeroBackground(context, colorScheme, textTheme),
+              collapseMode: CollapseMode.parallax,
+            ),
+            title: Text(
+              subject.subjectCode,
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+
+          // ─────────────────────────────────────────────────────────────────────
+          // STATS CARD
+          // ─────────────────────────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: _buildStatsSection(context)
+                  .animate()
+                  .fadeIn(duration: 400.ms)
+                  .slideY(begin: 0.2, end: 0),
+            ),
+          ),
+
+          // ─────────────────────────────────────────────────────────────────────
+          // PROGRESS SECTION
+          // ─────────────────────────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              child: _buildProgressSection(context)
+                  .animate(delay: 100.ms)
+                  .fadeIn(duration: 400.ms)
+                  .slideY(begin: 0.2, end: 0),
+            ),
+          ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.lg)),
+
+          // ─────────────────────────────────────────────────────────────────────
+          // BREAKDOWN SECTION
+          // ─────────────────────────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              child: _buildBreakdownSection(context)
+                  .animate(delay: 200.ms)
+                  .fadeIn(duration: 400.ms)
+                  .slideY(begin: 0.2, end: 0),
+            ),
+          ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: 80)),
+        ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    );
+  }
+
+  Widget _buildHeroBackground(
+    BuildContext context,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
+    final stats = subject.stats;
+    final statusColor = _getStatusColor(colorScheme, stats.status);
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            colorScheme.primaryContainer,
+            colorScheme.secondaryContainer,
+          ],
+        ),
+      ),
+      child: SafeArea(
+        child: Stack(
           children: [
-            // Subject Header - M3 styled
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(AppSpacing.mlg),
-              decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
+            // Glassmorphism overlay
+            Positioned.fill(
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    color: colorScheme.surface.withValues(alpha: 0.1),
+                  ),
                 ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+
+            // Content
+            Positioned(
+              left: AppSpacing.lg,
+              bottom: 60,
+              right: AppSpacing.lg,
+              child: Row(
                 children: [
-                  Text(
-                    subject.subjectName,
-                    style: textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onPrimaryContainer,
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Icon(
+                      Icons.book_outlined,
+                      color: colorScheme.onPrimary,
+                      size: 32,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Code: ${subject.subjectCode}',
-                    style: textTheme.bodyLarge?.copyWith(
-                      color:
-                          colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Semester: ${subject.semester}',
-                    style: textTheme.bodyMedium?.copyWith(
-                      color:
-                          colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          subject.subjectName,
+                          style: textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onPrimaryContainer,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: statusColor.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                stats.status,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: statusColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Text(
+                              'Sem ${subject.semester}',
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onPrimaryContainer
+                                    .withValues(alpha: 0.8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-
-            const SizedBox(height: AppSpacing.lg),
-
-            // Attendance Stats
-            _buildStatsSection(context),
-
-            const SizedBox(height: AppSpacing.lg),
-
-            // Progress Section
-            _buildProgressSection(context),
-
-            const SizedBox(height: AppSpacing.lg),
-
-            // Attendance Breakdown
-            _buildBreakdownSection(context),
-
-            const SizedBox(height: AppSpacing.lg),
           ],
         ),
       ),
@@ -95,83 +207,86 @@ class SubjectDetailsScreen extends ConsumerWidget {
     final stats = subject.stats;
     final statusColor = _getStatusColor(colorScheme, stats.status);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.mlg),
-          child: Column(
-            children: [
-              // Circular Progress
-              SizedBox(
-                height: 150,
-                width: 150,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox(
-                      height: 150,
-                      width: 150,
-                      child: CircularProgressIndicator(
-                        value: stats.percentage / 100,
-                        strokeWidth: 12,
-                        backgroundColor: colorScheme.surfaceContainerHighest,
-                        valueColor: AlwaysStoppedAnimation<Color>(statusColor),
-                      ),
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${stats.percentage.toStringAsFixed(1)}%',
-                          style: textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: statusColor,
-                          ),
-                        ),
-                        Text(
-                          stats.status,
-                          style: textTheme.labelMedium?.copyWith(
-                            color: statusColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: AppSpacing.lg),
-
-              // Stats Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.mlg),
+        child: Column(
+          children: [
+            // Circular Progress
+            SizedBox(
+              height: 160,
+              width: 160,
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  _buildStatColumn(
+                  SizedBox(
+                    height: 160,
+                    width: 160,
+                    child: CircularProgressIndicator(
+                      value: stats.percentage / 100,
+                      strokeWidth: 14,
+                      backgroundColor: colorScheme.surfaceContainerHighest,
+                      valueColor: AlwaysStoppedAnimation<Color>(statusColor),
+                      strokeCap: StrokeCap.round,
+                    ),
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${stats.percentage.toStringAsFixed(1)}%',
+                        style: textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: statusColor,
+                        ),
+                      ),
+                      Text(
+                        'Attendance',
+                        style: textTheme.labelMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: AppSpacing.lg),
+
+            // Stats Row
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatColumn(
                     context,
                     'Total',
                     stats.totalSessions.toString(),
                     Icons.event_outlined,
+                    colorScheme.primary,
                   ),
-                  _buildStatColumn(
+                ),
+                Expanded(
+                  child: _buildStatColumn(
                     context,
                     'Attended',
                     stats.attended.toString(),
                     Icons.check_circle_outline,
                     colorScheme.tertiary,
                   ),
-                  _buildStatColumn(
+                ),
+                Expanded(
+                  child: _buildStatColumn(
                     context,
                     'Missed',
                     stats.absent.toString(),
                     Icons.cancel_outlined,
                     colorScheme.error,
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -183,50 +298,47 @@ class SubjectDetailsScreen extends ConsumerWidget {
     final stats = subject.stats;
 
     if (stats.percentage >= 75) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        child: Card(
-          color: colorScheme.tertiaryContainer,
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: colorScheme.tertiary,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.check_circle,
-                    color: colorScheme.onTertiary,
-                    size: 24,
-                  ),
+      return Card(
+        color: colorScheme.tertiaryContainer,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: colorScheme.tertiary,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Great Job! 🎉',
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onTertiaryContainer,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'You have excellent attendance',
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onTertiaryContainer,
-                        ),
-                      ),
-                    ],
-                  ),
+                child: Icon(
+                  Icons.celebration,
+                  color: colorScheme.onTertiary,
+                  size: 28,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Excellent Work! 🎉',
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onTertiaryContainer,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'You have maintained great attendance',
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onTertiaryContainer,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -236,67 +348,86 @@ class SubjectDetailsScreen extends ConsumerWidget {
     final sessionsNeeded =
         ((75 * stats.totalSessions) / 100).ceil() - stats.attended;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-      child: Card(
-        color: stats.status == 'CRITICAL'
-            ? colorScheme.errorContainer
-            : colorScheme.secondaryContainer,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
+    return Card(
+      color: stats.status == 'CRITICAL'
+          ? colorScheme.errorContainer
+          : colorScheme.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: stats.status == 'CRITICAL'
+                        ? colorScheme.error
+                        : colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
                     stats.status == 'CRITICAL'
                         ? Icons.error_outline
                         : Icons.warning_amber_outlined,
                     color: stats.status == 'CRITICAL'
-                        ? colorScheme.onErrorContainer
-                        : colorScheme.onSecondaryContainer,
+                        ? colorScheme.onError
+                        : colorScheme.onSecondary,
                     size: 24,
                   ),
-                  const SizedBox(width: AppSpacing.smd),
-                  Text(
-                    stats.status == 'CRITICAL'
-                        ? 'Critical Alert!'
-                        : 'Attention Needed',
-                    style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: stats.status == 'CRITICAL'
-                          ? colorScheme.onErrorContainer
-                          : colorScheme.onSecondaryContainer,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.smd),
-              Text(
-                'You need to attend at least $sessionsNeeded more ${sessionsNeeded > 1 ? 'classes' : 'class'} to reach 75% attendance.',
-                style: textTheme.bodyMedium?.copyWith(
-                  color: stats.status == 'CRITICAL'
-                      ? colorScheme.onErrorContainer
-                      : colorScheme.onSecondaryContainer,
                 ),
-              ),
-              const SizedBox(height: AppSpacing.smd),
-              LinearProgressIndicator(
-                value: stats.percentage / 75,
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        stats.status == 'CRITICAL'
+                            ? 'Critical Alert!'
+                            : 'Attention Needed',
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: stats.status == 'CRITICAL'
+                              ? colorScheme.onErrorContainer
+                              : colorScheme.onSecondaryContainer,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Need $sessionsNeeded more ${sessionsNeeded > 1 ? 'classes' : 'class'} for 75%',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: stats.status == 'CRITICAL'
+                              ? colorScheme.onErrorContainer
+                              : colorScheme.onSecondaryContainer,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
+                value: (stats.percentage / 75).clamp(0.0, 1.0),
+                minHeight: 8,
                 backgroundColor: colorScheme.surfaceContainerHighest,
                 valueColor: AlwaysStoppedAnimation<Color>(statusColor),
               ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                '${(stats.percentage / 75 * 100).toStringAsFixed(0)}% to target',
-                style: textTheme.labelMedium?.copyWith(
-                  color: statusColor,
-                  fontWeight: FontWeight.w600,
-                ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              '${(stats.percentage / 75 * 100).toStringAsFixed(0)}% to target',
+              style: textTheme.labelMedium?.copyWith(
+                color: stats.status == 'CRITICAL'
+                    ? colorScheme.onErrorContainer
+                    : colorScheme.onSecondaryContainer,
+                fontWeight: FontWeight.w600,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -308,65 +439,62 @@ class SubjectDetailsScreen extends ConsumerWidget {
     final semanticColors = Theme.of(context).extension<SemanticColors>()!;
     final stats = subject.stats;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Attendance Breakdown',
-            style: textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Attendance Breakdown',
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: AppSpacing.md),
-          Card(
-            child: Column(
-              children: [
-                _buildBreakdownTile(
-                  context,
-                  'Present',
-                  stats.present,
-                  stats.totalSessions,
-                  Icons.check_circle_outlined,
-                  semanticColors.present,
-                  semanticColors.onPresent,
-                ),
-                Divider(height: 1, color: colorScheme.outlineVariant),
-                _buildBreakdownTile(
-                  context,
-                  'Absent',
-                  stats.absent,
-                  stats.totalSessions,
-                  Icons.cancel_outlined,
-                  semanticColors.absent,
-                  semanticColors.onAbsent,
-                ),
-                Divider(height: 1, color: colorScheme.outlineVariant),
-                _buildBreakdownTile(
-                  context,
-                  'Late',
-                  stats.late,
-                  stats.totalSessions,
-                  Icons.access_time,
-                  semanticColors.late,
-                  semanticColors.onLate,
-                ),
-                Divider(height: 1, color: colorScheme.outlineVariant),
-                _buildBreakdownTile(
-                  context,
-                  'Excused',
-                  stats.excused,
-                  stats.totalSessions,
-                  Icons.description_outlined,
-                  semanticColors.excused,
-                  semanticColors.onExcused,
-                ),
-              ],
-            ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Card(
+          child: Column(
+            children: [
+              _buildBreakdownTile(
+                context,
+                'Present',
+                stats.present,
+                stats.totalSessions,
+                Icons.check_circle_outlined,
+                semanticColors.present,
+                semanticColors.onPresent,
+              ),
+              Divider(height: 1, color: colorScheme.outlineVariant),
+              _buildBreakdownTile(
+                context,
+                'Absent',
+                stats.absent,
+                stats.totalSessions,
+                Icons.cancel_outlined,
+                semanticColors.absent,
+                semanticColors.onAbsent,
+              ),
+              Divider(height: 1, color: colorScheme.outlineVariant),
+              _buildBreakdownTile(
+                context,
+                'Late',
+                stats.late,
+                stats.totalSessions,
+                Icons.access_time,
+                semanticColors.late,
+                semanticColors.onLate,
+              ),
+              Divider(height: 1, color: colorScheme.outlineVariant),
+              _buildBreakdownTile(
+                context,
+                'Excused',
+                stats.excused,
+                stats.totalSessions,
+                Icons.description_outlined,
+                semanticColors.excused,
+                semanticColors.onExcused,
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -374,22 +502,28 @@ class SubjectDetailsScreen extends ConsumerWidget {
     BuildContext context,
     String label,
     String value,
-    IconData icon, [
-    Color? color,
-  ]) {
+    IconData icon,
+    Color color,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final effectiveColor = color ?? colorScheme.onSurfaceVariant;
 
     return Column(
       children: [
-        Icon(icon, size: 20, color: effectiveColor),
-        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.12),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 20, color: color),
+        ),
+        const SizedBox(height: AppSpacing.sm),
         Text(
           value,
           style: textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: effectiveColor,
+            color: color,
           ),
         ),
         Text(
@@ -420,7 +554,7 @@ class SubjectDetailsScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(icon, color: fgColor, size: 20),
       ),

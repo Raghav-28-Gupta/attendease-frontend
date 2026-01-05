@@ -40,7 +40,7 @@ class StudentNavigationBar extends StatelessWidget {
 
     switch (index) {
       case 0:
-        context.go('/student/dashboard');
+        context.go('/student');
       case 1:
         context.go('/student/timetable');
       case 2:
