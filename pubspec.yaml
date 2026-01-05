@@ -88,7 +88,7 @@ dev_dependencies:
    json_serializable: ^6.7.1
    riverpod_generator: ^2.3.9
    flutter_launcher_icons: ^0.13.1
-  flutter_native_splash: ^2.4.0
+   flutter_native_splash: ^2.4.0
 
 flutter_native_splash:
   color: "#608074"
