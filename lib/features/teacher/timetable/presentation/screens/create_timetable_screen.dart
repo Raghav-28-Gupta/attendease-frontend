@@ -32,14 +32,14 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
   TimeOfDay _endTime = const TimeOfDay(hour: 10, minute: 0);
   bool _isSubmitting = false;
 
-  final List<String> _days = [
-    'MONDAY',
-    'TUESDAY',
-    'WEDNESDAY',
-    'THURSDAY',
-    'FRIDAY',
-    'SATURDAY',
-    'SUNDAY'
+  final List<Map<String, dynamic>> _days = [
+    {'value': 'MONDAY', 'icon': Icons.looks_one},
+    {'value': 'TUESDAY', 'icon': Icons.looks_two},
+    {'value': 'WEDNESDAY', 'icon': Icons.looks_3},
+    {'value': 'THURSDAY', 'icon': Icons.looks_4},
+    {'value': 'FRIDAY', 'icon': Icons.looks_5},
+    {'value': 'SATURDAY', 'icon': Icons.looks_6},
+    {'value': 'SUNDAY', 'icon': Icons.weekend},
   ];
 
   bool get isEditing => widget.entry != null;
@@ -91,6 +91,15 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
           children: [
+            // Section: Class Selection
+            Text(
+              'Class',
+              style: textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+
             if (!isEditing)
               enrollmentsAsync.when(
                 data: (enrollments) {
@@ -99,145 +108,667 @@ class _CreateTimetableScreenState extends ConsumerState<CreateTimetableScreen> {
                       color: colorScheme.secondaryContainer,
                       child: Padding(
                         padding: const EdgeInsets.all(AppSpacing.md),
-                        child: Text(
-                          'No enrollments available. Create enrollments first.',
-                          textAlign: TextAlign.center,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSecondaryContainer,
-                          ),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.warning_amber_outlined,
+                              color: colorScheme.onSecondaryContainer,
+                              size: 40,
+                            ),
+                            const SizedBox(height: AppSpacing.smd),
+                            Text(
+                              'No Enrollments Available',
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.sm),
+                            Text(
+                              'Create enrollments first before adding timetable entries.',
+                              textAlign: TextAlign.center,
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSecondaryContainer,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     );
                   }
 
-                  return DropdownButtonFormField<String>(
-                    value: _selectedEnrollmentId,
-                    decoration: const InputDecoration(
-                      labelText: 'Select Class',
-                      prefixIcon: Icon(Icons.class_),
-                      border: OutlineInputBorder(),
+                  return InkWell(
+                    onTap: _isSubmitting
+                        ? null
+                        : () => _showClassSelectionSheet(context, enrollments),
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: colorScheme.outline),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.class_,
+                            color: colorScheme.primary,
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(
+                            child: _selectedEnrollmentId == null
+                                ? Text(
+                                    'Select Class',
+                                    style: textTheme.bodyLarge?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  )
+                                : Builder(builder: (context) {
+                                    final enrollment = enrollments.firstWhere(
+                                      (e) => e.id == _selectedEnrollmentId,
+                                    );
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          enrollment.subject.name,
+                                          style: textTheme.bodyLarge?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Text(
+                                          '${enrollment.subject.code} • ${enrollment.batch.name}',
+                                          style: textTheme.labelSmall?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                          ),
+                          Icon(
+                            Icons.arrow_drop_down,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ],
+                      ),
                     ),
-                    items: enrollments.map((enrollment) {
-                      return DropdownMenuItem(
-                        value: enrollment.id,
+                  );
+                },
+                loading: () => Container(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: colorScheme.outline),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      const SizedBox(width: AppSpacing.smd),
+                      Text('Loading enrollments...',
+                          style: textTheme.bodyMedium),
+                    ],
+                  ),
+                ),
+                error: (error, stack) => Card(
+                  color: colorScheme.errorContainer,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.smd),
+                    child: Row(
+                      children: [
+                        Icon(Icons.error_outline,
+                            color: colorScheme.onErrorContainer),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            'Error: $error',
+                            style: textTheme.labelMedium?.copyWith(
+                              color: colorScheme.onErrorContainer,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            else
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          Icons.class_outlined,
+                          color: colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              enrollment.subject.name,
-                              style: textTheme.labelLarge?.copyWith(
+                              widget.entry!.enrollment.subject.name,
+                              style: textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             Text(
-                              '${enrollment.subject.code} • ${enrollment.batch.code}',
+                              '${widget.entry!.enrollment.subject.code} • ${widget.entry!.enrollment.batch.code}',
                               style: textTheme.labelSmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
                         ),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() => _selectedEnrollmentId = value);
-                    },
-                    validator: (value) {
-                      if (value == null) return 'Please select an enrollment';
-                      return null;
-                    },
-                  );
-                },
-                loading: () => const LinearProgressIndicator(),
-                error: (error, stack) => Text('Error: $error'),
-              )
-            else
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.class_),
-                  title: Text(widget.entry!.enrollment.subject.name),
-                  subtitle: Text(
-                    '${widget.entry!.enrollment.subject.code} • ${widget.entry!.enrollment.batch.code}',
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: colorScheme.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'Editing',
+                          style: textTheme.labelSmall?.copyWith(
+                            color: colorScheme.onTertiaryContainer,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            const SizedBox(height: AppSpacing.md),
-            DropdownButtonFormField<String>(
-              value: _selectedDay,
-              decoration: const InputDecoration(
-                labelText: 'Day of Week',
-                prefixIcon: Icon(Icons.calendar_today_outlined),
-                border: OutlineInputBorder(),
-              ),
-              items: _days.map((day) {
-                return DropdownMenuItem(
-                  value: day,
-                  child: Text(_formatDayName(day)),
-                );
-              }).toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _selectedDay = value);
-                }
-              },
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Card(
-              child: ListTile(
-                leading: Icon(Icons.access_time,
-                    color: colorScheme.onSurfaceVariant),
-                title: Text('Start Time', style: textTheme.labelLarge),
-                subtitle: Text(_formatTimeOfDay(_startTime)),
-                trailing: Icon(Icons.edit_outlined,
-                    color: colorScheme.onSurfaceVariant),
-                onTap: () async {
-                  final time = await showTimePicker(
-                    context: context,
-                    initialTime: _startTime,
-                  );
-                  if (time != null) {
-                    setState(() => _startTime = time);
-                  }
-                },
+
+            const SizedBox(height: AppSpacing.lg),
+
+            // Section: Day Selection
+            Text(
+              'Day of Week',
+              style: textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: AppSpacing.md),
-            Card(
-              child: ListTile(
-                leading: Icon(Icons.access_time,
-                    color: colorScheme.onSurfaceVariant),
-                title: Text('End Time', style: textTheme.labelLarge),
-                subtitle: Text(_formatTimeOfDay(_endTime)),
-                trailing: Icon(Icons.edit_outlined,
-                    color: colorScheme.onSurfaceVariant),
-                onTap: () async {
-                  final time = await showTimePicker(
-                    context: context,
-                    initialTime: _endTime,
-                  );
-                  if (time != null) {
-                    setState(() => _endTime = time);
-                  }
-                },
+            const SizedBox(height: AppSpacing.sm),
+            InkWell(
+              onTap:
+                  _isSubmitting ? null : () => _showDaySelectionSheet(context),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  border: Border.all(color: colorScheme.outline),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      color: colorScheme.primary,
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Text(
+                        _formatDayName(_selectedDay),
+                        style: textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_drop_down,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: AppSpacing.md),
+
+            const SizedBox(height: AppSpacing.lg),
+
+            // Section: Time Selection
+            Text(
+              'Time',
+              style: textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              children: [
+                // Start Time
+                Expanded(
+                  child: InkWell(
+                    onTap: _isSubmitting
+                        ? null
+                        : () async {
+                            final time = await showTimePicker(
+                              context: context,
+                              initialTime: _startTime,
+                            );
+                            if (time != null) {
+                              setState(() => _startTime = time);
+                            }
+                          },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: colorScheme.outline),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Start',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.play_arrow,
+                                size: 20,
+                                color: colorScheme.tertiary,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                _startTime.format(context),
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                // End Time
+                Expanded(
+                  child: InkWell(
+                    onTap: _isSubmitting
+                        ? null
+                        : () async {
+                            final time = await showTimePicker(
+                              context: context,
+                              initialTime: _endTime,
+                            );
+                            if (time != null) {
+                              setState(() => _endTime = time);
+                            }
+                          },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: colorScheme.outline),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'End',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.stop,
+                                size: 20,
+                                color: colorScheme.secondary,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                _endTime.format(context),
+                                style: textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: AppSpacing.lg),
+
+            // Section: Room
+            Text(
+              'Room (Optional)',
+              style: textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
             AppTextField(
               controller: _roomController,
-              label: 'Room (Optional)',
+              label: '',
               hint: 'e.g., A-101',
               prefixIcon: Icons.room_outlined,
               textCapitalization: TextCapitalization.words,
             ),
+
             const SizedBox(height: AppSpacing.xl),
+
+            // Submit Button
             AppButton.filled(
               text: isEditing ? 'Update Entry' : 'Create Entry',
               onPressed: _isSubmitting ? null : _handleSubmit,
               isLoading: _isSubmitting,
+              icon: isEditing ? Icons.save_outlined : Icons.add_circle_outline,
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showClassSelectionSheet(
+      BuildContext context, List<dynamic> enrollments) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.4,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) => Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.sm,
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.class_, color: colorScheme.primary),
+                  const SizedBox(width: AppSpacing.smd),
+                  Text(
+                    'Select Class',
+                    style: textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(color: colorScheme.outlineVariant),
+
+            // Class List
+            Expanded(
+              child: ListView.builder(
+                controller: scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                itemCount: enrollments.length,
+                itemBuilder: (context, index) {
+                  final enrollment = enrollments[index];
+                  final isSelected = enrollment.id == _selectedEnrollmentId;
+
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.smd),
+                    color: isSelected
+                        ? colorScheme.primaryContainer
+                        : colorScheme.surfaceContainerLow,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() => _selectedEnrollmentId = enrollment.id);
+                        Navigator.pop(context);
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? colorScheme.primary
+                                    : colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.class_outlined,
+                                color: isSelected
+                                    ? colorScheme.onPrimary
+                                    : colorScheme.onPrimaryContainer,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    enrollment.subject.name,
+                                    style: textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: isSelected
+                                          ? colorScheme.onPrimaryContainer
+                                          : colorScheme.onSurface,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      _buildInfoChip(
+                                        context,
+                                        enrollment.subject.code,
+                                        Icons.tag,
+                                        isSelected,
+                                      ),
+                                      const SizedBox(width: AppSpacing.sm),
+                                      Flexible(
+                                        child: _buildInfoChip(
+                                          context,
+                                          enrollment.batch.name,
+                                          Icons.groups,
+                                          isSelected,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (isSelected)
+                              Icon(Icons.check_circle,
+                                  color: colorScheme.primary)
+                            else
+                              Icon(Icons.circle_outlined,
+                                  color: colorScheme.outline),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showDaySelectionSheet(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.sm,
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.calendar_today, color: colorScheme.primary),
+                const SizedBox(width: AppSpacing.smd),
+                Text(
+                  'Select Day',
+                  style: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Divider(color: colorScheme.outlineVariant),
+
+          // Day Grid
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                mainAxisSpacing: AppSpacing.sm,
+                crossAxisSpacing: AppSpacing.sm,
+                childAspectRatio: 1.2,
+              ),
+              itemCount: _days.length,
+              itemBuilder: (context, index) {
+                final day = _days[index];
+                final isSelected = day['value'] == _selectedDay;
+
+                return InkWell(
+                  onTap: () {
+                    setState(() => _selectedDay = day['value']);
+                    Navigator.pop(context);
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? colorScheme.primaryContainer
+                          : colorScheme.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.outlineVariant,
+                        width: isSelected ? 2 : 1,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _formatDayName(day['value']).substring(0, 3),
+                          style: textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: isSelected
+                                ? colorScheme.primary
+                                : colorScheme.onSurface,
+                          ),
+                        ),
+                        if (isSelected) ...[
+                          const SizedBox(height: 4),
+                          Icon(
+                            Icons.check_circle,
+                            size: 16,
+                            color: colorScheme.primary,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoChip(
+    BuildContext context,
+    String text,
+    IconData icon,
+    bool isSelected,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: isSelected
+            ? colorScheme.primary.withValues(alpha: 0.15)
+            : colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 12,
+            color:
+                isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              text,
+              style: textTheme.labelSmall?.copyWith(
+                color: isSelected
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }
