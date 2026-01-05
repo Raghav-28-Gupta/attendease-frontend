@@ -54,6 +54,8 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
                 ),
               ),
               const SizedBox(height: AppSpacing.sm),
+
+              // Custom Class Selector
               enrollmentsAsync.when(
                 data: (enrollments) {
                   if (enrollments.isEmpty) {
@@ -95,46 +97,65 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
                     );
                   }
 
-                  return DropdownButtonFormField<String>(
-                    value: _selectedEnrollmentId,
-                    decoration: const InputDecoration(
-                      labelText: 'Select Class',
-                      prefixIcon: Icon(Icons.class_),
-                      border: OutlineInputBorder(),
-                      helperText: 'Choose subject and batch combination',
-                    ),
-                    items: enrollments.map((enrollment) {
-                      return DropdownMenuItem(
-                        value: enrollment.id,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              enrollment.subject.name,
-                              style: textTheme.labelLarge?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              '${enrollment.subject.code} • ${enrollment.batch.name}',
-                              style: textTheme.labelSmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: _isLoading
+                  return InkWell(
+                    onTap: _isLoading
                         ? null
-                        : (value) {
-                            setState(() => _selectedEnrollmentId = value);
-                          },
-                    validator: (value) {
-                      if (value == null) return 'Please select an enrollment';
-                      return null;
-                    },
+                        : () => _showClassSelectionSheet(context, enrollments),
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: colorScheme.outline),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.class_,
+                            color: colorScheme.primary,
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(
+                            child: _selectedEnrollmentId == null
+                                ? Text(
+                                    'Select Class',
+                                    style: textTheme.bodyLarge?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  )
+                                : Builder(builder: (context) {
+                                    final enrollment = enrollments.firstWhere(
+                                      (e) => e.id == _selectedEnrollmentId,
+                                    );
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          enrollment.subject.name,
+                                          style: textTheme.bodyLarge?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Text(
+                                          '${enrollment.subject.code} • ${enrollment.batch.name}',
+                                          style: textTheme.labelSmall?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                          ),
+                          Icon(
+                            Icons.arrow_drop_down,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 },
                 loading: () => Container(
@@ -181,6 +202,8 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
+
+              // Date Selection
               Text(
                 'Date',
                 style: textTheme.labelLarge?.copyWith(
@@ -204,6 +227,8 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
+
+              // Time Selection
               Row(
                 children: [
                   Expanded(
@@ -271,6 +296,8 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
+
+              // Session Type
               Text(
                 'Session Type',
                 style: textTheme.labelLarge?.copyWith(
@@ -304,14 +331,207 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
                       },
               ),
               const SizedBox(height: AppSpacing.xl),
+
+              // Submit Button
               AppButton.filled(
                 text: 'Create Session',
                 onPressed: _isLoading ? null : _handleCreateSession,
                 isLoading: _isLoading,
+                icon: Icons.add_circle_outline,
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showClassSelectionSheet(
+      BuildContext context, List<dynamic> enrollments) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.4,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) => Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.sm,
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.class_, color: colorScheme.primary),
+                  const SizedBox(width: AppSpacing.smd),
+                  Text(
+                    'Select Class',
+                    style: textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(color: colorScheme.outlineVariant),
+
+            // Class List
+            Expanded(
+              child: ListView.builder(
+                controller: scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                itemCount: enrollments.length,
+                itemBuilder: (context, index) {
+                  final enrollment = enrollments[index];
+                  final isSelected = enrollment.id == _selectedEnrollmentId;
+
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.smd),
+                    color: isSelected
+                        ? colorScheme.primaryContainer
+                        : colorScheme.surfaceContainerLow,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() => _selectedEnrollmentId = enrollment.id);
+                        Navigator.pop(context);
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Row(
+                          children: [
+                            // Class Icon
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? colorScheme.primary
+                                    : colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.class_outlined,
+                                color: isSelected
+                                    ? colorScheme.onPrimary
+                                    : colorScheme.onPrimaryContainer,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+
+                            // Class Info
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    enrollment.subject.name,
+                                    style: textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: isSelected
+                                          ? colorScheme.onPrimaryContainer
+                                          : colorScheme.onSurface,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      _buildInfoChip(
+                                        context,
+                                        enrollment.subject.code,
+                                        Icons.tag,
+                                        isSelected,
+                                      ),
+                                      const SizedBox(width: AppSpacing.sm),
+                                      Flexible(
+                                        child: _buildInfoChip(
+                                          context,
+                                          enrollment.batch.name,
+                                          Icons.groups,
+                                          isSelected,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Check icon
+                            if (isSelected)
+                              Icon(
+                                Icons.check_circle,
+                                color: colorScheme.primary,
+                              )
+                            else
+                              Icon(
+                                Icons.circle_outlined,
+                                color: colorScheme.outline,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoChip(
+    BuildContext context,
+    String text,
+    IconData icon,
+    bool isSelected,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: isSelected
+            ? colorScheme.primary.withValues(alpha: 0.15)
+            : colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 12,
+            color:
+                isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              text,
+              style: textTheme.labelSmall?.copyWith(
+                color: isSelected
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }
