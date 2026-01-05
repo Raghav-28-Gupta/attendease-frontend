@@ -187,44 +187,62 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
                 );
               }
 
-              return DropdownButtonFormField<String>(
-                value: _selectedBatchId,
-                decoration: const InputDecoration(
-                  labelText: 'Select Batch',
-                  prefixIcon: Icon(Icons.school_outlined),
-                  border: OutlineInputBorder(),
-                  helperText: 'Choose which batch to add students to',
+              return InkWell(
+                onTap: () => _showBatchSelectionSheet(context, batches),
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: colorScheme.outline),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.school_outlined,
+                        color: colorScheme.primary,
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: _selectedBatchId == null
+                            ? Text(
+                                'Select Batch',
+                                style: textTheme.bodyLarge?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              )
+                            : Builder(builder: (context) {
+                                final batch = batches.firstWhere(
+                                  (b) => b.id == _selectedBatchId,
+                                );
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      batch.name,
+                                      style: textTheme.bodyLarge?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      '${batch.code} • ${batch.academicYear}',
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                );
+                              }),
+                      ),
+                      Icon(
+                        Icons.arrow_drop_down,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ],
+                  ),
                 ),
-                items: batches.map((batch) {
-                  return DropdownMenuItem(
-                    value: batch.id,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          batch.name,
-                          style: textTheme.labelLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          '${batch.code} • ${batch.academicYear} • ${batch.studentCount} students',
-                          style: textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedBatchId = value;
-                    _file = null;
-                  });
-                  ref.read(importStudentsProvider.notifier).reset();
-                },
               );
             },
             loading: () => const LoadingWidget(message: 'Loading batches...'),
@@ -468,6 +486,208 @@ class _ImportStudentsScreenState extends ConsumerState<ImportStudentsScreen> {
             onPressed: _canImport && !importState.isLoading ? _upload : null,
             isLoading: importState.isLoading,
             icon: Icons.cloud_upload_outlined,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showBatchSelectionSheet(BuildContext context, List<dynamic> batches) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.4,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) => Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.sm,
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.school, color: colorScheme.primary),
+                  const SizedBox(width: AppSpacing.smd),
+                  Text(
+                    'Select Batch',
+                    style: textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(color: colorScheme.outlineVariant),
+
+            // Batch List
+            Expanded(
+              child: ListView.builder(
+                controller: scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                itemCount: batches.length,
+                itemBuilder: (context, index) {
+                  final batch = batches[index];
+                  final isSelected = batch.id == _selectedBatchId;
+
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.smd),
+                    color: isSelected
+                        ? colorScheme.primaryContainer
+                        : colorScheme.surfaceContainerLow,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _selectedBatchId = batch.id;
+                          _file = null;
+                        });
+                        ref.read(importStudentsProvider.notifier).reset();
+                        Navigator.pop(context);
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Row(
+                          children: [
+                            // Batch Icon
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? colorScheme.primary
+                                    : colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.groups_outlined,
+                                color: isSelected
+                                    ? colorScheme.onPrimary
+                                    : colorScheme.onPrimaryContainer,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+
+                            // Batch Info
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    batch.name,
+                                    style: textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: isSelected
+                                          ? colorScheme.onPrimaryContainer
+                                          : colorScheme.onSurface,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      _buildInfoChip(
+                                        context,
+                                        batch.code,
+                                        Icons.tag,
+                                        isSelected,
+                                      ),
+                                      const SizedBox(width: AppSpacing.sm),
+                                      _buildInfoChip(
+                                        context,
+                                        batch.academicYear,
+                                        Icons.calendar_today,
+                                        isSelected,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Student count & check
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                if (isSelected)
+                                  Icon(
+                                    Icons.check_circle,
+                                    color: colorScheme.primary,
+                                  )
+                                else
+                                  Icon(
+                                    Icons.circle_outlined,
+                                    color: colorScheme.outline,
+                                  ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${batch.studentCount} students',
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: isSelected
+                                        ? colorScheme.onPrimaryContainer
+                                        : colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoChip(
+    BuildContext context,
+    String text,
+    IconData icon,
+    bool isSelected,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: isSelected
+            ? colorScheme.primary.withValues(alpha: 0.15)
+            : colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 12,
+            color:
+                isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: textTheme.labelSmall?.copyWith(
+              color: isSelected
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
