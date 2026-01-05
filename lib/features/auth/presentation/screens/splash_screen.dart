@@ -66,6 +66,7 @@ class _SplashScreenState extends State<SplashScreen>
                   opacity: _fadeAnimation,
                   child: Container(
                     width: 120,
+                    clipBehavior: Clip.antiAlias,
                     height: 120,
                     decoration: BoxDecoration(
                       color: colorScheme.surface,
@@ -78,10 +79,9 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                       ],
                     ),
-                    child: Icon(
-                      Icons.check_circle,
-                      size: 64,
-                      color: colorScheme.primary,
+                    child: Image.asset(
+                      'assets/icons/app_icon.png',
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
