@@ -10,14 +10,17 @@ _$StudentDashboardModelImpl _$$StudentDashboardModelImplFromJson(
         Map<String, dynamic> json) =>
     _$StudentDashboardModelImpl(
       student: StudentInfo.fromJson(json['student'] as Map<String, dynamic>),
-      subjects: (json['subjects'] as List<dynamic>)
-          .map((e) => SubjectAttendanceInfo.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      subjects: (json['subjects'] as List<dynamic>?)
+              ?.map((e) =>
+                  SubjectAttendanceInfo.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       overview:
           DashboardOverview.fromJson(json['overview'] as Map<String, dynamic>),
-      todayClasses: (json['todayClasses'] as List<dynamic>)
-          .map((e) => TodayClassInfo.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      todayClasses: (json['todayClasses'] as List<dynamic>?)
+              ?.map((e) => TodayClassInfo.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$StudentDashboardModelImplToJson(
@@ -31,11 +34,11 @@ Map<String, dynamic> _$$StudentDashboardModelImplToJson(
 
 _$StudentInfoImpl _$$StudentInfoImplFromJson(Map<String, dynamic> json) =>
     _$StudentInfoImpl(
-      id: json['id'] as String,
-      studentId: json['studentId'] as String,
-      firstName: json['firstName'] as String,
-      lastName: json['lastName'] as String,
-      email: json['email'] as String,
+      id: json['id'] as String? ?? '',
+      studentId: json['studentId'] as String? ?? '',
+      firstName: json['firstName'] as String? ?? 'Student',
+      lastName: json['lastName'] as String? ?? '',
+      email: json['email'] as String? ?? '',
       phone: json['phone'] as String?,
       batch: BatchDetailInfo.fromJson(json['batch'] as Map<String, dynamic>),
     );
@@ -54,9 +57,9 @@ Map<String, dynamic> _$$StudentInfoImplToJson(_$StudentInfoImpl instance) =>
 _$BatchDetailInfoImpl _$$BatchDetailInfoImplFromJson(
         Map<String, dynamic> json) =>
     _$BatchDetailInfoImpl(
-      code: json['code'] as String,
-      name: json['name'] as String,
-      academicYear: json['academicYear'] as String,
+      code: json['code'] as String? ?? '',
+      name: json['name'] as String? ?? 'Unknown Batch',
+      academicYear: json['academicYear'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$BatchDetailInfoImplToJson(
@@ -70,10 +73,10 @@ Map<String, dynamic> _$$BatchDetailInfoImplToJson(
 _$SubjectAttendanceInfoImpl _$$SubjectAttendanceInfoImplFromJson(
         Map<String, dynamic> json) =>
     _$SubjectAttendanceInfoImpl(
-      subjectCode: json['subjectCode'] as String,
-      subjectName: json['subjectName'] as String,
-      semester: json['semester'] as String,
-      teacherName: json['teacherName'] as String,
+      subjectCode: json['subjectCode'] as String? ?? '',
+      subjectName: json['subjectName'] as String? ?? 'Unknown Subject',
+      semester: json['semester'] as String? ?? '',
+      teacherName: json['teacherName'] as String? ?? 'Unknown Teacher',
       stats: AttendanceStats.fromJson(json['stats'] as Map<String, dynamic>),
     );
 
@@ -90,13 +93,13 @@ Map<String, dynamic> _$$SubjectAttendanceInfoImplToJson(
 _$AttendanceStatsImpl _$$AttendanceStatsImplFromJson(
         Map<String, dynamic> json) =>
     _$AttendanceStatsImpl(
-      totalSessions: (json['totalSessions'] as num).toInt(),
-      present: (json['present'] as num).toInt(),
-      absent: (json['absent'] as num).toInt(),
-      late: (json['late'] as num).toInt(),
-      excused: (json['excused'] as num).toInt(),
-      percentage: (json['percentage'] as num).toDouble(),
-      status: json['status'] as String,
+      totalSessions: (json['totalSessions'] as num?)?.toInt() ?? 0,
+      present: (json['present'] as num?)?.toInt() ?? 0,
+      absent: (json['absent'] as num?)?.toInt() ?? 0,
+      late: (json['late'] as num?)?.toInt() ?? 0,
+      excused: (json['excused'] as num?)?.toInt() ?? 0,
+      percentage: (json['percentage'] as num?)?.toDouble() ?? 0.0,
+      status: json['status'] as String? ?? 'GOOD',
     );
 
 Map<String, dynamic> _$$AttendanceStatsImplToJson(
@@ -114,11 +117,11 @@ Map<String, dynamic> _$$AttendanceStatsImplToJson(
 _$DashboardOverviewImpl _$$DashboardOverviewImplFromJson(
         Map<String, dynamic> json) =>
     _$DashboardOverviewImpl(
-      totalSubjects: (json['totalSubjects'] as num).toInt(),
-      overallAttendance: (json['overallAttendance'] as num).toDouble(),
-      totalSessions: (json['totalSessions'] as num).toInt(),
-      classesAttended: (json['classesAttended'] as num).toInt(),
-      lowAttendanceCount: (json['lowAttendanceCount'] as num).toInt(),
+      totalSubjects: (json['totalSubjects'] as num?)?.toInt() ?? 0,
+      overallAttendance: (json['overallAttendance'] as num?)?.toDouble() ?? 0.0,
+      totalSessions: (json['totalSessions'] as num?)?.toInt() ?? 0,
+      classesAttended: (json['classesAttended'] as num?)?.toInt() ?? 0,
+      lowAttendanceCount: (json['lowAttendanceCount'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$$DashboardOverviewImplToJson(
@@ -133,21 +136,66 @@ Map<String, dynamic> _$$DashboardOverviewImplToJson(
 
 _$TodayClassInfoImpl _$$TodayClassInfoImplFromJson(Map<String, dynamic> json) =>
     _$TodayClassInfoImpl(
-      subjectCode: json['subjectCode'] as String,
-      subjectName: json['subjectName'] as String,
-      startTime: json['startTime'] as String,
-      endTime: json['endTime'] as String,
+      id: json['id'] as String? ?? '',
+      startTime: json['startTime'] as String? ?? '',
+      endTime: json['endTime'] as String? ?? '',
       room: json['room'] as String?,
-      teacherName: json['teacherName'] as String,
+      subjectEnrollment: TodayClassSubjectEnrollment.fromJson(
+          json['subjectEnrollment'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$TodayClassInfoImplToJson(
         _$TodayClassInfoImpl instance) =>
     <String, dynamic>{
-      'subjectCode': instance.subjectCode,
-      'subjectName': instance.subjectName,
+      'id': instance.id,
       'startTime': instance.startTime,
       'endTime': instance.endTime,
       'room': instance.room,
-      'teacherName': instance.teacherName,
+      'subjectEnrollment': instance.subjectEnrollment,
+    };
+
+_$TodayClassSubjectEnrollmentImpl _$$TodayClassSubjectEnrollmentImplFromJson(
+        Map<String, dynamic> json) =>
+    _$TodayClassSubjectEnrollmentImpl(
+      subject:
+          TodayClassSubject.fromJson(json['subject'] as Map<String, dynamic>),
+      teacher:
+          TodayClassTeacher.fromJson(json['teacher'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$TodayClassSubjectEnrollmentImplToJson(
+        _$TodayClassSubjectEnrollmentImpl instance) =>
+    <String, dynamic>{
+      'subject': instance.subject,
+      'teacher': instance.teacher,
+    };
+
+_$TodayClassSubjectImpl _$$TodayClassSubjectImplFromJson(
+        Map<String, dynamic> json) =>
+    _$TodayClassSubjectImpl(
+      code: json['code'] as String? ?? '',
+      name: json['name'] as String? ?? 'Unknown Subject',
+      semester: json['semester'] as String? ?? '',
+    );
+
+Map<String, dynamic> _$$TodayClassSubjectImplToJson(
+        _$TodayClassSubjectImpl instance) =>
+    <String, dynamic>{
+      'code': instance.code,
+      'name': instance.name,
+      'semester': instance.semester,
+    };
+
+_$TodayClassTeacherImpl _$$TodayClassTeacherImplFromJson(
+        Map<String, dynamic> json) =>
+    _$TodayClassTeacherImpl(
+      firstName: json['firstName'] as String? ?? 'Unknown',
+      lastName: json['lastName'] as String? ?? 'Teacher',
+    );
+
+Map<String, dynamic> _$$TodayClassTeacherImplToJson(
+        _$TodayClassTeacherImpl instance) =>
+    <String, dynamic>{
+      'firstName': instance.firstName,
+      'lastName': instance.lastName,
     };

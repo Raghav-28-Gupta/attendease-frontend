@@ -181,9 +181,9 @@ class __$$StudentDashboardModelImplCopyWithImpl<$Res>
 class _$StudentDashboardModelImpl implements _StudentDashboardModel {
   const _$StudentDashboardModelImpl(
       {required this.student,
-      required final List<SubjectAttendanceInfo> subjects,
+      final List<SubjectAttendanceInfo> subjects = const [],
       required this.overview,
-      required final List<TodayClassInfo> todayClasses})
+      final List<TodayClassInfo> todayClasses = const []})
       : _subjects = subjects,
         _todayClasses = todayClasses;
 
@@ -194,6 +194,7 @@ class _$StudentDashboardModelImpl implements _StudentDashboardModel {
   final StudentInfo student;
   final List<SubjectAttendanceInfo> _subjects;
   @override
+  @JsonKey()
   List<SubjectAttendanceInfo> get subjects {
     if (_subjects is EqualUnmodifiableListView) return _subjects;
     // ignore: implicit_dynamic_type
@@ -204,6 +205,7 @@ class _$StudentDashboardModelImpl implements _StudentDashboardModel {
   final DashboardOverview overview;
   final List<TodayClassInfo> _todayClasses;
   @override
+  @JsonKey()
   List<TodayClassInfo> get todayClasses {
     if (_todayClasses is EqualUnmodifiableListView) return _todayClasses;
     // ignore: implicit_dynamic_type
@@ -256,11 +258,10 @@ class _$StudentDashboardModelImpl implements _StudentDashboardModel {
 
 abstract class _StudentDashboardModel implements StudentDashboardModel {
   const factory _StudentDashboardModel(
-          {required final StudentInfo student,
-          required final List<SubjectAttendanceInfo> subjects,
-          required final DashboardOverview overview,
-          required final List<TodayClassInfo> todayClasses}) =
-      _$StudentDashboardModelImpl;
+      {required final StudentInfo student,
+      final List<SubjectAttendanceInfo> subjects,
+      required final DashboardOverview overview,
+      final List<TodayClassInfo> todayClasses}) = _$StudentDashboardModelImpl;
 
   factory _StudentDashboardModel.fromJson(Map<String, dynamic> json) =
       _$StudentDashboardModelImpl.fromJson;
@@ -469,11 +470,11 @@ class __$$StudentInfoImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$StudentInfoImpl extends _StudentInfo {
   const _$StudentInfoImpl(
-      {required this.id,
-      required this.studentId,
-      required this.firstName,
-      required this.lastName,
-      required this.email,
+      {this.id = '',
+      this.studentId = '',
+      this.firstName = 'Student',
+      this.lastName = '',
+      this.email = '',
       this.phone,
       required this.batch})
       : super._();
@@ -482,14 +483,19 @@ class _$StudentInfoImpl extends _StudentInfo {
       _$$StudentInfoImplFromJson(json);
 
   @override
+  @JsonKey()
   final String id;
   @override
+  @JsonKey()
   final String studentId;
   @override
+  @JsonKey()
   final String firstName;
   @override
+  @JsonKey()
   final String lastName;
   @override
+  @JsonKey()
   final String email;
   @override
   final String? phone;
@@ -541,11 +547,11 @@ class _$StudentInfoImpl extends _StudentInfo {
 
 abstract class _StudentInfo extends StudentInfo {
   const factory _StudentInfo(
-      {required final String id,
-      required final String studentId,
-      required final String firstName,
-      required final String lastName,
-      required final String email,
+      {final String id,
+      final String studentId,
+      final String firstName,
+      final String lastName,
+      final String email,
       final String? phone,
       required final BatchDetailInfo batch}) = _$StudentInfoImpl;
   const _StudentInfo._() : super._();
@@ -690,16 +696,19 @@ class __$$BatchDetailInfoImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$BatchDetailInfoImpl implements _BatchDetailInfo {
   const _$BatchDetailInfoImpl(
-      {required this.code, required this.name, required this.academicYear});
+      {this.code = '', this.name = 'Unknown Batch', this.academicYear = ''});
 
   factory _$BatchDetailInfoImpl.fromJson(Map<String, dynamic> json) =>
       _$$BatchDetailInfoImplFromJson(json);
 
   @override
+  @JsonKey()
   final String code;
   @override
+  @JsonKey()
   final String name;
   @override
+  @JsonKey()
   final String academicYear;
 
   @override
@@ -741,9 +750,9 @@ class _$BatchDetailInfoImpl implements _BatchDetailInfo {
 
 abstract class _BatchDetailInfo implements BatchDetailInfo {
   const factory _BatchDetailInfo(
-      {required final String code,
-      required final String name,
-      required final String academicYear}) = _$BatchDetailInfoImpl;
+      {final String code,
+      final String name,
+      final String academicYear}) = _$BatchDetailInfoImpl;
 
   factory _BatchDetailInfo.fromJson(Map<String, dynamic> json) =
       _$BatchDetailInfoImpl.fromJson;
@@ -928,22 +937,26 @@ class __$$SubjectAttendanceInfoImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$SubjectAttendanceInfoImpl implements _SubjectAttendanceInfo {
   const _$SubjectAttendanceInfoImpl(
-      {required this.subjectCode,
-      required this.subjectName,
-      required this.semester,
-      required this.teacherName,
+      {this.subjectCode = '',
+      this.subjectName = 'Unknown Subject',
+      this.semester = '',
+      this.teacherName = 'Unknown Teacher',
       required this.stats});
 
   factory _$SubjectAttendanceInfoImpl.fromJson(Map<String, dynamic> json) =>
       _$$SubjectAttendanceInfoImplFromJson(json);
 
   @override
+  @JsonKey()
   final String subjectCode;
   @override
+  @JsonKey()
   final String subjectName;
   @override
+  @JsonKey()
   final String semester;
   @override
+  @JsonKey()
   final String teacherName;
   @override
   final AttendanceStats stats;
@@ -993,10 +1006,10 @@ class _$SubjectAttendanceInfoImpl implements _SubjectAttendanceInfo {
 
 abstract class _SubjectAttendanceInfo implements SubjectAttendanceInfo {
   const factory _SubjectAttendanceInfo(
-      {required final String subjectCode,
-      required final String subjectName,
-      required final String semester,
-      required final String teacherName,
+      {final String subjectCode,
+      final String subjectName,
+      final String semester,
+      final String teacherName,
       required final AttendanceStats stats}) = _$SubjectAttendanceInfoImpl;
 
   factory _SubjectAttendanceInfo.fromJson(Map<String, dynamic> json) =
@@ -1193,31 +1206,38 @@ class __$$AttendanceStatsImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$AttendanceStatsImpl extends _AttendanceStats {
   const _$AttendanceStatsImpl(
-      {required this.totalSessions,
-      required this.present,
-      required this.absent,
-      required this.late,
-      required this.excused,
-      required this.percentage,
-      required this.status})
+      {this.totalSessions = 0,
+      this.present = 0,
+      this.absent = 0,
+      this.late = 0,
+      this.excused = 0,
+      this.percentage = 0.0,
+      this.status = 'GOOD'})
       : super._();
 
   factory _$AttendanceStatsImpl.fromJson(Map<String, dynamic> json) =>
       _$$AttendanceStatsImplFromJson(json);
 
   @override
+  @JsonKey()
   final int totalSessions;
   @override
+  @JsonKey()
   final int present;
   @override
+  @JsonKey()
   final int absent;
   @override
+  @JsonKey()
   final int late;
   @override
+  @JsonKey()
   final int excused;
   @override
+  @JsonKey()
   final double percentage;
   @override
+  @JsonKey()
   final String status;
 
   @override
@@ -1265,13 +1285,13 @@ class _$AttendanceStatsImpl extends _AttendanceStats {
 
 abstract class _AttendanceStats extends AttendanceStats {
   const factory _AttendanceStats(
-      {required final int totalSessions,
-      required final int present,
-      required final int absent,
-      required final int late,
-      required final int excused,
-      required final double percentage,
-      required final String status}) = _$AttendanceStatsImpl;
+      {final int totalSessions,
+      final int present,
+      final int absent,
+      final int late,
+      final int excused,
+      final double percentage,
+      final String status}) = _$AttendanceStatsImpl;
   const _AttendanceStats._() : super._();
 
   factory _AttendanceStats.fromJson(Map<String, dynamic> json) =
@@ -1446,24 +1466,29 @@ class __$$DashboardOverviewImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DashboardOverviewImpl implements _DashboardOverview {
   const _$DashboardOverviewImpl(
-      {required this.totalSubjects,
-      required this.overallAttendance,
-      required this.totalSessions,
-      required this.classesAttended,
-      required this.lowAttendanceCount});
+      {this.totalSubjects = 0,
+      this.overallAttendance = 0.0,
+      this.totalSessions = 0,
+      this.classesAttended = 0,
+      this.lowAttendanceCount = 0});
 
   factory _$DashboardOverviewImpl.fromJson(Map<String, dynamic> json) =>
       _$$DashboardOverviewImplFromJson(json);
 
   @override
+  @JsonKey()
   final int totalSubjects;
   @override
+  @JsonKey()
   final double overallAttendance;
   @override
+  @JsonKey()
   final int totalSessions;
   @override
+  @JsonKey()
   final int classesAttended;
   @override
+  @JsonKey()
   final int lowAttendanceCount;
 
   @override
@@ -1512,11 +1537,11 @@ class _$DashboardOverviewImpl implements _DashboardOverview {
 
 abstract class _DashboardOverview implements DashboardOverview {
   const factory _DashboardOverview(
-      {required final int totalSubjects,
-      required final double overallAttendance,
-      required final int totalSessions,
-      required final int classesAttended,
-      required final int lowAttendanceCount}) = _$DashboardOverviewImpl;
+      {final int totalSubjects,
+      final double overallAttendance,
+      final int totalSessions,
+      final int classesAttended,
+      final int lowAttendanceCount}) = _$DashboardOverviewImpl;
 
   factory _DashboardOverview.fromJson(Map<String, dynamic> json) =
       _$DashboardOverviewImpl.fromJson;
@@ -1546,12 +1571,12 @@ TodayClassInfo _$TodayClassInfoFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$TodayClassInfo {
-  String get subjectCode => throw _privateConstructorUsedError;
-  String get subjectName => throw _privateConstructorUsedError;
+  String get id => throw _privateConstructorUsedError;
   String get startTime => throw _privateConstructorUsedError;
   String get endTime => throw _privateConstructorUsedError;
   String? get room => throw _privateConstructorUsedError;
-  String get teacherName => throw _privateConstructorUsedError;
+  TodayClassSubjectEnrollment get subjectEnrollment =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this TodayClassInfo to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1570,12 +1595,13 @@ abstract class $TodayClassInfoCopyWith<$Res> {
       _$TodayClassInfoCopyWithImpl<$Res, TodayClassInfo>;
   @useResult
   $Res call(
-      {String subjectCode,
-      String subjectName,
+      {String id,
       String startTime,
       String endTime,
       String? room,
-      String teacherName});
+      TodayClassSubjectEnrollment subjectEnrollment});
+
+  $TodayClassSubjectEnrollmentCopyWith<$Res> get subjectEnrollment;
 }
 
 /// @nodoc
@@ -1593,21 +1619,16 @@ class _$TodayClassInfoCopyWithImpl<$Res, $Val extends TodayClassInfo>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? subjectCode = null,
-    Object? subjectName = null,
+    Object? id = null,
     Object? startTime = null,
     Object? endTime = null,
     Object? room = freezed,
-    Object? teacherName = null,
+    Object? subjectEnrollment = null,
   }) {
     return _then(_value.copyWith(
-      subjectCode: null == subjectCode
-          ? _value.subjectCode
-          : subjectCode // ignore: cast_nullable_to_non_nullable
-              as String,
-      subjectName: null == subjectName
-          ? _value.subjectName
-          : subjectName // ignore: cast_nullable_to_non_nullable
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
               as String,
       startTime: null == startTime
           ? _value.startTime
@@ -1621,11 +1642,22 @@ class _$TodayClassInfoCopyWithImpl<$Res, $Val extends TodayClassInfo>
           ? _value.room
           : room // ignore: cast_nullable_to_non_nullable
               as String?,
-      teacherName: null == teacherName
-          ? _value.teacherName
-          : teacherName // ignore: cast_nullable_to_non_nullable
-              as String,
+      subjectEnrollment: null == subjectEnrollment
+          ? _value.subjectEnrollment
+          : subjectEnrollment // ignore: cast_nullable_to_non_nullable
+              as TodayClassSubjectEnrollment,
     ) as $Val);
+  }
+
+  /// Create a copy of TodayClassInfo
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $TodayClassSubjectEnrollmentCopyWith<$Res> get subjectEnrollment {
+    return $TodayClassSubjectEnrollmentCopyWith<$Res>(_value.subjectEnrollment,
+        (value) {
+      return _then(_value.copyWith(subjectEnrollment: value) as $Val);
+    });
   }
 }
 
@@ -1638,12 +1670,14 @@ abstract class _$$TodayClassInfoImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String subjectCode,
-      String subjectName,
+      {String id,
       String startTime,
       String endTime,
       String? room,
-      String teacherName});
+      TodayClassSubjectEnrollment subjectEnrollment});
+
+  @override
+  $TodayClassSubjectEnrollmentCopyWith<$Res> get subjectEnrollment;
 }
 
 /// @nodoc
@@ -1659,21 +1693,16 @@ class __$$TodayClassInfoImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? subjectCode = null,
-    Object? subjectName = null,
+    Object? id = null,
     Object? startTime = null,
     Object? endTime = null,
     Object? room = freezed,
-    Object? teacherName = null,
+    Object? subjectEnrollment = null,
   }) {
     return _then(_$TodayClassInfoImpl(
-      subjectCode: null == subjectCode
-          ? _value.subjectCode
-          : subjectCode // ignore: cast_nullable_to_non_nullable
-              as String,
-      subjectName: null == subjectName
-          ? _value.subjectName
-          : subjectName // ignore: cast_nullable_to_non_nullable
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
               as String,
       startTime: null == startTime
           ? _value.startTime
@@ -1687,44 +1716,45 @@ class __$$TodayClassInfoImplCopyWithImpl<$Res>
           ? _value.room
           : room // ignore: cast_nullable_to_non_nullable
               as String?,
-      teacherName: null == teacherName
-          ? _value.teacherName
-          : teacherName // ignore: cast_nullable_to_non_nullable
-              as String,
+      subjectEnrollment: null == subjectEnrollment
+          ? _value.subjectEnrollment
+          : subjectEnrollment // ignore: cast_nullable_to_non_nullable
+              as TodayClassSubjectEnrollment,
     ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$TodayClassInfoImpl implements _TodayClassInfo {
+class _$TodayClassInfoImpl extends _TodayClassInfo {
   const _$TodayClassInfoImpl(
-      {required this.subjectCode,
-      required this.subjectName,
-      required this.startTime,
-      required this.endTime,
+      {this.id = '',
+      this.startTime = '',
+      this.endTime = '',
       this.room,
-      required this.teacherName});
+      required this.subjectEnrollment})
+      : super._();
 
   factory _$TodayClassInfoImpl.fromJson(Map<String, dynamic> json) =>
       _$$TodayClassInfoImplFromJson(json);
 
   @override
-  final String subjectCode;
+  @JsonKey()
+  final String id;
   @override
-  final String subjectName;
-  @override
+  @JsonKey()
   final String startTime;
   @override
+  @JsonKey()
   final String endTime;
   @override
   final String? room;
   @override
-  final String teacherName;
+  final TodayClassSubjectEnrollment subjectEnrollment;
 
   @override
   String toString() {
-    return 'TodayClassInfo(subjectCode: $subjectCode, subjectName: $subjectName, startTime: $startTime, endTime: $endTime, room: $room, teacherName: $teacherName)';
+    return 'TodayClassInfo(id: $id, startTime: $startTime, endTime: $endTime, room: $room, subjectEnrollment: $subjectEnrollment)';
   }
 
   @override
@@ -1732,22 +1762,19 @@ class _$TodayClassInfoImpl implements _TodayClassInfo {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$TodayClassInfoImpl &&
-            (identical(other.subjectCode, subjectCode) ||
-                other.subjectCode == subjectCode) &&
-            (identical(other.subjectName, subjectName) ||
-                other.subjectName == subjectName) &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.startTime, startTime) ||
                 other.startTime == startTime) &&
             (identical(other.endTime, endTime) || other.endTime == endTime) &&
             (identical(other.room, room) || other.room == room) &&
-            (identical(other.teacherName, teacherName) ||
-                other.teacherName == teacherName));
+            (identical(other.subjectEnrollment, subjectEnrollment) ||
+                other.subjectEnrollment == subjectEnrollment));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, subjectCode, subjectName,
-      startTime, endTime, room, teacherName);
+  int get hashCode =>
+      Object.hash(runtimeType, id, startTime, endTime, room, subjectEnrollment);
 
   /// Create a copy of TodayClassInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -1766,22 +1793,21 @@ class _$TodayClassInfoImpl implements _TodayClassInfo {
   }
 }
 
-abstract class _TodayClassInfo implements TodayClassInfo {
+abstract class _TodayClassInfo extends TodayClassInfo {
   const factory _TodayClassInfo(
-      {required final String subjectCode,
-      required final String subjectName,
-      required final String startTime,
-      required final String endTime,
-      final String? room,
-      required final String teacherName}) = _$TodayClassInfoImpl;
+          {final String id,
+          final String startTime,
+          final String endTime,
+          final String? room,
+          required final TodayClassSubjectEnrollment subjectEnrollment}) =
+      _$TodayClassInfoImpl;
+  const _TodayClassInfo._() : super._();
 
   factory _TodayClassInfo.fromJson(Map<String, dynamic> json) =
       _$TodayClassInfoImpl.fromJson;
 
   @override
-  String get subjectCode;
-  @override
-  String get subjectName;
+  String get id;
   @override
   String get startTime;
   @override
@@ -1789,12 +1815,585 @@ abstract class _TodayClassInfo implements TodayClassInfo {
   @override
   String? get room;
   @override
-  String get teacherName;
+  TodayClassSubjectEnrollment get subjectEnrollment;
 
   /// Create a copy of TodayClassInfo
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$TodayClassInfoImplCopyWith<_$TodayClassInfoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+TodayClassSubjectEnrollment _$TodayClassSubjectEnrollmentFromJson(
+    Map<String, dynamic> json) {
+  return _TodayClassSubjectEnrollment.fromJson(json);
+}
+
+/// @nodoc
+mixin _$TodayClassSubjectEnrollment {
+  TodayClassSubject get subject => throw _privateConstructorUsedError;
+  TodayClassTeacher get teacher => throw _privateConstructorUsedError;
+
+  /// Serializes this TodayClassSubjectEnrollment to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of TodayClassSubjectEnrollment
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $TodayClassSubjectEnrollmentCopyWith<TodayClassSubjectEnrollment>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TodayClassSubjectEnrollmentCopyWith<$Res> {
+  factory $TodayClassSubjectEnrollmentCopyWith(
+          TodayClassSubjectEnrollment value,
+          $Res Function(TodayClassSubjectEnrollment) then) =
+      _$TodayClassSubjectEnrollmentCopyWithImpl<$Res,
+          TodayClassSubjectEnrollment>;
+  @useResult
+  $Res call({TodayClassSubject subject, TodayClassTeacher teacher});
+
+  $TodayClassSubjectCopyWith<$Res> get subject;
+  $TodayClassTeacherCopyWith<$Res> get teacher;
+}
+
+/// @nodoc
+class _$TodayClassSubjectEnrollmentCopyWithImpl<$Res,
+        $Val extends TodayClassSubjectEnrollment>
+    implements $TodayClassSubjectEnrollmentCopyWith<$Res> {
+  _$TodayClassSubjectEnrollmentCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of TodayClassSubjectEnrollment
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? subject = null,
+    Object? teacher = null,
+  }) {
+    return _then(_value.copyWith(
+      subject: null == subject
+          ? _value.subject
+          : subject // ignore: cast_nullable_to_non_nullable
+              as TodayClassSubject,
+      teacher: null == teacher
+          ? _value.teacher
+          : teacher // ignore: cast_nullable_to_non_nullable
+              as TodayClassTeacher,
+    ) as $Val);
+  }
+
+  /// Create a copy of TodayClassSubjectEnrollment
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $TodayClassSubjectCopyWith<$Res> get subject {
+    return $TodayClassSubjectCopyWith<$Res>(_value.subject, (value) {
+      return _then(_value.copyWith(subject: value) as $Val);
+    });
+  }
+
+  /// Create a copy of TodayClassSubjectEnrollment
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $TodayClassTeacherCopyWith<$Res> get teacher {
+    return $TodayClassTeacherCopyWith<$Res>(_value.teacher, (value) {
+      return _then(_value.copyWith(teacher: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$TodayClassSubjectEnrollmentImplCopyWith<$Res>
+    implements $TodayClassSubjectEnrollmentCopyWith<$Res> {
+  factory _$$TodayClassSubjectEnrollmentImplCopyWith(
+          _$TodayClassSubjectEnrollmentImpl value,
+          $Res Function(_$TodayClassSubjectEnrollmentImpl) then) =
+      __$$TodayClassSubjectEnrollmentImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({TodayClassSubject subject, TodayClassTeacher teacher});
+
+  @override
+  $TodayClassSubjectCopyWith<$Res> get subject;
+  @override
+  $TodayClassTeacherCopyWith<$Res> get teacher;
+}
+
+/// @nodoc
+class __$$TodayClassSubjectEnrollmentImplCopyWithImpl<$Res>
+    extends _$TodayClassSubjectEnrollmentCopyWithImpl<$Res,
+        _$TodayClassSubjectEnrollmentImpl>
+    implements _$$TodayClassSubjectEnrollmentImplCopyWith<$Res> {
+  __$$TodayClassSubjectEnrollmentImplCopyWithImpl(
+      _$TodayClassSubjectEnrollmentImpl _value,
+      $Res Function(_$TodayClassSubjectEnrollmentImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TodayClassSubjectEnrollment
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? subject = null,
+    Object? teacher = null,
+  }) {
+    return _then(_$TodayClassSubjectEnrollmentImpl(
+      subject: null == subject
+          ? _value.subject
+          : subject // ignore: cast_nullable_to_non_nullable
+              as TodayClassSubject,
+      teacher: null == teacher
+          ? _value.teacher
+          : teacher // ignore: cast_nullable_to_non_nullable
+              as TodayClassTeacher,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$TodayClassSubjectEnrollmentImpl
+    implements _TodayClassSubjectEnrollment {
+  const _$TodayClassSubjectEnrollmentImpl(
+      {required this.subject, required this.teacher});
+
+  factory _$TodayClassSubjectEnrollmentImpl.fromJson(
+          Map<String, dynamic> json) =>
+      _$$TodayClassSubjectEnrollmentImplFromJson(json);
+
+  @override
+  final TodayClassSubject subject;
+  @override
+  final TodayClassTeacher teacher;
+
+  @override
+  String toString() {
+    return 'TodayClassSubjectEnrollment(subject: $subject, teacher: $teacher)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TodayClassSubjectEnrollmentImpl &&
+            (identical(other.subject, subject) || other.subject == subject) &&
+            (identical(other.teacher, teacher) || other.teacher == teacher));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, subject, teacher);
+
+  /// Create a copy of TodayClassSubjectEnrollment
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TodayClassSubjectEnrollmentImplCopyWith<_$TodayClassSubjectEnrollmentImpl>
+      get copyWith => __$$TodayClassSubjectEnrollmentImplCopyWithImpl<
+          _$TodayClassSubjectEnrollmentImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$TodayClassSubjectEnrollmentImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _TodayClassSubjectEnrollment
+    implements TodayClassSubjectEnrollment {
+  const factory _TodayClassSubjectEnrollment(
+          {required final TodayClassSubject subject,
+          required final TodayClassTeacher teacher}) =
+      _$TodayClassSubjectEnrollmentImpl;
+
+  factory _TodayClassSubjectEnrollment.fromJson(Map<String, dynamic> json) =
+      _$TodayClassSubjectEnrollmentImpl.fromJson;
+
+  @override
+  TodayClassSubject get subject;
+  @override
+  TodayClassTeacher get teacher;
+
+  /// Create a copy of TodayClassSubjectEnrollment
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TodayClassSubjectEnrollmentImplCopyWith<_$TodayClassSubjectEnrollmentImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+TodayClassSubject _$TodayClassSubjectFromJson(Map<String, dynamic> json) {
+  return _TodayClassSubject.fromJson(json);
+}
+
+/// @nodoc
+mixin _$TodayClassSubject {
+  String get code => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String get semester => throw _privateConstructorUsedError;
+
+  /// Serializes this TodayClassSubject to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of TodayClassSubject
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $TodayClassSubjectCopyWith<TodayClassSubject> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TodayClassSubjectCopyWith<$Res> {
+  factory $TodayClassSubjectCopyWith(
+          TodayClassSubject value, $Res Function(TodayClassSubject) then) =
+      _$TodayClassSubjectCopyWithImpl<$Res, TodayClassSubject>;
+  @useResult
+  $Res call({String code, String name, String semester});
+}
+
+/// @nodoc
+class _$TodayClassSubjectCopyWithImpl<$Res, $Val extends TodayClassSubject>
+    implements $TodayClassSubjectCopyWith<$Res> {
+  _$TodayClassSubjectCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of TodayClassSubject
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? code = null,
+    Object? name = null,
+    Object? semester = null,
+  }) {
+    return _then(_value.copyWith(
+      code: null == code
+          ? _value.code
+          : code // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      semester: null == semester
+          ? _value.semester
+          : semester // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$TodayClassSubjectImplCopyWith<$Res>
+    implements $TodayClassSubjectCopyWith<$Res> {
+  factory _$$TodayClassSubjectImplCopyWith(_$TodayClassSubjectImpl value,
+          $Res Function(_$TodayClassSubjectImpl) then) =
+      __$$TodayClassSubjectImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String code, String name, String semester});
+}
+
+/// @nodoc
+class __$$TodayClassSubjectImplCopyWithImpl<$Res>
+    extends _$TodayClassSubjectCopyWithImpl<$Res, _$TodayClassSubjectImpl>
+    implements _$$TodayClassSubjectImplCopyWith<$Res> {
+  __$$TodayClassSubjectImplCopyWithImpl(_$TodayClassSubjectImpl _value,
+      $Res Function(_$TodayClassSubjectImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TodayClassSubject
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? code = null,
+    Object? name = null,
+    Object? semester = null,
+  }) {
+    return _then(_$TodayClassSubjectImpl(
+      code: null == code
+          ? _value.code
+          : code // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      semester: null == semester
+          ? _value.semester
+          : semester // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$TodayClassSubjectImpl implements _TodayClassSubject {
+  const _$TodayClassSubjectImpl(
+      {this.code = '', this.name = 'Unknown Subject', this.semester = ''});
+
+  factory _$TodayClassSubjectImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TodayClassSubjectImplFromJson(json);
+
+  @override
+  @JsonKey()
+  final String code;
+  @override
+  @JsonKey()
+  final String name;
+  @override
+  @JsonKey()
+  final String semester;
+
+  @override
+  String toString() {
+    return 'TodayClassSubject(code: $code, name: $name, semester: $semester)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TodayClassSubjectImpl &&
+            (identical(other.code, code) || other.code == code) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.semester, semester) ||
+                other.semester == semester));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, code, name, semester);
+
+  /// Create a copy of TodayClassSubject
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TodayClassSubjectImplCopyWith<_$TodayClassSubjectImpl> get copyWith =>
+      __$$TodayClassSubjectImplCopyWithImpl<_$TodayClassSubjectImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$TodayClassSubjectImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _TodayClassSubject implements TodayClassSubject {
+  const factory _TodayClassSubject(
+      {final String code,
+      final String name,
+      final String semester}) = _$TodayClassSubjectImpl;
+
+  factory _TodayClassSubject.fromJson(Map<String, dynamic> json) =
+      _$TodayClassSubjectImpl.fromJson;
+
+  @override
+  String get code;
+  @override
+  String get name;
+  @override
+  String get semester;
+
+  /// Create a copy of TodayClassSubject
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TodayClassSubjectImplCopyWith<_$TodayClassSubjectImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+TodayClassTeacher _$TodayClassTeacherFromJson(Map<String, dynamic> json) {
+  return _TodayClassTeacher.fromJson(json);
+}
+
+/// @nodoc
+mixin _$TodayClassTeacher {
+  String get firstName => throw _privateConstructorUsedError;
+  String get lastName => throw _privateConstructorUsedError;
+
+  /// Serializes this TodayClassTeacher to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of TodayClassTeacher
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $TodayClassTeacherCopyWith<TodayClassTeacher> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TodayClassTeacherCopyWith<$Res> {
+  factory $TodayClassTeacherCopyWith(
+          TodayClassTeacher value, $Res Function(TodayClassTeacher) then) =
+      _$TodayClassTeacherCopyWithImpl<$Res, TodayClassTeacher>;
+  @useResult
+  $Res call({String firstName, String lastName});
+}
+
+/// @nodoc
+class _$TodayClassTeacherCopyWithImpl<$Res, $Val extends TodayClassTeacher>
+    implements $TodayClassTeacherCopyWith<$Res> {
+  _$TodayClassTeacherCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of TodayClassTeacher
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? firstName = null,
+    Object? lastName = null,
+  }) {
+    return _then(_value.copyWith(
+      firstName: null == firstName
+          ? _value.firstName
+          : firstName // ignore: cast_nullable_to_non_nullable
+              as String,
+      lastName: null == lastName
+          ? _value.lastName
+          : lastName // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$TodayClassTeacherImplCopyWith<$Res>
+    implements $TodayClassTeacherCopyWith<$Res> {
+  factory _$$TodayClassTeacherImplCopyWith(_$TodayClassTeacherImpl value,
+          $Res Function(_$TodayClassTeacherImpl) then) =
+      __$$TodayClassTeacherImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String firstName, String lastName});
+}
+
+/// @nodoc
+class __$$TodayClassTeacherImplCopyWithImpl<$Res>
+    extends _$TodayClassTeacherCopyWithImpl<$Res, _$TodayClassTeacherImpl>
+    implements _$$TodayClassTeacherImplCopyWith<$Res> {
+  __$$TodayClassTeacherImplCopyWithImpl(_$TodayClassTeacherImpl _value,
+      $Res Function(_$TodayClassTeacherImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TodayClassTeacher
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? firstName = null,
+    Object? lastName = null,
+  }) {
+    return _then(_$TodayClassTeacherImpl(
+      firstName: null == firstName
+          ? _value.firstName
+          : firstName // ignore: cast_nullable_to_non_nullable
+              as String,
+      lastName: null == lastName
+          ? _value.lastName
+          : lastName // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$TodayClassTeacherImpl extends _TodayClassTeacher {
+  const _$TodayClassTeacherImpl(
+      {this.firstName = 'Unknown', this.lastName = 'Teacher'})
+      : super._();
+
+  factory _$TodayClassTeacherImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TodayClassTeacherImplFromJson(json);
+
+  @override
+  @JsonKey()
+  final String firstName;
+  @override
+  @JsonKey()
+  final String lastName;
+
+  @override
+  String toString() {
+    return 'TodayClassTeacher(firstName: $firstName, lastName: $lastName)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TodayClassTeacherImpl &&
+            (identical(other.firstName, firstName) ||
+                other.firstName == firstName) &&
+            (identical(other.lastName, lastName) ||
+                other.lastName == lastName));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, firstName, lastName);
+
+  /// Create a copy of TodayClassTeacher
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TodayClassTeacherImplCopyWith<_$TodayClassTeacherImpl> get copyWith =>
+      __$$TodayClassTeacherImplCopyWithImpl<_$TodayClassTeacherImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$TodayClassTeacherImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _TodayClassTeacher extends TodayClassTeacher {
+  const factory _TodayClassTeacher(
+      {final String firstName,
+      final String lastName}) = _$TodayClassTeacherImpl;
+  const _TodayClassTeacher._() : super._();
+
+  factory _TodayClassTeacher.fromJson(Map<String, dynamic> json) =
+      _$TodayClassTeacherImpl.fromJson;
+
+  @override
+  String get firstName;
+  @override
+  String get lastName;
+
+  /// Create a copy of TodayClassTeacher
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TodayClassTeacherImplCopyWith<_$TodayClassTeacherImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
