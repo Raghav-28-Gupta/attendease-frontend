@@ -1,6 +1,6 @@
 <div align="center">
 
-![AttendEase Logo](assets/icons/app_icon.png)
+<img src="assets/icons/app_icon.png" alt="AttendEase Logo" width="150"/>
 
 # 🎓 AttendEase - Smart Attendance Management System
 
@@ -56,25 +56,25 @@ AttendEase follows a **Feature-First Layered Architecture** powered by **Riverpo
 ```mermaid
 graph TD
     subgraph "Presentation Layer"
-        UI[Screens & Widgets]
-        C[Controllers/Notifiers]
-        S[State (Riverpod)]
+        UI["Screens & Widgets"]
+        C["Controllers/Notifiers"]
+        S["State - Riverpod"]
     end
 
     subgraph "Domain Layer"
-        M[Models (Freezed)]
-        V[Validators]
+        M["Models - Freezed"]
+        V["Validators"]
     end
 
     subgraph "Data Layer"
-        R[Repositories]
-        DS[Remote Data Source]
-        LS[Local Storage]
+        R["Repositories"]
+        DS["Remote Data Source"]
+        LS["Local Storage"]
     end
 
     subgraph "External"
-        API[Node.js Backend]
-        FCM[Firebase Cloud Messaging]
+        API["Node.js Backend"]
+        FCM["Firebase Cloud Messaging"]
     end
 
     UI --> C
